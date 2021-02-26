@@ -7,8 +7,11 @@ const dbConnection = require('./db/database');
 
 console.log(dbConnection.connectDB[0] ? 'Connection to database is success' : 'Connection to database is failure');
 
-require('./models/User.model').userModel;
 require('./models/Ills.model').illModel;
+require('./models/Vaccines.model').vaccineModel;
+require('./models/Survey.model').surveyModel;
+require('./models/Partners.model').partnerModel;
+require('./models/User.model').userModel;
 
 const usersRouter = require('./routes/users');
 

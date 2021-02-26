@@ -1,8 +1,8 @@
 const {DataTypes} = require('sequelize');
 const dbConnection = require('../db/database').connectDB;
 
-const initIll = function () {
-  const ill = dbConnection[1].define('Ill', {
+const initPartner = function () {
+  const partner = dbConnection[1].define('Partner', {
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
@@ -12,19 +12,19 @@ const initIll = function () {
       type: DataTypes.STRING,
       allowNull: false
     },
-    typeIll: {
+    typePartner: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    aboutIll: {
+    termContract: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    capabilities: {
+    linkPartner: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
-    info: {
+    about: {
       type: DataTypes.STRING,
       allowNull: false
     }
@@ -32,14 +32,14 @@ const initIll = function () {
 
   (async () => {
     try {
-      await ill.sync();
-      console.log('Illness model is sync');
+      await partner.sync();
+      console.log('Partner model is sync')
     } catch (e) {
-      console.error('Illness model is not sync');
+      console.error('Partner model is not sync')
     }
   })();
 
-  return ill;
+  return partner;
 }
 
-module.exports.illModel = initIll();
+module.exports.partnerModel = initPartner();

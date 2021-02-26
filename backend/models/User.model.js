@@ -4,7 +4,9 @@ const ills = require('../models/Ills.model').illModel;
 const vaccines = require('../models/Vaccines.model').vaccineModel;
 const survey = require('../models/Survey.model').surveyModel;
 
-const createUser = function () {
+console.log(ills.findAll())
+
+const initUser = function () {
   const user = dbConnection[1].define('User', {
     id: {
       primaryKey: true,
@@ -46,11 +48,15 @@ const createUser = function () {
   });
 
   (async () => {
-    await dbConnection[1].sync();
-    console.log('User model is sync')
+    try {
+      await user.sync();
+      console.log('User model is sync');
+    } catch (e) {
+      console.error('User model is not sync');
+    }
   })();
 
   return user;
 }
 
-module.exports.userModel = createUser();
+module.exports.userModel = initUser();

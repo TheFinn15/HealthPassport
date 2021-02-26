@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const dbConnection = require('../db/database').connectDB;
 
-const createVaccine = function () {
+const initVaccine = function () {
   const vaccine = dbConnection[1].define('Vaccine', {
     id: {
       primaryKey: true,
@@ -27,11 +27,15 @@ const createVaccine = function () {
   });
 
   (async () => {
-    await dbConnection[1].sync();
-    console.log('Vaccine model is sync')
+    try {
+      await vaccine.sync();
+      console.log('Vaccine model is sync');
+    } catch (e) {
+      console.error('Vaccine mode is not sync');
+    }
   })();
 
   return vaccine;
 }
 
-module.exports.vaccineModel = createVaccine();
+module.exports.vaccineModel = initVaccine();
