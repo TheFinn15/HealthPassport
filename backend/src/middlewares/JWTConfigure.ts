@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import {PrismaClient} from "@prisma/client";
 
 export class JWTConfigure {
-  // TODO: Контролирование каждого созданого токена ( Модель Токена )
 
   async validateUserToken(token: string, client: PrismaClient) {
     try {

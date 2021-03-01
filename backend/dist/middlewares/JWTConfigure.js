@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JWTConfigure = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class JWTConfigure {
-    // TODO: Валидация токена по ролям юзера
     // TODO: Контролирование каждого созданого токена ( Модель Токена )
     async validateUserToken(token, client) {
         try {

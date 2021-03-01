@@ -19,15 +19,15 @@ const argon2_1 = __importDefault(require("argon2"));
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
 let UserController = class UserController {
     constructor() {
-        this.userClient = new client_1.PrismaClient();
+        this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getAll(req, res) {
         const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.userClient);
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
         if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
             return res.status(401).send("401 Unauthorized");
-        await this.userClient.user.findMany({
+        await this.clientDB.user.findMany({
             include: { ills: true, survey: true, vaccines: true }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -39,11 +39,11 @@ let UserController = class UserController {
     }
     async getById(req, res) {
         const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.userClient);
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
         if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
             return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
-        await this.userClient.user.findMany({
+        await this.clientDB.user.findMany({
             where: { id: id }, include: { ills: true, survey: true, vaccines: true }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -55,7 +55,7 @@ let UserController = class UserController {
     }
     async registerNewUser(req, res) {
         const { login, pwd, fullName, email, phone } = req.body;
-        await this.userClient.user.create({
+        await this.clientDB.user.create({
             data: {
                 login: login,
                 pwd: await argon2_1.default.hash(pwd),
@@ -72,8 +72,8 @@ let UserController = class UserController {
         });
     }
     async login(req, res) {
-        const { login, pwd, isRemember } = req.body;
-        await this.userClient.user.findUnique({
+        const { login, pwd, isRemember, device } = req.body;
+        await this.clientDB.user.findUnique({
             where: { login: login }
         }).then(async (resp) => {
             const verifyPwd = await argon2_1.default.verify(resp.pwd, pwd);
@@ -82,8 +82,35 @@ let UserController = class UserController {
                     msg: "Password is invalid!"
                 });
             }
+            const newJWToken = this.jwtConfigure.generateJWT(resp, isRemember !== undefined);
+            await this.clientDB.token.findUnique({
+                where: { token: newJWToken }
+            })
+                .then(resp => {
+                return res.status(200).json({
+                    token: resp.token
+                });
+            })
+                .catch(async () => {
+                await this.clientDB.token.create({
+                    data: {
+                        typeDevice: device,
+                        token: newJWToken
+                    }
+                });
+                await this.clientDB.user.update({
+                    where: { login: login },
+                    data: {
+                        auths: {
+                            connect: {
+                                token: newJWToken
+                            }
+                        }
+                    }
+                });
+            });
             return res.status(200).json({
-                user: resp, token: this.jwtConfigure.generateJWT(resp, isRemember !== undefined)
+                user: resp, token: newJWToken
             });
         }).catch(e => {
             return res.status(404).json({
@@ -93,13 +120,13 @@ let UserController = class UserController {
     }
     async editUserById(req, res) {
         const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.userClient);
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
         if (!verifyToken.tokenVerified)
             return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
         const { login, pwd, fullName, email, phone, ill, vaccine, survey } = req.body;
         if (login !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     login
@@ -111,7 +138,7 @@ let UserController = class UserController {
             });
         }
         if (pwd !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     pwd: pwd
@@ -123,7 +150,7 @@ let UserController = class UserController {
             });
         }
         if (fullName !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     fullName: fullName
@@ -135,7 +162,7 @@ let UserController = class UserController {
             });
         }
         if (email !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     email: email
@@ -147,7 +174,7 @@ let UserController = class UserController {
             });
         }
         if (phone !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     phone: phone
@@ -159,7 +186,7 @@ let UserController = class UserController {
             });
         }
         if (email !== undefined) {
-            await this.userClient.user.update({
+            await this.clientDB.user.update({
                 where: { id: id },
                 data: {
                     email: email
@@ -172,7 +199,7 @@ let UserController = class UserController {
         }
         if (ill !== undefined) {
             for (let name of ill) {
-                await this.userClient.user.update({
+                await this.clientDB.user.update({
                     where: { id: id },
                     data: {
                         ills: {
@@ -190,7 +217,7 @@ let UserController = class UserController {
         }
         if (vaccine !== undefined) {
             for (let name of vaccine) {
-                await this.userClient.user.update({
+                await this.clientDB.user.update({
                     where: { id: id },
                     data: {
                         vaccines: {
@@ -208,7 +235,7 @@ let UserController = class UserController {
         }
         if (survey !== undefined) {
             for (let name of survey) {
-                await this.userClient.user.update({
+                await this.clientDB.user.update({
                     where: { id: id },
                     data: {
                         survey: {
@@ -224,7 +251,7 @@ let UserController = class UserController {
                 });
             }
         }
-        await this.userClient.user.findUnique({
+        await this.clientDB.user.findUnique({
             where: { id: id }, include: { ills: true, survey: true, vaccines: true }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -236,11 +263,11 @@ let UserController = class UserController {
     }
     async deleteUserById(req, res) {
         const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.userClient);
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
         if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
             return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
-        await this.userClient.user.delete({
+        await this.clientDB.user.delete({
             where: { id: id }
         }).then(resp => {
             return res.status(200).json(resp);

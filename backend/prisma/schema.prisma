@@ -16,6 +16,25 @@ enum Role {
   ROLE_ADMIN
 }
 
+enum Capability {
+  PERSON_NOT_VALID_FOR_PUBLIC
+  PERSON_HAVE_CONSTRAINTS
+  PERSON_IS_CLEAN
+}
+
+enum Devices {
+  DEVICE_BROWSER
+  DEVICE_ANDROID
+  DEVICE_IOS
+}
+
+model Token {
+  id         Int     @id @default(autoincrement())
+  token      String  @unique
+  typeDevice Devices @default(DEVICE_BROWSER)
+  users      User[]
+}
+
 model User {
   id       Int       @id @default(autoincrement())
   login    String    @unique
@@ -24,15 +43,10 @@ model User {
   email    String?
   phone    String?
   role     Role      @default(ROLE_USER)
+  auths    Token[]
   ills     Ill[]
   vaccines Vaccine[]
   survey   Survey[]
-}
-
-enum Capability {
-  PERSON_NOT_VALID_FOR_PUBLIC
-  PERSON_HAVE_CONSTRAINTS
-  PERSON_IS_CLEAN
 }
 
 model Ill {
