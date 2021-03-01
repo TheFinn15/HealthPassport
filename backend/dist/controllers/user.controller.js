@@ -22,6 +22,11 @@ let UserController = class UserController {
         this.userClient = new client_1.PrismaClient();
     }
     async getAll(req, res) {
+        const token = req.headers.authorization.split(" ")[1];
+        const verifyToken = await this.validateUserToken(token);
+        console.log(verifyToken);
+        if (!verifyToken.tokenVerified)
+            return res.status(401).send("401 Unauthorized");
         await this.userClient.user.findMany({
             include: { ills: true, survey: true, vaccines: true }
         }).then(resp => {
@@ -33,6 +38,8 @@ let UserController = class UserController {
         });
     }
     async getById(req, res) {
+        const verifyToken = await this.validateUserToken(req.headers.authorization);
+        // if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
         await this.userClient.user.findMany({
             where: { id: id }, include: { ills: true, survey: true, vaccines: true }
@@ -84,6 +91,8 @@ let UserController = class UserController {
         });
     }
     async editUserById(req, res) {
+        const verifyToken = await this.validateUserToken(req.headers.authorization);
+        // if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
         const { login, pwd, fullName, email, phone, ill, vaccine, survey } = req.body;
         if (login !== undefined) {
@@ -223,6 +232,8 @@ let UserController = class UserController {
         });
     }
     async deleteUserById(req, res) {
+        const verifyToken = await this.validateUserToken(req.headers.authorization);
+        // if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
         const id = parseInt(req.params.id);
         await this.userClient.user.delete({
             where: { id: id }
@@ -234,12 +245,42 @@ let UserController = class UserController {
             });
         });
     }
-    validateUserToken(user, token) {
+    async validateUserToken(token) {
         try {
+            let result = {};
             const tokenData = jsonwebtoken_1.default.verify(token, "T0p_S3cr3t");
-            // tokenData
+            const nowDate = Math.round((new Date()).getTime() / 1000);
+            await this.userClient.user.findUnique({
+                where: { login: tokenData['data'].login }
+            }).then(() => {
+                if (nowDate < tokenData.exp) {
+                    result = {
+                        type: "success",
+                        tokenVerified: true
+                    };
+                }
+                else {
+                    result = {
+                        type: "error",
+                        tokenVerified: false,
+                        msg: "Token is expired !"
+                    };
+                }
+            }).catch(() => {
+                result = {
+                    type: "error",
+                    tokenVerified: false,
+                    msg: "User not exists!"
+                };
+            });
+            return result;
         }
         catch (e) {
+            return {
+                type: "error",
+                tokenVerified: false,
+                msg: "Invalid signature or token is expired!"
+            };
         }
     }
     generateJWT(user) {

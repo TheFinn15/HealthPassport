@@ -12,8 +12,9 @@ export class UserController {
 
   @Get("users")
   private async getAll(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
+    const token = req.headers.authorization.split(" ")[1];
+    const verifyToken: any = await this.validateUserToken(token);
+    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
 
     await this.userClient.user.findMany({
       include: {ills: true, survey: true, vaccines: true}
@@ -28,8 +29,9 @@ export class UserController {
 
   @Get("users/:id")
   private async getById(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
+    const token = req.headers.authorization.split(" ")[1];
+    const verifyToken: any = await this.validateUserToken(token);
+    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.userClient.user.findMany({
@@ -45,8 +47,6 @@ export class UserController {
 
   @Post("register")
   private async registerNewUser(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
 
     const {login, pwd, fullName, email, phone} = req.body;
     await this.userClient.user.create({
@@ -68,8 +68,6 @@ export class UserController {
 
   @Post("login")
   private async login(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
 
     const {login, pwd} = req.body;
     console.log(login);
@@ -95,8 +93,9 @@ export class UserController {
 
   @Put("users/:id")
   private async editUserById(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
+    const token = req.headers.authorization.split(" ")[1];
+    const verifyToken: any = await this.validateUserToken(token);
+    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     const {login, pwd, fullName, email, phone, ill, vaccine, survey} = req.body;
@@ -241,8 +240,9 @@ export class UserController {
 
   @Delete("users/:id")
   private async deleteUserById(req: Request, res: Response) {
-    const verifyToken = await this.validateUserToken(req.headers.authorization);
-    if (!verifyToken.tokenVerified) return res.status(401);
+    const token = req.headers.authorization.split(" ")[1];
+    const verifyToken: any = await this.validateUserToken(token);
+    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.userClient.user.delete({
@@ -258,36 +258,40 @@ export class UserController {
 
   private async validateUserToken(token: string) {
     try {
+      let result = {};
       const tokenData: any = jwt.verify(token, "T0p_S3cr3t");
       const nowDate = Math.round((new Date()).getTime() / 1000);
+
       await this.userClient.user.findUnique({
         where: {login: tokenData['data'].login}
       }).then(() => {
-        if (tokenData.exp < nowDate) {
-          return {
+        if (nowDate < tokenData.exp) {
+          result = {
             type: "success",
             tokenVerified: true
           };
         } else {
-          return {
+          result = {
             type: "error",
             tokenVerified: false,
             msg: "Token is expired !"
           };
         }
       }).catch(() => {
-        return {
+        result = {
           type: "error",
           tokenVerified: false,
           msg: "User not exists!"
         };
       });
+
+      return result;
     } catch (e) {
       return {
         type: "error",
         tokenVerified: false,
         msg: "Invalid signature or token is expired!"
-      }
+      };
     }
   }
 
