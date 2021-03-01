@@ -1,6 +1,8 @@
 import {Controller, Delete, Get, Post, Put} from "@overnightjs/core";
 import {Request, Response} from "express";
 import {PrismaClient} from "@prisma/client";
+import argon2 from "argon2";
+import jwt from "jsonwebtoken"
 
 
 @Controller("api")
@@ -10,6 +12,9 @@ export class UserController {
 
   @Get("users")
   private async getAll(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
     await this.userClient.user.findMany({
       include: {ills: true, survey: true, vaccines: true}
     }).then(resp => {
@@ -23,6 +28,9 @@ export class UserController {
 
   @Get("users/:id")
   private async getById(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
     const id = parseInt(req.params.id);
     await this.userClient.user.findMany({
       where: {id: id}, include: {ills: true, survey: true, vaccines: true}
@@ -37,11 +45,14 @@ export class UserController {
 
   @Post("register")
   private async registerNewUser(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
     const {login, pwd, fullName, email, phone} = req.body;
     await this.userClient.user.create({
       data: {
         login: login,
-        pwd: pwd,
+        pwd: await argon2.hash(pwd),
         fullName: fullName,
         email: email,
         phone: phone
@@ -54,8 +65,39 @@ export class UserController {
       });
     });
   }
+
+  @Post("login")
+  private async login(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
+    const {login, pwd} = req.body;
+    console.log(login);
+    await this.userClient.user.findUnique({
+      where: {login: login}
+    }).then(async resp => {
+      const verifyPwd = await argon2.verify(resp.pwd, pwd);
+      if (!verifyPwd) {
+        return res.status(404).json({
+          msg: "Password is invalid!"
+        });
+      }
+
+      return res.status(200).json({
+        user: resp, token: this.generateJWT(resp)
+      })
+    }).catch(e => {
+      return res.status(404).json({
+        msg: `User not found \n ${e}`
+      });
+    });
+  }
+
   @Put("users/:id")
   private async editUserById(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
     const id = parseInt(req.params.id);
     const {login, pwd, fullName, email, phone, ill, vaccine, survey} = req.body;
 
@@ -199,6 +241,9 @@ export class UserController {
 
   @Delete("users/:id")
   private async deleteUserById(req: Request, res: Response) {
+    const verifyToken = await this.validateUserToken(req.headers.authorization);
+    if (!verifyToken.tokenVerified) return res.status(401);
+
     const id = parseInt(req.params.id);
     await this.userClient.user.delete({
       where: {id: id}
@@ -209,5 +254,51 @@ export class UserController {
         msg: `Error deleting user by id ${id} \n ` + e
       });
     });
+  }
+
+  private async validateUserToken(token: string) {
+    try {
+      const tokenData: any = jwt.verify(token, "T0p_S3cr3t");
+      const nowDate = Math.round((new Date()).getTime() / 1000);
+      await this.userClient.user.findUnique({
+        where: {login: tokenData['data'].login}
+      }).then(() => {
+        if (tokenData.exp < nowDate) {
+          return {
+            type: "success",
+            tokenVerified: true
+          };
+        } else {
+          return {
+            type: "error",
+            tokenVerified: false,
+            msg: "Token is expired !"
+          };
+        }
+      }).catch(() => {
+        return {
+          type: "error",
+          tokenVerified: false,
+          msg: "User not exists!"
+        };
+      });
+    } catch (e) {
+      return {
+        type: "error",
+        tokenVerified: false,
+        msg: "Invalid signature or token is expired!"
+      }
+    }
+  }
+
+  private generateJWT(user: any) {
+    const data = {
+      id: user.id,
+      login: user.login
+    };
+    const signature = "T0p_S3cr3t";
+    const exp = "24h";
+
+    return jwt.sign({data}, signature, {subject: 'auth', expiresIn: exp});
   }
 }

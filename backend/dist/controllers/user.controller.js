@@ -8,10 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const core_1 = require("@overnightjs/core");
 const client_1 = require("@prisma/client");
+const argon2_1 = __importDefault(require("argon2"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 let UserController = class UserController {
     constructor() {
         this.userClient = new client_1.PrismaClient();
@@ -44,7 +49,7 @@ let UserController = class UserController {
         await this.userClient.user.create({
             data: {
                 login: login,
-                pwd: pwd,
+                pwd: await argon2_1.default.hash(pwd),
                 fullName: fullName,
                 email: email,
                 phone: phone
@@ -54,6 +59,27 @@ let UserController = class UserController {
         }).catch(e => {
             return res.status(404).json({
                 msg: "Error creating user \n " + e
+            });
+        });
+    }
+    async login(req, res) {
+        const { login, pwd } = req.body;
+        console.log(login);
+        await this.userClient.user.findUnique({
+            where: { login: login }
+        }).then(async (resp) => {
+            const verifyPwd = await argon2_1.default.verify(resp.pwd, pwd);
+            if (!verifyPwd) {
+                return res.status(404).json({
+                    msg: "Password is invalid!"
+                });
+            }
+            return res.status(200).json({
+                user: resp, token: this.generateJWT(resp)
+            });
+        }).catch(e => {
+            return res.status(404).json({
+                msg: `User not found \n ${e}`
             });
         });
     }
@@ -208,6 +234,23 @@ let UserController = class UserController {
             });
         });
     }
+    validateUserToken(user, token) {
+        try {
+            const tokenData = jsonwebtoken_1.default.verify(token, "T0p_S3cr3t");
+            // tokenData
+        }
+        catch (e) {
+        }
+    }
+    generateJWT(user) {
+        const data = {
+            id: user.id,
+            login: user.login
+        };
+        const signature = "T0p_S3cr3t";
+        const exp = "24h";
+        return jsonwebtoken_1.default.sign({ data }, signature, { subject: 'auth', expiresIn: exp });
+    }
 };
 __decorate([
     core_1.Get("users"),
@@ -227,6 +270,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "registerNewUser", null);
+__decorate([
+    core_1.Post("login"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "login", null);
 __decorate([
     core_1.Put("users/:id"),
     __metadata("design:type", Function),

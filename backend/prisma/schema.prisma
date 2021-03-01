@@ -10,6 +10,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Role {
+  ROLE_USER
+  ROLE_PARTNER
+  ROLE_ADMIN
+}
+
 model User {
   id       Int       @id @default(autoincrement())
   login    String    @unique
@@ -17,6 +23,7 @@ model User {
   fullName String?
   email    String?
   phone    String?
+  role     Role      @default(ROLE_USER)
   ills     Ill[]
   vaccines Vaccine[]
   survey   Survey[]
@@ -54,4 +61,12 @@ model Vaccine {
   about String?
   info  String?
   users User[]
+}
+
+model Partner {
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  timeWork DateTime
+  url      String   @unique
+  about    String
 }
