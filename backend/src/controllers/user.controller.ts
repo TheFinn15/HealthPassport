@@ -2,19 +2,20 @@ import {Controller, Delete, Get, Post, Put} from "@overnightjs/core";
 import {Request, Response} from "express";
 import {PrismaClient} from "@prisma/client";
 import argon2 from "argon2";
-import jwt from "jsonwebtoken"
+import {JWTConfigure} from "../middlewares/JWTConfigure";
 
 
 @Controller("api")
 export class UserController {
 
   userClient: PrismaClient = new PrismaClient();
+  jwtConfigure: JWTConfigure = new JWTConfigure();
 
   @Get("users")
   private async getAll(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
-    const verifyToken: any = await this.validateUserToken(token);
-    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.userClient);
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
 
     await this.userClient.user.findMany({
       include: {ills: true, survey: true, vaccines: true}
@@ -30,8 +31,8 @@ export class UserController {
   @Get("users/:id")
   private async getById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
-    const verifyToken: any = await this.validateUserToken(token);
-    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.userClient);
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.userClient.user.findMany({
@@ -69,8 +70,7 @@ export class UserController {
   @Post("login")
   private async login(req: Request, res: Response) {
 
-    const {login, pwd} = req.body;
-    console.log(login);
+    const {login, pwd, isRemember} = req.body;
     await this.userClient.user.findUnique({
       where: {login: login}
     }).then(async resp => {
@@ -82,7 +82,7 @@ export class UserController {
       }
 
       return res.status(200).json({
-        user: resp, token: this.generateJWT(resp)
+        user: resp, token: this.jwtConfigure.generateJWT(resp, isRemember !== undefined)
       })
     }).catch(e => {
       return res.status(404).json({
@@ -94,7 +94,7 @@ export class UserController {
   @Put("users/:id")
   private async editUserById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
-    const verifyToken: any = await this.validateUserToken(token);
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.userClient);
     if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
@@ -241,8 +241,8 @@ export class UserController {
   @Delete("users/:id")
   private async deleteUserById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
-    const verifyToken: any = await this.validateUserToken(token);
-    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.userClient);
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.userClient.user.delete({
@@ -256,53 +256,4 @@ export class UserController {
     });
   }
 
-  private async validateUserToken(token: string) {
-    try {
-      let result = {};
-      const tokenData: any = jwt.verify(token, "T0p_S3cr3t");
-      const nowDate = Math.round((new Date()).getTime() / 1000);
-
-      await this.userClient.user.findUnique({
-        where: {login: tokenData['data'].login}
-      }).then(() => {
-        if (nowDate < tokenData.exp) {
-          result = {
-            type: "success",
-            tokenVerified: true
-          };
-        } else {
-          result = {
-            type: "error",
-            tokenVerified: false,
-            msg: "Token is expired !"
-          };
-        }
-      }).catch(() => {
-        result = {
-          type: "error",
-          tokenVerified: false,
-          msg: "User not exists!"
-        };
-      });
-
-      return result;
-    } catch (e) {
-      return {
-        type: "error",
-        tokenVerified: false,
-        msg: "Invalid signature or token is expired!"
-      };
-    }
-  }
-
-  private generateJWT(user: any) {
-    const data = {
-      id: user.id,
-      login: user.login
-    };
-    const signature = "T0p_S3cr3t";
-    const exp = "24h";
-
-    return jwt.sign({data}, signature, {subject: 'auth', expiresIn: exp});
-  }
 }
