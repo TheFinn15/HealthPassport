@@ -16,7 +16,7 @@ enum Role {
   ROLE_ADMIN
 }
 
-enum Capability {
+enum UserCapability {
   PERSON_NOT_VALID_FOR_PUBLIC
   PERSON_HAVE_CONSTRAINTS
   PERSON_IS_CLEAN
@@ -28,6 +28,12 @@ enum Devices {
   DEVICE_IOS
 }
 
+enum TypeServices {
+  TYPE_SURVEY
+  TYPE_VACCINE
+  TYPE_ILL
+}
+
 model Token {
   id         Int     @id @default(autoincrement())
   token      String  @unique
@@ -36,51 +42,34 @@ model Token {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  login    String    @unique
-  pwd      String?
-  fullName String?
-  email    String?
-  phone    String?
-  role     Role      @default(ROLE_USER)
-  auths    Token[]
-  ills     Ill[]
-  vaccines Vaccine[]
-  survey   Survey[]
+  id           Int                @id @default(autoincrement())
+  login        String             @unique
+  pwd          String?
+  fullName     String?
+  email        String?
+  phone        String?
+  capabilities UserCapability     @default(PERSON_IS_CLEAN)
+  role         Role               @default(ROLE_USER)
+  auths        Token[]
+  services     SupplierServices[]
 }
 
-model Ill {
-  id           Int        @id @default(autoincrement())
-  name         String     @unique
-  type         String?
-  about        String?
-  info         String?
-  capabilities Capability @default(PERSON_IS_CLEAN)
-  users        User[]
-}
-
-model Survey {
-  id    Int     @id @default(autoincrement())
-  name  String  @unique
-  type  String?
-  about String?
-  info  String?
-  users User[]
-}
-
-model Vaccine {
-  id    Int     @id @default(autoincrement())
-  name  String  @unique
-  type  String?
-  about String?
-  info  String?
-  users User[]
+model SupplierServices {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  type      TypeServices @default(TYPE_SURVEY)
+  about     String?
+  info      String?
+  users     User[]
+  partner   Partner?     @relation(fields: [partnerId], references: [id])
+  partnerId Int?
 }
 
 model Partner {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique
+  id       Int                @id @default(autoincrement())
+  name     String             @unique
   timeWork DateTime
-  url      String   @unique
+  url      String             @unique
   about    String
+  services SupplierServices[]
 }

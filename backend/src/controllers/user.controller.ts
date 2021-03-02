@@ -13,17 +13,20 @@ export class UserController {
 
   @Get("users")
   private async getAll(req: Request, res: Response) {
+
     const token = req.headers.authorization.split(" ")[1];
     const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
+
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+      return res.status(401).send("401 Unauthorized");
 
     await this.clientDB.user.findMany({
-      include: {ills: true, survey: true, vaccines: true}
+      include: {services: true}
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
-      return res.status(404).json({
-        msg: "Error getting users \n " + e
+      return res.status(400).json({
+        msg: "Error getting users | ERROR: " + e
       });
     });
   }
@@ -32,16 +35,18 @@ export class UserController {
   private async getById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
     const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
+
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+      return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.clientDB.user.findMany({
-      where: {id: id}, include: {ills: true, survey: true, vaccines: true}
+      where: {id: id}, include: {services: true}
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
-      return res.status(404).json({
-        msg: `Error getting user by id ${id} \n ` + e
+      return res.status(400).json({
+        msg: `Error getting user by id ${id} | ERROR: ` + e
       });
     })
   }
@@ -61,8 +66,8 @@ export class UserController {
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
-      return res.status(404).json({
-        msg: "Error creating user \n " + e
+      return res.status(400).json({
+        msg: "Error creating user | ERROR: " + e
       });
     });
   }
@@ -76,7 +81,7 @@ export class UserController {
     }).then(async resp => {
       const verifyPwd = await argon2.verify(resp.pwd, pwd);
       if (!verifyPwd) {
-        return res.status(404).json({
+        return res.status(400).json({
           msg: "Password is invalid!"
         });
       }
@@ -105,8 +110,8 @@ export class UserController {
         user: resp, token: newJWToken
       })
     }).catch(e => {
-      return res.status(404).json({
-        msg: `User not found \n ${e}`
+      return res.status(400).json({
+        msg: `User not found | ERROR: ${e}`
       });
     });
   }
@@ -115,10 +120,11 @@ export class UserController {
   private async editUserById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
     const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-    if (!verifyToken.tokenVerified) return res.status(401).send("401 Unauthorized");
+    if (!verifyToken.tokenVerified)
+      return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
-    const {login, pwd, fullName, email, phone, ill, vaccine, survey} = req.body;
+    const {login, pwd, fullName, email, phone, services} = req.body;
 
     if (login !== undefined) {
       await this.clientDB.user.update({
@@ -127,8 +133,8 @@ export class UserController {
           login
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing login field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing login field by id ${id} | ERROR: ` + e
         })
       });
     }
@@ -139,8 +145,8 @@ export class UserController {
           pwd: pwd
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing pwd field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing pwd field by id ${id} | ERROR:  ` + e
         })
       });
     }
@@ -151,8 +157,8 @@ export class UserController {
           fullName: fullName
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing fullName field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing fullName field by id ${id} | ERROR:  ` + e
         })
       });
     }
@@ -163,8 +169,8 @@ export class UserController {
           email: email
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing email field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing email field by id ${id} | ERROR:  ` + e
         })
       });
     }
@@ -175,8 +181,8 @@ export class UserController {
           phone: phone
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing phone field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing phone field by id ${id} | ERROR:  ` + e
         })
       });
     }
@@ -187,73 +193,37 @@ export class UserController {
           email: email
         }
       }).catch(e => {
-        return res.status(404).json({
-          msg: `Error editing email field by id ${id}` + e
+        return res.status(400).json({
+          msg: `Error editing email field by id ${id} | ERROR:  ` + e
         })
       });
     }
-    if (ill !== undefined) {
-      for (let name of ill) {
+    if (services !== undefined) {
+      for (let name of services) {
         await this.clientDB.user.update({
           where: {id: id},
           data: {
-            ills: {
+            services: {
               connect: {
                 name: name
               }
             }
           }
         }).catch(e => {
-          return res.status(404).json({
-            msg: `Error editing ill field by id ${id}` + e
+          return res.status(400).json({
+            msg: `Error editing services field by id ${id} | ERROR:  ` + e
           })
         })
-      }
-    }
-    if (vaccine !== undefined) {
-      for (let name of vaccine) {
-        await this.clientDB.user.update({
-          where: {id: id},
-          data: {
-            vaccines: {
-              connect: {
-                name: name
-              }
-            }
-          }
-        }).catch(e => {
-          return res.status(404).json({
-            msg: `Error editing vaccine field by id ${id}` + e
-          })
-        });
-      }
-    }
-    if (survey !== undefined) {
-      for (let name of survey) {
-        await this.clientDB.user.update({
-          where: {id: id},
-          data: {
-            survey: {
-              connect: {
-                name: name
-              }
-            }
-          }
-        }).catch(e => {
-          return res.status(404).json({
-            msg: `Error editing survey field by id ${id}` + e
-          })
-        });
       }
     }
 
     await this.clientDB.user.findUnique({
-      where: {id: id}, include: {ills: true, survey: true, vaccines: true}
+      where: {id: id}, include: {services: true}
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
-      return res.status(404).json({
-        msg: `Error editing user by id ${id} \n ` + e
+      return res.status(400).json({
+        msg: `Error getting edited user by id ${id} | ` + e
       });
     });
   }
@@ -262,7 +232,8 @@ export class UserController {
   private async deleteUserById(req: Request, res: Response) {
     const token = req.headers.authorization.split(" ")[1];
     const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN") return res.status(401).send("401 Unauthorized");
+    if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+      return res.status(401).send("401 Unauthorized");
 
     const id = parseInt(req.params.id);
     await this.clientDB.user.delete({
@@ -270,8 +241,8 @@ export class UserController {
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
-      return res.status(404).json({
-        msg: `Error deleting user by id ${id} \n ` + e
+      return res.status(400).json({
+        msg: `Error deleting user by id ${id} | ERROR: ` + e
       });
     });
   }

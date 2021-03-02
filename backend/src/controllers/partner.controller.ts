@@ -17,7 +17,7 @@ export class PartnerController {
       })
       .catch(e => {
         return res.status(404).json({
-          msg: `Error getting all partner \n ${e}`
+          msg: `Error getting all partner | ERROR: ${e}`
         });
       });
   }
@@ -31,7 +31,7 @@ export class PartnerController {
         return res.status(200).json(resp);
     }).catch(e => {
       return res.status(404).json({
-        msg: `Error getting partner by id ${id} \n ${e}`
+        msg: `Error getting partner by id ${id} | ERROR: ${e}`
       });
     });
   }
@@ -50,7 +50,7 @@ export class PartnerController {
       return res.status(200).json(resp);
     }).catch(e => {
       return res.status(404).json({
-        msg: `Error creating user \n ${e}`
+        msg: `Error creating user | ERROR: ${e}`
       });
     });
   }
@@ -68,7 +68,7 @@ export class PartnerController {
         }
       }).catch(e => {
         return res.status(404).json({
-          msg: `Error edit %name% field by id ${id} \n ${e}`
+          msg: `Error edit %name% field by id ${id} | ERROR: ${e}`
         })
       });
     }
@@ -80,7 +80,7 @@ export class PartnerController {
         }
       }).catch(e => {
         return res.status(404).json({
-          msg: `Error edit %timeWork% field by id ${id} \n ${e}`
+          msg: `Error edit %timeWork% field by id ${id} | ERROR: ${e}`
         })
       });
     }
@@ -92,7 +92,7 @@ export class PartnerController {
         }
       }).catch(e => {
         return res.status(404).json({
-          msg: `Error edit %url% field by id ${id} \n ${e}`
+          msg: `Error edit %url% field by id ${id} | ERROR: ${e}`
         })
       });
     }
@@ -104,7 +104,7 @@ export class PartnerController {
         }
       }).catch(e => {
         return res.status(404).json({
-          msg: `Error edit %about% field by id ${id} \n ${e}`
+          msg: `Error edit %about% field by id ${id} | ERROR: ${e}`
         })
       });
     }
@@ -115,7 +115,7 @@ export class PartnerController {
       return res.status(200).json(resp);
     }).catch(e => {
       return res.status(404).json({
-        msg: `Unexpected error in edit partner method \n ${e}`
+        msg: `Unexpected error in edit partner method | ERROR: ${e}`
       });
     });
   }
@@ -130,7 +130,7 @@ export class PartnerController {
       return res.status(200).json(resp);
     }).catch(e => {
       return res.status(404).json({
-        msg: `Error deleting partner by id ${id} \n ${e}`
+        msg: `Error deleting partner by id ${id} | ERROR: ${e}`
       })
     })
   }

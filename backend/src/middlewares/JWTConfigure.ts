@@ -56,10 +56,8 @@ export class JWTConfigure {
       login: user.login,
       role: user.role
     };
-    const signature = "T0p_S3cr3t";
-    const exp = "24h";
 
-    if (isRemember) return jwt.sign({data}, signature, {subject: 'auth'});
-    else return jwt.sign({data}, signature, {subject: 'auth', expiresIn: exp});
+    if (isRemember) return jwt.sign({data}, process.env.JWT_SECRET, {subject: 'auth'});
+    else return jwt.sign({data}, process.env.JWT_SECRET, {subject: 'auth', expiresIn: process.env.JWT_EXPIRATION});
   }
 }
