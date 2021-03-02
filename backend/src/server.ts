@@ -10,17 +10,6 @@ export class HealthPassport extends Server {
   constructor() {
     super();
 
-    this.app.use(((req, res) => {
-      res.setHeader("Content-Security-Policy",
-        "default-src 'self'; " +
-        "font-src 'self'; " +
-        "img-src 'self'; " +
-        "script-src 'self'; " +
-        "style-src 'self'; " +
-        "frame-src 'self'"
-      );
-    }));
-
     const corsOptions: CorsOptions = {
       origin: 'http://localhost:8080',
       methods: ['GET', 'PUT', 'POST', 'DELETE'],
@@ -35,6 +24,12 @@ export class HealthPassport extends Server {
     this.app.use(cors(corsOptions));
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({extended: true}));
+    this.app.use((req, res) => {
+      res.status(404).send({
+        status: 404,
+        error: "NOT FOUND"
+      });
+    });
 
     let userController = new UserController();
     let partnerController = new PartnerController();
@@ -48,8 +43,8 @@ export class HealthPassport extends Server {
   }
 
   public start() {
-    this.app.listen(3000, () => {
-      console.log('Server is runnig...');
+    this.app.listen(process.env.SERVER_PORT, () => {
+      console.log(`Server is running on port ${process.env.SERVER_PORT}...`);
     })
   }
 }

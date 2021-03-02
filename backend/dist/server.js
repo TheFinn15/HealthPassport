@@ -13,14 +13,6 @@ const service_controller_1 = require("./controllers/service.controller");
 class HealthPassport extends core_1.Server {
     constructor() {
         super();
-        this.app.use(((req, res) => {
-            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
-                "font-src 'self'; " +
-                "img-src 'self'; " +
-                "script-src 'self'; " +
-                "style-src 'self'; " +
-                "frame-src 'self'");
-        }));
         const corsOptions = {
             origin: 'http://localhost:8080',
             methods: ['GET', 'PUT', 'POST', 'DELETE'],
@@ -35,6 +27,12 @@ class HealthPassport extends core_1.Server {
         this.app.use(cors_1.default(corsOptions));
         this.app.use(body_parser_1.default.json());
         this.app.use(body_parser_1.default.urlencoded({ extended: true }));
+        this.app.use((req, res) => {
+            res.status(404).send({
+                status: 404,
+                error: "NOT FOUND"
+            });
+        });
         let userController = new user_controller_1.UserController();
         let partnerController = new partner_controller_1.PartnerController();
         let serviceController = new service_controller_1.ServiceController();
@@ -46,7 +44,7 @@ class HealthPassport extends core_1.Server {
     }
     start() {
         this.app.listen(3000, () => {
-            console.log('Server is runnig...');
+            console.log('Server is running...');
         });
     }
 }

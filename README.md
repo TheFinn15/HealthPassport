@@ -9,3 +9,16 @@ npm install
 ```
 npm run serve
 ```
+
+
+# backend
+
+### Compile and build project
+```
+npm run build
+```
+
+### Run server
+```
+npm run start
+```
