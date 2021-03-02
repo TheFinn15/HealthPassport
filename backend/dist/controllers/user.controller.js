@@ -23,75 +23,90 @@ let UserController = class UserController {
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getAll(req, res) {
-        const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-        if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
-            return res.status(401).send("401 Unauthorized");
-        await this.clientDB.user.findMany({
-            include: { ills: true, survey: true, vaccines: true }
-        }).then(resp => {
-            return res.status(200).json(resp);
-        }).catch(e => {
-            return res.status(404).json({
-                msg: "Error getting users \n " + e
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+                return res.status(401).send("401 Unauthorized");
+            await this.clientDB.user.findMany({
+                include: { services: true }
+            }).then(resp => {
+                return res.status(200).json(resp);
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error getting users | ERROR: " + e
+                });
             });
-        });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
+            });
+        }
     }
     async getById(req, res) {
-        const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-        if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
-            return res.status(401).send("401 Unauthorized");
-        const id = parseInt(req.params.id);
-        await this.clientDB.user.findMany({
-            where: { id: id }, include: { ills: true, survey: true, vaccines: true }
-        }).then(resp => {
-            return res.status(200).json(resp);
-        }).catch(e => {
-            return res.status(404).json({
-                msg: `Error getting user by id ${id} \n ` + e
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+                return res.status(401).send("401 Unauthorized");
+            const id = parseInt(req.params.id);
+            await this.clientDB.user.findMany({
+                where: { id: id }, include: { services: true }
+            }).then(resp => {
+                return res.status(200).json(resp);
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: `Error getting user by id ${id} | ERROR: ` + e
+                });
             });
-        });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
+            });
+        }
     }
     async registerNewUser(req, res) {
-        const { login, pwd, fullName, email, phone } = req.body;
-        await this.clientDB.user.create({
-            data: {
-                login: login,
-                pwd: await argon2_1.default.hash(pwd),
-                fullName: fullName,
-                email: email,
-                phone: phone
-            }
-        }).then(resp => {
-            return res.status(200).json(resp);
-        }).catch(e => {
-            return res.status(404).json({
-                msg: "Error creating user \n " + e
+        try {
+            const { login, pwd, fullName, email, phone } = req.body;
+            await this.clientDB.user.create({
+                data: {
+                    login: login,
+                    pwd: await argon2_1.default.hash(pwd),
+                    fullName: fullName,
+                    email: email,
+                    phone: phone
+                }
+            }).then(resp => {
+                return res.status(200).json(resp);
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error creating user | ERROR: " + e
+                });
             });
-        });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
+            });
+        }
     }
     async login(req, res) {
-        const { login, pwd, isRemember, device } = req.body;
-        await this.clientDB.user.findUnique({
-            where: { login: login }
-        }).then(async (resp) => {
-            const verifyPwd = await argon2_1.default.verify(resp.pwd, pwd);
-            if (!verifyPwd) {
-                return res.status(404).json({
-                    msg: "Password is invalid!"
-                });
-            }
-            const newJWToken = this.jwtConfigure.generateJWT(resp, isRemember !== undefined);
-            await this.clientDB.token.findUnique({
-                where: { token: newJWToken }
-            })
-                .then(resp => {
-                return res.status(200).json({
-                    token: resp.token
-                });
-            })
-                .catch(async () => {
+        try {
+            const { login, pwd, isRemember, device } = req.body;
+            await this.clientDB.user.findUnique({
+                where: { login: login }
+            }).then(async (resp) => {
+                const verifyPwd = await argon2_1.default.verify(resp.pwd, pwd);
+                if (!verifyPwd) {
+                    return res.status(400).json({
+                        msg: "Password is invalid!"
+                    });
+                }
+                const newJWToken = this.jwtConfigure.generateJWT(resp, isRemember !== undefined);
                 await this.clientDB.token.create({
                     data: {
                         typeDevice: device,
@@ -108,174 +123,159 @@ let UserController = class UserController {
                         }
                     }
                 });
+                return res.status(200).json({
+                    user: resp, token: newJWToken
+                });
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: `User not found | ERROR: ${e}`
+                });
             });
-            return res.status(200).json({
-                user: resp, token: newJWToken
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
             });
-        }).catch(e => {
-            return res.status(404).json({
-                msg: `User not found \n ${e}`
-            });
-        });
+        }
     }
     async editUserById(req, res) {
-        const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-        if (!verifyToken.tokenVerified)
-            return res.status(401).send("401 Unauthorized");
-        const id = parseInt(req.params.id);
-        const { login, pwd, fullName, email, phone, ill, vaccine, survey } = req.body;
-        if (login !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    login
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing login field by id ${id}` + e
-                });
-            });
-        }
-        if (pwd !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    pwd: pwd
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing pwd field by id ${id}` + e
-                });
-            });
-        }
-        if (fullName !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    fullName: fullName
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing fullName field by id ${id}` + e
-                });
-            });
-        }
-        if (email !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    email: email
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing email field by id ${id}` + e
-                });
-            });
-        }
-        if (phone !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    phone: phone
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing phone field by id ${id}` + e
-                });
-            });
-        }
-        if (email !== undefined) {
-            await this.clientDB.user.update({
-                where: { id: id },
-                data: {
-                    email: email
-                }
-            }).catch(e => {
-                return res.status(404).json({
-                    msg: `Error editing email field by id ${id}` + e
-                });
-            });
-        }
-        if (ill !== undefined) {
-            for (let name of ill) {
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified)
+                return res.status(401).send("401 Unauthorized");
+            const id = parseInt(req.params.id);
+            const { login, pwd, fullName, email, phone, services } = req.body;
+            if (login !== undefined) {
                 await this.clientDB.user.update({
                     where: { id: id },
                     data: {
-                        ills: {
-                            connect: {
-                                name: name
-                            }
-                        }
+                        login
                     }
                 }).catch(e => {
-                    return res.status(404).json({
-                        msg: `Error editing ill field by id ${id}` + e
+                    return res.status(400).json({
+                        msg: `Error editing login field by id ${id} | ERROR: ` + e
                     });
                 });
             }
-        }
-        if (vaccine !== undefined) {
-            for (let name of vaccine) {
+            if (pwd !== undefined) {
                 await this.clientDB.user.update({
                     where: { id: id },
                     data: {
-                        vaccines: {
-                            connect: {
-                                name: name
-                            }
-                        }
+                        pwd: pwd
                     }
                 }).catch(e => {
-                    return res.status(404).json({
-                        msg: `Error editing vaccine field by id ${id}` + e
+                    return res.status(400).json({
+                        msg: `Error editing pwd field by id ${id} | ERROR:  ` + e
                     });
                 });
             }
-        }
-        if (survey !== undefined) {
-            for (let name of survey) {
+            if (fullName !== undefined) {
                 await this.clientDB.user.update({
                     where: { id: id },
                     data: {
-                        survey: {
-                            connect: {
-                                name: name
-                            }
-                        }
+                        fullName: fullName
                     }
                 }).catch(e => {
-                    return res.status(404).json({
-                        msg: `Error editing survey field by id ${id}` + e
+                    return res.status(400).json({
+                        msg: `Error editing fullName field by id ${id} | ERROR:  ` + e
                     });
                 });
             }
-        }
-        await this.clientDB.user.findUnique({
-            where: { id: id }, include: { ills: true, survey: true, vaccines: true }
-        }).then(resp => {
-            return res.status(200).json(resp);
-        }).catch(e => {
-            return res.status(404).json({
-                msg: `Error editing user by id ${id} \n ` + e
+            if (email !== undefined) {
+                await this.clientDB.user.update({
+                    where: { id: id },
+                    data: {
+                        email: email
+                    }
+                }).catch(e => {
+                    return res.status(400).json({
+                        msg: `Error editing email field by id ${id} | ERROR:  ` + e
+                    });
+                });
+            }
+            if (phone !== undefined) {
+                await this.clientDB.user.update({
+                    where: { id: id },
+                    data: {
+                        phone: phone
+                    }
+                }).catch(e => {
+                    return res.status(400).json({
+                        msg: `Error editing phone field by id ${id} | ERROR:  ` + e
+                    });
+                });
+            }
+            if (email !== undefined) {
+                await this.clientDB.user.update({
+                    where: { id: id },
+                    data: {
+                        email: email
+                    }
+                }).catch(e => {
+                    return res.status(400).json({
+                        msg: `Error editing email field by id ${id} | ERROR:  ` + e
+                    });
+                });
+            }
+            if (services !== undefined) {
+                for (let name of services) {
+                    await this.clientDB.user.update({
+                        where: { id: id },
+                        data: {
+                            services: {
+                                connect: {
+                                    name: name
+                                }
+                            }
+                        }
+                    }).catch(e => {
+                        return res.status(400).json({
+                            msg: `Error editing services field by id ${id} | ERROR:  ` + e
+                        });
+                    });
+                }
+            }
+            await this.clientDB.user.findUnique({
+                where: { id: id }, include: { services: true }
+            }).then(resp => {
+                return res.status(200).json(resp);
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: `Error getting edited user by id ${id} | ` + e
+                });
             });
-        });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
+            });
+        }
     }
     async deleteUserById(req, res) {
-        const token = req.headers.authorization.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-        if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
-            return res.status(401).send("401 Unauthorized");
-        const id = parseInt(req.params.id);
-        await this.clientDB.user.delete({
-            where: { id: id }
-        }).then(resp => {
-            return res.status(200).json(resp);
-        }).catch(e => {
-            return res.status(404).json({
-                msg: `Error deleting user by id ${id} \n ` + e
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+                return res.status(401).send("401 Unauthorized");
+            const id = parseInt(req.params.id);
+            await this.clientDB.user.delete({
+                where: { id: id }
+            }).then(resp => {
+                return res.status(200).json(resp);
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: `Error deleting user by id ${id} | ERROR: ` + e
+                });
             });
-        });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error processing request ! ERROR: " + e
+            });
+        }
     }
 };
 __decorate([

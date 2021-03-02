@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JWTConfigure = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class JWTConfigure {
-    // TODO: Контролирование каждого созданого токена ( Модель Токена )
     async validateUserToken(token, client) {
         try {
             let result = {};
@@ -59,12 +58,10 @@ class JWTConfigure {
             login: user.login,
             role: user.role
         };
-        const signature = "T0p_S3cr3t";
-        const exp = "24h";
         if (isRemember)
-            return jsonwebtoken_1.default.sign({ data }, signature, { subject: 'auth' });
+            return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, { subject: 'auth' });
         else
-            return jsonwebtoken_1.default.sign({ data }, signature, { subject: 'auth', expiresIn: exp });
+            return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, { subject: 'auth', expiresIn: process.env.JWT_EXPIRATION });
     }
 }
 exports.JWTConfigure = JWTConfigure;

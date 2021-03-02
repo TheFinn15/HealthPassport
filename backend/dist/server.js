@@ -7,13 +7,42 @@ exports.HealthPassport = void 0;
 const core_1 = require("@overnightjs/core");
 const body_parser_1 = __importDefault(require("body-parser"));
 const user_controller_1 = require("./controllers/user.controller");
+const cors_1 = __importDefault(require("cors"));
+const partner_controller_1 = require("./controllers/partner.controller");
+const service_controller_1 = require("./controllers/service.controller");
 class HealthPassport extends core_1.Server {
     constructor() {
         super();
+        this.app.use(((req, res) => {
+            res.setHeader("Content-Security-Policy", "default-src 'self'; " +
+                "font-src 'self'; " +
+                "img-src 'self'; " +
+                "script-src 'self'; " +
+                "style-src 'self'; " +
+                "frame-src 'self'");
+        }));
+        const corsOptions = {
+            origin: 'http://localhost:8080',
+            methods: ['GET', 'PUT', 'POST', 'DELETE'],
+            optionsSuccessStatus: 200,
+            credentials: true,
+            allowedHeaders: [
+                'Content-Type', 'Authorization',
+                'X-Requested-With', 'device-remember-token',
+                'Access-Control-Allow-Origin', 'Origin', 'Accept'
+            ]
+        };
+        this.app.use(cors_1.default(corsOptions));
         this.app.use(body_parser_1.default.json());
         this.app.use(body_parser_1.default.urlencoded({ extended: true }));
         let userController = new user_controller_1.UserController();
-        this.addControllers([userController]);
+        let partnerController = new partner_controller_1.PartnerController();
+        let serviceController = new service_controller_1.ServiceController();
+        this.addControllers([
+            userController,
+            partnerController,
+            serviceController
+        ]);
     }
     start() {
         this.app.listen(3000, () => {
