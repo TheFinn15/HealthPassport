@@ -1,6 +1,5 @@
 <template>
-  <v-app>
-    <v-bottom-navigation app :value="bottomVal" color="#FFB74D" horizontal>
+  <v-bottom-navigation horizontal app :value="bottomVal" color="#FFB74D">
       <v-btn to="/">
           <span>
             Главная
@@ -28,7 +27,6 @@
         </v-icon>
       </v-btn>
     </v-bottom-navigation>
-  </v-app>
 </template>
 
 <script>

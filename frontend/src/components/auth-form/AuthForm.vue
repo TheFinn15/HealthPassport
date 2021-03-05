@@ -14,7 +14,7 @@
       <v-divider />
       <v-form value="authForm">
         <v-container>
-          <v-row>
+          <v-row no-gutters>
             <v-col cols="12">
               <v-text-field
                   label="Логин"
@@ -22,15 +22,24 @@
                   shaped
                   v-model="info.login"
                   color="#FFCC80"
+                  :rules="rules.text"
               />
             </v-col>
             <v-col cols="12">
               <v-text-field
+                  type="password"
                   label="Пароль"
                   outlined
                   shaped
                   v-model="info.pwd"
                   color="#FFCC80"
+                  :rules="rules.text"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-checkbox
+                  label="Запомнить меня"
+                  v-model="info.isRememberMe"
               />
             </v-col>
           </v-row>
@@ -49,9 +58,15 @@ export default {
   props: ["isShow", "closer"],
   data() {
     return {
+      rules: {
+        text: [
+          v => v.length > 0 || "Пустое поле!"
+        ]
+      },
       info: {
         login: "",
-        pwd: ""
+        pwd: "",
+        isRememberMe: false
       }
     }
   },

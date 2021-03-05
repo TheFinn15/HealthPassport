@@ -15,7 +15,7 @@
       <v-form value="registerForm">
         <v-container>
           <v-row>
-            <v-col>
+            <v-col cols="12">
               <v-text-field
                   label="ФИО"
                   outlined
@@ -25,7 +25,7 @@
                   :rules="rules.text"
               />
             </v-col>
-            <v-col>
+            <v-col cols="6">
               <v-text-field
                   label="Логин"
                   outlined
@@ -35,8 +35,9 @@
                   :rules="rules.text"
               />
             </v-col>
-            <v-col>
+            <v-col cols="6">
               <v-text-field
+                  type="password"
                   label="Пароль"
                   outlined
                   shaped
@@ -45,7 +46,7 @@
                   :rules="rules.text"
               />
             </v-col>
-            <v-col>
+            <v-col cols="6">
               <v-text-field
                   label="E-mail"
                   outlined
@@ -55,7 +56,7 @@
                   :rules="rules.email"
               />
             </v-col>
-            <v-col>
+            <v-col cols="6">
               <v-text-field
                   label="Телефон"
                   outlined
@@ -63,6 +64,12 @@
                   v-model="info.phone"
                   color="#FFCC80"
                   :rules="rules.phone"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-checkbox
+                  label="Запомнить меня"
+                  v-model="info.isRememberMe"
               />
             </v-col>
           </v-row>
@@ -97,7 +104,8 @@ export default {
         login: "",
         pwd: "",
         email: "",
-        phone: ""
+        phone: "",
+        isRememberMe: false
       }
     }
   },

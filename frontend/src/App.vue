@@ -9,8 +9,19 @@
         <v-icon>
           health_and_safety
         </v-icon>
-        HealthPassport
+        <router-link to="/" style="color: inherit; text-decoration: none">
+          HealthPassport
+        </router-link>
       </v-toolbar-title>
+      <v-menu offset-y>
+        <template v-slot:activator="{on, attrs}">
+          <v-btn icon v-bind="attrs" v-on="on">
+            <v-icon>
+              translate
+            </v-icon>
+          </v-btn>
+        </template>
+      </v-menu>
       <v-spacer />
 
       <AuthForm :closer="doCloseForm" :is-show="forms.auth" />
