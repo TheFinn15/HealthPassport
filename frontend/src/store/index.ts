@@ -14,7 +14,7 @@ export default new Vuex.Store({
     async auth({state}) {
       await axios({
         method: "POST",
-        url: process.env.VUE_APP_SERVER + "/api/login",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/login",
         data: state.userInfo
       }).then(resp => {
         localStorage['uid'] = resp.data.token;
@@ -25,7 +25,7 @@ export default new Vuex.Store({
     async register({state}) {
       await axios({
         method: "POST",
-        url: process.env.VUE_APP_SERVER + "/api/register",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/register",
         data: state.userInfo
       }).catch(e => {
         console.error(e);
@@ -36,7 +36,7 @@ export default new Vuex.Store({
     async getCurUser() {
       return await axios({
         method: "GET",
-        url: process.env.VUE_APP_SERVER + "/api/user",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
         headers: {
           Authorization: localStorage['uid']
         }

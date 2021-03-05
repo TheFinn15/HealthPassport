@@ -18,24 +18,6 @@ class HealthPassport extends core_1.Server {
         this.app.use(cors_1.default(corsConfig));
         this.app.use(body_parser_1.default.json());
         this.app.use(body_parser_1.default.urlencoded({ extended: true }));
-        this.app.use((req, resp, next) => {
-            console.log(req.statusCode);
-        });
-        // this.app.use(((req, res, next) => {
-        //   console.log(req.statusCode)
-        //   console.log(res.statusCode)
-        //   if (res.statusCode === 404) {
-        //     return res.status(404).send({
-        //       status: 404,
-        //       error: "NOT FOUND"
-        //     });
-        //   } else {
-        //     if (typeof req.body === "object")
-        //       return res.status(res.statusCode).json(req.body);
-        //     else
-        //       return res.status(res.statusCode).send(req.body);
-        //   }
-        // }));
         let userController = new user_controller_1.UserController();
         let partnerController = new partner_controller_1.PartnerController();
         let serviceController = new service_controller_1.ServiceController();

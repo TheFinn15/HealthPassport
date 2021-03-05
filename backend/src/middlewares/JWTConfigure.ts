@@ -56,7 +56,7 @@ export class JWTConfigure {
       login: user.login,
       role: user.role
     };
-
+    console.log(isRemember)
     if (isRemember) return jwt.sign({data}, process.env.JWT_SECRET, {subject: 'auth'});
     else return jwt.sign({data}, process.env.JWT_SECRET, {subject: 'auth', expiresIn: process.env.JWT_EXPIRATION});
   }

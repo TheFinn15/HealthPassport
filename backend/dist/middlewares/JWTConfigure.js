@@ -58,6 +58,7 @@ class JWTConfigure {
             login: user.login,
             role: user.role
         };
+        console.log(isRemember);
         if (isRemember)
             return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, { subject: 'auth' });
         else

@@ -1,5 +1,17 @@
 <template>
   <v-card flat style="margin: 5%">
+    <v-alert v-model="alert.state" :type="alert.type" outlined border="left">
+      <span>
+        {{alert.info}}
+      </span>
+    </v-alert>
+    <v-progress-linear
+        height="6"
+        indeterminate
+        rounded
+        :active="alert.loader"
+        color="#FB8C00"
+    />
     <v-card-title style="justify-content: center; display: flex">
       Регистрация
     </v-card-title>
@@ -59,6 +71,7 @@
           </v-col>
           <v-col cols="12">
             <v-checkbox
+                color="#FFCC80"
                 label="Запомнить меня"
                 v-model="info.isRememberMe"
             />
@@ -94,13 +107,33 @@ export default {
         pwd: "",
         email: "",
         phone: "",
-        isRememberMe: false
+        isRememberMe: false,
+        device: "DEVICE_BROWSER"
+      },
+      alert: {
+        state: false,
+        type: "success",
+        info: "",
+        loader: false
       }
     }
   },
   methods: {
-    doRegister() {
-
+    async doRegister() {
+      this.$store.state.userInfo = this.info;
+      await this.$store.dispatch("register");
+      await this.$store.dispatch("auth");
+      this.alert.loader = true;
+      setTimeout(() => {
+        this.alert.loader = false;
+        this.alert.state = true;
+        if (localStorage["uid"] !== undefined) {
+          this.alert.info = "Успешная регистрация!";
+        } else {
+          this.alert.type = "error";
+          this.alert.info = "Ошибка регистрации!";
+        }
+      }, 1500)
     },
   }
 }

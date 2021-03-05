@@ -48,6 +48,17 @@ export default Vue.extend({
   components: {
     BottomNav
   },
-  methods: {}
+  methods: {},
+  mounted() {
+    if (/login/i.test(this.$route.fullPath)) {
+      this.bottomNav = "auth";
+    } else if (/register/i.test(this.$route.fullPath)) {
+      this.bottomNav = "register";
+    } else if (/cabinet/i.test(this.$route.fullPath)) {
+      this.bottomNav = "cabinet";
+    } else {
+      this.bottomNav = "main";
+    }
+  }
 });
 </script>

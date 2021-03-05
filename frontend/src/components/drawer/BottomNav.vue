@@ -1,15 +1,15 @@
 <template>
   <v-bottom-navigation horizontal app :value="bottomVal" color="#FFB74D">
-      <v-btn to="/">
-          <span>
-            Главная
-          </span>
-        <v-icon>
-          home
-        </v-icon>
-      </v-btn>
+    <v-btn to="/" value="main">
+      <span>
+        Главная
+      </span>
+      <v-icon>
+        home
+      </v-icon>
+    </v-btn>
 
-    <v-btn to="/cabinet" v-if="isAuth">
+    <v-btn to="/cabinet" v-if="isAuth" value="cabinet">
       <span>
         Личный кабинет
       </span>
@@ -18,19 +18,19 @@
       </v-icon>
     </v-btn>
 
-      <v-btn to="/login" v-if="!isAuth">
-          <span>
-            Авторизация
-          </span>
+      <v-btn to="/login" v-if="!isAuth" value="auth">
+        <span>
+          Авторизация
+        </span>
         <v-icon>
           login
         </v-icon>
       </v-btn>
 
-      <v-btn to="/register" v-if="!isAuth">
-          <span>
-            Регистрация
-          </span>
+      <v-btn to="/register" v-if="!isAuth" value="register">
+        <span>
+          Регистрация
+        </span>
         <v-icon>
           person_add
         </v-icon>

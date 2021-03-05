@@ -30,7 +30,7 @@ let UserController = class UserController {
             if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
                 return res.status(401).send("401 Unauthorized");
             await this.clientDB.user.findMany({
-                include: { services: true }
+                include: { services: true, auths: true }
             }).then(resp => {
                 return res.status(200).json(resp);
             }).catch(e => {
@@ -96,7 +96,7 @@ let UserController = class UserController {
     }
     async login(req, res) {
         try {
-            const { login, pwd, isRemember, device } = req.body;
+            const { login, pwd, isRememberMe, device } = req.body;
             await this.clientDB.user.findUnique({
                 where: { login: login }
             }).then(async (resp) => {
@@ -106,7 +106,7 @@ let UserController = class UserController {
                         msg: "Password is invalid!"
                     });
                 }
-                const newJWToken = this.jwtConfigure.generateJWT(resp, isRemember !== undefined);
+                const newJWToken = this.jwtConfigure.generateJWT(resp, isRememberMe);
                 await this.clientDB.token.create({
                     data: {
                         typeDevice: device,

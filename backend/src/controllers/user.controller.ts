@@ -21,7 +21,7 @@ export class UserController {
         return res.status(401).send("401 Unauthorized");
 
       await this.clientDB.user.findMany({
-        include: {services: true}
+        include: {services: true, auths: true}
       }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -91,7 +91,7 @@ export class UserController {
   @Post("login")
   private async login(req: Request, res: Response) {
     try {
-      const {login, pwd, isRemember, device} = req.body;
+      const {login, pwd, isRememberMe, device} = req.body;
       await this.clientDB.user.findUnique({
         where: {login: login}
       }).then(async resp => {
@@ -102,7 +102,7 @@ export class UserController {
           });
         }
 
-        const newJWToken = this.jwtConfigure.generateJWT(resp, isRemember !== undefined);
+        const newJWToken = this.jwtConfigure.generateJWT(resp, isRememberMe);
 
         await this.clientDB.token.create({
           data: {
