@@ -49,8 +49,18 @@
         <v-col cols="12">
           <v-col cols="12">
             <v-switch
+                style="justify-content: center; display: flex"
                 color="#FFB74D"
-                label="Есть ограничения?"
+                label="Вкл. систему"
+                v-if="!exampleData.hasConstraint"
+                v-model="exampleData.hasConstraint"
+                @click="randomizeExampleData"
+            />
+            <v-switch
+                style="justify-content: center; display: flex"
+                color="#FFB74D"
+                label="Выкл. систему"
+                v-else
                 v-model="exampleData.hasConstraint"
                 @click="randomizeExampleData"
             />
@@ -102,18 +112,76 @@ export default Vue.extend({
   data() {
     return {
       userInfo: {},
+      services: [
+        {
+          name: "COVID",
+          type: "TYPE_ILL"
+        },
+        {
+          name: "GEpa",
+          type: "TYPE_ILL"
+        },
+        {
+          name: "COVID",
+          type: "TYPE_SURVEY"
+        },
+        {
+          name: "GEpa",
+          type: "TYPE_SURVEY"
+        },
+        {
+          name: "COVID",
+          type: "TYPE_VACCINE"
+        },
+        {
+          name: "Jopa",
+          type: "TYPE_VACCINE"
+        }
+      ],
       isAuth: false,
       exampleData: {
         hasConstraint: false,
-        ill: [],
-        surveys: [],
-        vaccines: []
+        ill: [] as any,
+        surveys: [] as any,
+        vaccines: [] as any
       }
     }
   },
   methods: {
     randomizeExampleData() {
+      if (this.exampleData.hasConstraint) {
+        const ills = this.services.filter(i => i.type === "TYPE_ILL")
+        const surveys = this.services.filter(i => i.type === "TYPE_SURVEY")
+        const vaccines = this.services.filter(i => i.type === "TYPE_VACCINE")
 
+        let tempChoiceIll = [ills[Math.floor(Math.random() * ills.length)]];
+        let tempChoiceSurvey = [surveys[Math.floor(Math.random() * surveys.length)]];
+        let tempChoiceVaccine = [vaccines[Math.floor(Math.random() * vaccines.length)]];
+
+        if (tempChoiceIll[0].name === tempChoiceVaccine[0].name) {
+          console.log(tempChoiceIll)
+          tempChoiceIll = tempChoiceIll.filter(i => i.name !== tempChoiceVaccine[0].name);
+          console.log(tempChoiceIll)
+              // this.services.filter(i =>
+              //     i.type === "TYPE_ILL" &&
+              //     i.name !== tempChoiceVaccine[0].name
+              // )[0];
+        }
+        if (tempChoiceIll[0].name !== tempChoiceSurvey[0].name) {
+          tempChoiceIll = [];
+          tempChoiceIll.push(tempChoiceSurvey[0]);
+        } else if (tempChoiceSurvey[0].name !== tempChoiceIll[0].name) {
+          tempChoiceSurvey.push(tempChoiceIll[0]);
+        }
+
+        this.exampleData.ill.push(...tempChoiceIll);
+        this.exampleData.surveys.push(...tempChoiceSurvey);
+        this.exampleData.vaccines.push(...tempChoiceVaccine);
+      } else {
+        this.exampleData.ill = [];
+        this.exampleData.surveys = [];
+        this.exampleData.vaccines = [];
+      }
     },
     doShowConstraint() {
 
