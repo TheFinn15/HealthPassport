@@ -9,7 +9,16 @@
         </v-icon>
       </v-btn>
 
-      <v-btn @click="doShowAuth" v-if="!isAuth">
+    <v-btn to="/cabinet" v-if="isAuth">
+      <span>
+        Личный кабинет
+      </span>
+      <v-icon>
+        person
+      </v-icon>
+    </v-btn>
+
+      <v-btn to="/login" v-if="!isAuth">
           <span>
             Авторизация
           </span>
@@ -18,7 +27,7 @@
         </v-icon>
       </v-btn>
 
-      <v-btn @click="doShowRegister" v-if="!isAuth">
+      <v-btn to="/register" v-if="!isAuth">
           <span>
             Регистрация
           </span>
@@ -32,19 +41,7 @@
 <script>
 export default {
   name: "BottomNav",
-  props: ["bottomVal", "isAuth", "locales", "showForm"],
-  methods: {
-    doShowAuth() {
-      this.showForm({
-        type: "auth"
-      });
-    },
-    doShowRegister() {
-      this.showForm({
-        type: "register"
-      });
-    }
-  }
+  props: ["bottomVal", "isAuth", "locales"],
 }
 </script>
 

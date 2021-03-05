@@ -1,0 +1,111 @@
+<template>
+  <v-card flat style="margin: 5%">
+    <v-card-title style="justify-content: center; display: flex">
+      Регистрация
+    </v-card-title>
+    <v-form value="registerForm">
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+                label="ФИО"
+                outlined
+                shaped
+                v-model="info.fullName"
+                color="#FFCC80"
+                :rules="rules.text"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+                label="Логин"
+                outlined
+                shaped
+                v-model="info.login"
+                color="#FFCC80"
+                :rules="rules.text"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+                type="password"
+                label="Пароль"
+                outlined
+                shaped
+                v-model="info.pwd"
+                color="#FFCC80"
+                :rules="rules.text"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+                label="E-mail"
+                outlined
+                shaped
+                v-model="info.email"
+                color="#FFCC80"
+                :rules="rules.email"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+                label="Телефон"
+                outlined
+                shaped
+                v-model="info.phone"
+                color="#FFCC80"
+                :rules="rules.phone"
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-checkbox
+                label="Запомнить меня"
+                v-model="info.isRememberMe"
+            />
+          </v-col>
+        </v-row>
+        <v-btn color="#FB8C00" block outlined @click="doRegister">
+          СОЗДАТЬ АККАУНТ
+        </v-btn>
+      </v-container>
+    </v-form>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: "Register",
+  data: () => {
+    return {
+      rules: {
+        text: [
+          v => v.length > 0 || "Пустое поле!"
+        ],
+        email: [
+          v => v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null || "Невепеый e-mail"
+        ],
+        phone: [
+          v => v.length > 11 || "Неверный телефон"
+        ]
+      },
+      info: {
+        fullName: "",
+        login: "",
+        pwd: "",
+        email: "",
+        phone: "",
+        isRememberMe: false
+      }
+    }
+  },
+  methods: {
+    doRegister() {
+
+    },
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

@@ -47,24 +47,22 @@
     <v-container v-else>
       <v-row>
         <v-col cols="12">
-          <v-col cols="12">
-            <v-switch
-                style="justify-content: center; display: flex"
-                color="#FFB74D"
-                label="Вкл. систему"
-                v-if="!exampleData.hasConstraint"
-                v-model="exampleData.hasConstraint"
-                @click="randomizeExampleData"
-            />
-            <v-switch
-                style="justify-content: center; display: flex"
-                color="#FFB74D"
-                label="Выкл. систему"
-                v-else
-                v-model="exampleData.hasConstraint"
-                @click="randomizeExampleData"
-            />
-          </v-col>
+          <v-switch
+              style="justify-content: center; display: flex"
+              color="#FFB74D"
+              label="Вкл. систему"
+              v-if="!exampleData.hasConstraint"
+              v-model="exampleData.hasConstraint"
+              @click="randomizeExampleData"
+          />
+          <v-switch
+              style="justify-content: center; display: flex"
+              color="#FFB74D"
+              label="Выкл. систему"
+              v-else
+              v-model="exampleData.hasConstraint"
+              @click="randomizeExampleData"
+          />
         </v-col>
         <v-col cols="12">
           <v-card rounded style="padding: 2%">
@@ -72,7 +70,7 @@
               Примерные данные
               <v-btn
                   v-if="exampleData.ill.length > 0"
-                  @click="doShowConstraint"
+                  @click="hideExample = true"
                   outlined
                   color="red"
                   absolute right
@@ -94,6 +92,25 @@
               <Vaccine :vaccines="exampleData.vaccines"/>
             </v-list>
           </v-card>
+          <v-overlay :value="hideExample" z-index="0" style="padding: 2%">
+            <v-card rounded light max-width="420">
+              <v-card-title style="word-break: break-word;justify-content: center; display: flex">
+                Зарегистрируйтесь или войдите в систему для больших возможностей !
+              </v-card-title>
+              <v-divider />
+              <v-card-actions style="justify-content: center; display: flex">
+                <v-btn outlined color="info" to="/login">
+                  Авторизация
+                </v-btn>
+                <v-btn text color="red" @click="hideExample = false">
+                  Закрыть
+                </v-btn>
+                <v-btn outlined color="info" to="/register">
+                  Регистрация
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-overlay>
         </v-col>
       </v-row>
     </v-container>
@@ -112,6 +129,7 @@ export default Vue.extend({
   data() {
     return {
       userInfo: {},
+      hideExample: false,
       services: [
         {
           name: "COVID",
