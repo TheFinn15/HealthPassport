@@ -129,7 +129,9 @@ export default Vue.extend({
   components: {Vaccine, Survey, Ill},
   data() {
     return {
-      userInfo: {},
+      userInfo: {
+        services: []
+      },
       hideExample: false,
       services: [
         {
@@ -178,9 +180,7 @@ export default Vue.extend({
         let tempChoiceVaccine = [vaccines[Math.floor(Math.random() * vaccines.length)]];
 
         if (tempChoiceIll[0].name === tempChoiceVaccine[0].name) {
-          console.log(tempChoiceIll)
           tempChoiceIll = tempChoiceIll.filter(i => i.name !== tempChoiceVaccine[0].name);
-          console.log(tempChoiceIll)
               // this.services.filter(i =>
               //     i.type === "TYPE_ILL" &&
               //     i.name !== tempChoiceVaccine[0].name
@@ -208,11 +208,19 @@ export default Vue.extend({
   },
   computed: {
     mapToServices() {
-      return [[], [], []];
+      if (this.userInfo.services.length > 0) {
+        const ills = this.userInfo.services.filter(i => i.type === "TYPE_ILL");
+        const surveys = this.userInfo.services.filter(i => i.type === "TYPE_SURVEY");
+        const vaccines = this.userInfo.services.filter(i => i.type === "TYPE_VACCINE");
+
+        return [ills, surveys, vaccines];
+      } else {
+        return [[], [], []];
+      }
     }
   },
-  mounted() {
-
+  async mounted() {
+    this.userInfo = (await this.$store.getters.getCurUser)[0];
   }
 });
 </script>

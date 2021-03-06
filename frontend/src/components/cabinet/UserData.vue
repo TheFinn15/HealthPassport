@@ -4,8 +4,13 @@
       {{alert.info}}
     </v-alert>
     <v-card-title style="justify-content: center; display: flex">
-      Просмотр данных
-      <v-tooltip v-if="!editMode" left color="#FB8C00" open-delay="600">
+      <span v-if="!editMode">
+        Просмотр данных
+      </span>
+      <span v-else>
+        Редактирование данных
+      </span>
+      <v-tooltip v-if="!editMode" bottom color="#FB8C00" open-delay="600">
         <template v-slot:activator="{on, attrs}">
           <v-btn @click="editMode = true" fab color="info" absolute right v-bind="attrs" v-on="on">
             <v-icon>
@@ -17,7 +22,7 @@
           Режим редактирования
         </span>
       </v-tooltip>
-      <v-tooltip v-if="editMode" left color="#FB8C00" open-delay="600">
+      <v-tooltip v-if="editMode" bottom color="#FB8C00" open-delay="600">
         <template v-slot:activator="{on, attrs}">
           <v-btn @click="doEditUser" fab color="success" absolute right v-bind="attrs" v-on="on">
             <v-icon>
@@ -55,6 +60,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
+              type="password"
               label="Пароль"
               v-model="user.pwd"
               outlined

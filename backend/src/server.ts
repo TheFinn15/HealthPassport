@@ -13,7 +13,6 @@ export class HealthPassport extends Server {
 
     const corsConfig = new CorsConfigure().config();
 
-    this.app.set("trust proxy", true);
     this.app.use(cors(corsConfig));
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({extended: true}));

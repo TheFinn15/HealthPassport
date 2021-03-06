@@ -56,7 +56,7 @@ export default {
   methods: {
     async doLogout() {
       const ip = await axios.get("https://api.ipify.org?format=json");
-      this.$store.state.userInfo = ip.data["ip"];
+      this.$store.state.userInfo = {ip: ip.data["ip"]};
       await this.$store.dispatch("logout");
 
       localStorage.removeItem("uid");

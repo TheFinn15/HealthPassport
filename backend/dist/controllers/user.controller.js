@@ -30,7 +30,7 @@ let UserController = class UserController {
         if (!verifyToken.tokenVerified)
             return res.status(401).send("401 Unauthorized");
         await this.clientDB.user.findMany({
-            where: { auths: { every: { token: token } } }
+            where: { auths: { some: { token: token } } }, include: { auths: true, services: true }
         }).then(resp => {
             return res.status(200).json(resp);
         }).catch(e => {
@@ -59,6 +59,21 @@ let UserController = class UserController {
         catch (e) {
             return res.status(400).json({
                 msg: "Error processing request ! ERROR: " + e
+            });
+        }
+    }
+    async validAuth(req, res) {
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified)
+                return res.status(401).send("401 Unauthorized");
+            return res.status(200).json(verifyToken);
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error verify auth | " + e
             });
         }
     }
@@ -229,7 +244,7 @@ let UserController = class UserController {
                 await this.clientDB.user.update({
                     where: { id: id },
                     data: {
-                        pwd: pwd
+                        pwd: await argon2_1.default.hash(pwd)
                     }
                 }).catch(e => {
                     return res.status(400).json({
@@ -319,6 +334,29 @@ let UserController = class UserController {
             });
         }
     }
+    async editTokenIp(req, res) {
+        var _a;
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        if (!verifyToken.tokenVerified)
+            return res.status(401).send("401 Unauthorized");
+        const { ip } = req.body;
+        const curToken = await this.clientDB.token.findMany({
+            where: { token: token }
+        });
+        await this.clientDB.token.update({
+            where: { id: curToken[0].id },
+            data: {
+                ip: ip
+            }
+        }).then(resp => {
+            return res.send(200).json(resp);
+        }).catch(e => {
+            return res.send(400).json({
+                msg: "Error edit token | " + e
+            });
+        });
+    }
     async editCurrentUser(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
@@ -330,7 +368,7 @@ let UserController = class UserController {
             where: { login: verifyToken.decoded.data.login },
             data: {
                 login: login,
-                pwd: pwd,
+                pwd: await argon2_1.default.hash(pwd),
                 fullName: fullName,
                 email: email,
                 phone: phone
@@ -381,6 +419,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getAll", null);
 __decorate([
+    core_1.Get("valid-auth"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "validAuth", null);
+__decorate([
     core_1.Get("users/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
@@ -410,6 +454,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "editUserById", null);
+__decorate([
+    core_1.Put("update-ip"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "editTokenIp", null);
 __decorate([
     core_1.Put("user"),
     __metadata("design:type", Function),

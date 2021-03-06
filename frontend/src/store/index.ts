@@ -11,6 +11,16 @@ export default new Vuex.Store({
   mutations: {
   },
   actions: {
+    async updateTokenIp({state}) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/update-ip",
+        data: state.userInfo,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      });
+    },
     async editUser({state}) {
       await axios({
         method: "PUT",
@@ -24,7 +34,7 @@ export default new Vuex.Store({
     async logout({state}) {
       await axios({
         method: "POST",
-        url: "http://" + process.env.VUE_APP_SERVER + "/api/login",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/logout",
         data: state.userInfo,
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
@@ -53,6 +63,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    async validateToken() {
+      return await axios({
+        method: "GET",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/valid-auth",
+        headers: {
+          Authorization: "Bearer " + localStorage['uid']
+        }
+      }).then(resp => resp.data);
+    },
     async getCurUser() {
       return await axios({
         method: "GET",

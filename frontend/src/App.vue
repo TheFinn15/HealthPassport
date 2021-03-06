@@ -51,6 +51,18 @@ export default Vue.extend({
     BottomNav
   },
   methods: {},
+  async updated() {
+    if (localStorage["uid"] !== undefined) {
+      const ip = await axios.get("https://api.ipify.org?format=json");
+      const user = (await this.$store.getters.getCurUser)[0];
+      this.$store.state.userInfo = ip.data["ip"];
+
+      if (user.ip !== ip) {
+        this.$store.state.userInfo = {ip: ip};
+        await this.$store.dispatch("updateTokenIp");
+      }
+    }
+  },
   async mounted() {
     if (/login/i.test(this.$route.fullPath)) {
       this.bottomNav = "auth";

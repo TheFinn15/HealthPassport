@@ -21,7 +21,7 @@ export class UserController {
       return res.status(401).send("401 Unauthorized");
 
     await this.clientDB.user.findMany({
-      where: {auths: {every: {token: token}}}
+      where: {auths: {some: {token: token}}}, include: {auths: true, services: true}
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
@@ -52,6 +52,23 @@ export class UserController {
     } catch (e) {
       return res.status(400).json({
         msg: "Error processing request ! ERROR: " + e
+      });
+    }
+  }
+
+  @Get("valid-auth")
+  private async validAuth(req: Request, res: Response) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+
+      if (!verifyToken.tokenVerified)
+        return res.status(401).send("401 Unauthorized");
+
+      return res.status(200).json(verifyToken);
+    } catch (e) {
+      return res.status(400).json({
+        msg: "Error verify auth | " + e
       });
     }
   }
@@ -186,7 +203,7 @@ export class UserController {
       if (!verifyToken.tokenVerified)
         return res.status(401).send("401 Unauthorized");
 
-      const { ip } = req.body;
+      const {ip} = req.body;
       // const token = req.headers.authorization.split(" ")[1];
       // const {data: {id, login}} = this.jwtConfigure.decodeToken(token) as {data: any};
 
@@ -235,7 +252,7 @@ export class UserController {
         await this.clientDB.user.update({
           where: {id: id},
           data: {
-            pwd: pwd
+            pwd: await argon2.hash(pwd)
           }
         }).catch(e => {
           return res.status(400).json({
@@ -326,6 +343,32 @@ export class UserController {
     }
   }
 
+  @Put("update-ip")
+  private async editTokenIp(req: Request, res: Response) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+
+    if (!verifyToken.tokenVerified)
+      return res.status(401).send("401 Unauthorized");
+
+    const {ip} = req.body;
+    const curToken = await this.clientDB.token.findMany({
+      where: {token: token}
+    });
+    await this.clientDB.token.update({
+      where: {id: curToken[0].id},
+      data: {
+        ip: ip
+      }
+    }).then(resp => {
+      return res.send(200).json(resp);
+    }).catch(e => {
+      return res.send(400).json({
+        msg: "Error edit token | " + e
+      });
+    });
+  }
+
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
     const token = req.headers.authorization?.split(" ")[1];
@@ -340,7 +383,7 @@ export class UserController {
       where: {login: verifyToken.decoded.data.login},
       data: {
         login: login,
-        pwd: pwd,
+        pwd: await argon2.hash(pwd),
         fullName: fullName,
         email: email,
         phone: phone
