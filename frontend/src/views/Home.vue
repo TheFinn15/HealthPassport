@@ -122,6 +122,7 @@ import Vue from 'vue';
 import Ill from "@/components/home/Ill.vue";
 import Survey from "@/components/home/Survey.vue";
 import Vaccine from "@/components/home/Vaccine.vue";
+import jwt from "jsonwebtoken";
 
 export default Vue.extend({
   name: 'Home',
@@ -208,6 +209,18 @@ export default Vue.extend({
   computed: {
     mapToServices() {
       return [[], [], []];
+    }
+  },
+  mounted() {
+    if (localStorage["uid"] !== undefined) {
+      try {
+        jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
+
+        this.isAuth = true;
+      } catch (e) {
+        localStorage.removeItem("uid");
+        window.location.reload();
+      }
     }
   }
 });

@@ -18,7 +18,16 @@
       </v-icon>
     </v-btn>
 
-      <v-btn to="/login" v-if="!isAuth" value="auth">
+    <v-btn @click="doLogout" v-if="isAuth" value="logout">
+      <span>
+        Выход
+      </span>
+      <v-icon>
+        exit_to_app
+      </v-icon>
+    </v-btn>
+
+    <v-btn to="/login" v-if="!isAuth" value="auth">
         <span>
           Авторизация
         </span>
@@ -27,7 +36,7 @@
         </v-icon>
       </v-btn>
 
-      <v-btn to="/register" v-if="!isAuth" value="register">
+    <v-btn to="/register" v-if="!isAuth" value="register">
         <span>
           Регистрация
         </span>
@@ -42,6 +51,13 @@
 export default {
   name: "BottomNav",
   props: ["bottomVal", "isAuth", "locales"],
+  methods: {
+    doLogout() {
+      localStorage.removeItem("uid");
+      this.$router.push("/");
+      window.location.reload();
+    }
+  }
 }
 </script>
 

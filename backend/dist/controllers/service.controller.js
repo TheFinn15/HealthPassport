@@ -26,7 +26,7 @@ let ServiceController = class ServiceController {
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
                 return res.status(401).send("401 Unauthorized");
             await this.clientDB.supplierServices.findMany({
-                include: { Partner: true }
+                include: { partner: true }
             }).then(resp => {
                 return res.status(200).json(resp);
             }).catch(e => {
@@ -50,7 +50,7 @@ let ServiceController = class ServiceController {
                 return res.status(401).send("401 Unauthorized");
             const { id } = req.params;
             await this.clientDB.supplierServices.findUnique({
-                where: { id: parseInt(id) }, include: { Partner: true }
+                where: { id: parseInt(id) }, include: { partner: true }
             }).then(resp => {
                 return res.status(200).json(resp);
             }).catch(e => {

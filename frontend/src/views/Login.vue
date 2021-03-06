@@ -15,7 +15,7 @@
     <v-card-title style="justify-content: center; display: flex">
       Авторизация
     </v-card-title>
-    <v-form value="authForm">
+    <v-form ref="authForm">
       <v-container>
         <v-row no-gutters>
           <v-col cols="12">
@@ -56,20 +56,23 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Login",
   data() {
     return {
       rules: {
         text: [
-          v => v.length > 0 || "Пустое поле!"
+          v => v.length !== 0 || "Пустое поле!"
         ]
       },
       info: {
         login: "",
         pwd: "",
         isRememberMe: false,
-        device: "DEVICE_BROWSER"
+        device: "DEVICE_BROWSER",
+        ip: ""
       },
       alert: {
         state: false,
@@ -81,24 +84,30 @@ export default {
   },
   methods: {
     async doAuth() {
-      console.log(this.info);
-      this.$store.state.userInfo = this.info;
-      await this.$store.dispatch("auth");
-      this.alert.loader = true;
-      setTimeout(() => {
-        this.alert.loader = false;
-        this.alert.state = true;
-        if (localStorage["uid"] !== undefined) {
-          this.alert.info = "Успешная авторизация!";
-        } else {
-          this.alert.type = "error";
-          this.alert.info = "Ошибка авторизации!";
-        }
-      }, 1500)
+      const ip = await axios.get("https://api.ipify.org?format=json");
+      this.info.ip = ip.data["ip"];
+      if (this.$refs.authForm.validate()) {
+        console.log(this.info)
+        this.$store.state.userInfo = this.info;
+        await this.$store.dispatch("auth");
+        this.alert.loader = true;
+        setTimeout(() => {
+          this.alert.loader = false;
+          this.alert.state = true;
+          if (localStorage["uid"] !== undefined) {
+            this.alert.info = "Успешная авторизация!";
+            this.$router.push("/cabinet");
+            window.location.reload();
+          } else {
+            this.alert.type = "error";
+            this.alert.info = "Ошибка авторизации!";
+          }
+        }, 1500)
+      }
     }
   },
   mounted() {
-    console.log(/Windows/i.test(navigator.userAgent));
+    console.log();
   }
 }
 </script>

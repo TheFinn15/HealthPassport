@@ -37,6 +37,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import BottomNav from "@/components/drawer/BottomNav.vue";
+import jwt from "jsonwebtoken";
 
 export default Vue.extend({
   name: 'App',
@@ -58,6 +59,16 @@ export default Vue.extend({
       this.bottomNav = "cabinet";
     } else {
       this.bottomNav = "main";
+    }
+    if (localStorage["uid"] !== undefined) {
+      try {
+        jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
+
+        this.isAuth = true;
+      } catch (e) {
+        localStorage.removeItem("uid");
+        window.location.reload();
+      }
     }
   }
 });

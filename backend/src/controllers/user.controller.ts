@@ -3,6 +3,7 @@ import {Request, Response} from "express";
 import {PrismaClient} from "@prisma/client";
 import argon2 from "argon2";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
+import geo_from_ip from "geoip-lite";
 
 
 @Controller("api")
@@ -91,40 +92,61 @@ export class UserController {
   @Post("login")
   private async login(req: Request, res: Response) {
     try {
-      const {login, pwd, isRememberMe, device} = req.body;
+      const {login, pwd, isRememberMe, device, ip} = req.body;
       await this.clientDB.user.findUnique({
         where: {login: login}
-      }).then(async resp => {
-        const verifyPwd = await argon2.verify(resp.pwd, pwd);
+      }).then(async user => {
+        const verifyPwd = await argon2.verify(user.pwd, pwd);
         if (!verifyPwd) {
           return res.status(400).json({
             msg: "Password is invalid!"
           });
         }
+        await this.clientDB.token.findUnique({
+          where: {ip}
+        }).then(token => {
+          console.log(token);
+          return res.status(200).json({
+            user: user, token: token.token
+          })
+        }).catch(async () => {
+          const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
 
-        const newJWToken = this.jwtConfigure.generateJWT(resp, isRememberMe);
+          const geoInfo = geo_from_ip.lookup(ip);
+          let location = `${geoInfo.country}, ${geoInfo.city}`;
 
-        await this.clientDB.token.create({
-          data: {
-            typeDevice: device,
-            token: newJWToken
-          }
-        });
+          await this.clientDB.token.create({
+            data: {
+              typeDevice: device,
+              token: newJWToken,
+              ip: ip,
+              location: location
+            }
+          }).catch(e => {
+            return res.status(400).json({
+              msg: "Error creating token | " + e
+            });
+          });
 
-        await this.clientDB.user.update({
-          where: {login: login},
-          data: {
-            auths: {
-              connect: {
-                token: newJWToken
+          await this.clientDB.user.update({
+            where: {login: login},
+            data: {
+              auths: {
+                connect: {
+                  ip: req.ip
+                }
               }
             }
-          }
-        })
+          }).catch(e => {
+            return res.status(400).json({
+              msg: "Error connecting token with user | " + e
+            });
+          });
 
-        return res.status(200).json({
-          user: resp, token: newJWToken
-        })
+          return res.status(200).json({
+            user: user, token: newJWToken
+          });
+        });
       }).catch(e => {
         return res.status(400).json({
           msg: `User not found | ERROR: ${e}`
@@ -134,6 +156,36 @@ export class UserController {
       return res.status(400).json({
         msg: "Error processing request ! ERROR: " + e
       });
+    }
+  }
+
+  @Post("logout")
+  private async logout(req: Request, res: Response) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      if (!verifyToken.tokenVerified)
+        return res.status(401).send("401 Unauthorized");
+
+      const { ip } = req.body;
+      // const token = req.headers.authorization.split(" ")[1];
+      // const {data: {id, login}} = this.jwtConfigure.decodeToken(token) as {data: any};
+
+      await this.clientDB.token.delete({
+        where: {ip: ip}
+      }).then(() => {
+        return res.status(200).json({
+          msg: "User is sign-out"
+        });
+      }).catch(e => {
+        return res.status(400).json({
+          msg: "Error deleting token | " + e
+        });
+      });
+    } catch (e) {
+      return res.status(400).json({
+        msg: "Error logout. " + e
+      })
     }
   }
 

@@ -35,10 +35,13 @@ enum TypeServices {
 }
 
 model Token {
-  id         Int     @id @default(autoincrement())
-  token      String  @unique
-  typeDevice Devices @default(DEVICE_BROWSER)
-  users      User[]
+  id             Int      @id @default(autoincrement())
+  token          String?
+  ip             String?  @unique
+  location       String?
+  lastOnlineTime DateTime @default(now())
+  typeDevice     Devices  @default(DEVICE_BROWSER)
+  users          User[]
 }
 
 model User {
@@ -55,14 +58,15 @@ model User {
 }
 
 model SupplierServices {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
-  type      TypeServices @default(TYPE_SURVEY)
-  about     String?
-  info      String?
-  users     User[]
-  partner   Partner?     @relation(fields: [partnerId], references: [id])
-  partnerId Int?
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  type        TypeServices @default(TYPE_SURVEY)
+  passingTime DateTime     @default(now())
+  about       String?
+  info        String?
+  users       User[]
+  partner     Partner?     @relation(fields: [partnerId], references: [id])
+  partnerId   Int?
 }
 
 model Partner {

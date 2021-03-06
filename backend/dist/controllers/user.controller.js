@@ -17,6 +17,7 @@ const core_1 = require("@overnightjs/core");
 const client_1 = require("@prisma/client");
 const argon2_1 = __importDefault(require("argon2"));
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
+const geoip_lite_1 = __importDefault(require("geoip-lite"));
 let UserController = class UserController {
     constructor() {
         this.clientDB = new client_1.PrismaClient();
@@ -96,35 +97,56 @@ let UserController = class UserController {
     }
     async login(req, res) {
         try {
-            const { login, pwd, isRememberMe, device } = req.body;
+            const { login, pwd, isRememberMe, device, ip } = req.body;
             await this.clientDB.user.findUnique({
                 where: { login: login }
-            }).then(async (resp) => {
-                const verifyPwd = await argon2_1.default.verify(resp.pwd, pwd);
+            }).then(async (user) => {
+                const verifyPwd = await argon2_1.default.verify(user.pwd, pwd);
                 if (!verifyPwd) {
                     return res.status(400).json({
                         msg: "Password is invalid!"
                     });
                 }
-                const newJWToken = this.jwtConfigure.generateJWT(resp, isRememberMe);
-                await this.clientDB.token.create({
-                    data: {
-                        typeDevice: device,
-                        token: newJWToken
-                    }
-                });
-                await this.clientDB.user.update({
-                    where: { login: login },
-                    data: {
-                        auths: {
-                            connect: {
-                                token: newJWToken
+                await this.clientDB.token.findUnique({
+                    where: { ip }
+                }).then(token => {
+                    console.log(token);
+                    return res.status(200).json({
+                        user: user, token: token.token
+                    });
+                }).catch(async () => {
+                    const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
+                    const geoInfo = geoip_lite_1.default.lookup(ip);
+                    let location = `${geoInfo.country}, ${geoInfo.city}`;
+                    await this.clientDB.token.create({
+                        data: {
+                            typeDevice: device,
+                            token: newJWToken,
+                            ip: ip,
+                            location: location
+                        }
+                    }).catch(e => {
+                        return res.status(400).json({
+                            msg: "Error creating token | " + e
+                        });
+                    });
+                    await this.clientDB.user.update({
+                        where: { login: login },
+                        data: {
+                            auths: {
+                                connect: {
+                                    ip: req.ip
+                                }
                             }
                         }
-                    }
-                });
-                return res.status(200).json({
-                    user: resp, token: newJWToken
+                    }).catch(e => {
+                        return res.status(400).json({
+                            msg: "Error connecting token with user | " + e
+                        });
+                    });
+                    return res.status(200).json({
+                        user: user, token: newJWToken
+                    });
                 });
             }).catch(e => {
                 return res.status(400).json({
@@ -135,6 +157,34 @@ let UserController = class UserController {
         catch (e) {
             return res.status(400).json({
                 msg: "Error processing request ! ERROR: " + e
+            });
+        }
+    }
+    async logout(req, res) {
+        var _a;
+        try {
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            if (!verifyToken.tokenVerified)
+                return res.status(401).send("401 Unauthorized");
+            const { ip } = req.body;
+            // const token = req.headers.authorization.split(" ")[1];
+            // const {data: {id, login}} = this.jwtConfigure.decodeToken(token) as {data: any};
+            await this.clientDB.token.delete({
+                where: { ip: ip }
+            }).then(() => {
+                return res.status(200).json({
+                    msg: "User is sign-out"
+                });
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error deleting token | " + e
+                });
+            });
+        }
+        catch (e) {
+            return res.status(400).json({
+                msg: "Error logout. " + e
             });
         }
     }
@@ -302,6 +352,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "login", null);
+__decorate([
+    core_1.Post("logout"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "logout", null);
 __decorate([
     core_1.Put("users/:id"),
     __metadata("design:type", Function),

@@ -15,6 +15,7 @@ class HealthPassport extends core_1.Server {
     constructor() {
         super();
         const corsConfig = new CorsConfigure_1.CorsConfigure().config();
+        this.app.set("trust proxy", true);
         this.app.use(cors_1.default(corsConfig));
         this.app.use(body_parser_1.default.json());
         this.app.use(body_parser_1.default.urlencoded({ extended: true }));

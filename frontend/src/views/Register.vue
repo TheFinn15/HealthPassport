@@ -15,7 +15,7 @@
     <v-card-title style="justify-content: center; display: flex">
       Регистрация
     </v-card-title>
-    <v-form value="registerForm">
+    <v-form ref="registerForm">
       <v-container>
         <v-row>
           <v-col cols="12">
@@ -92,13 +92,13 @@ export default {
     return {
       rules: {
         text: [
-          v => v.length > 0 || "Пустое поле!"
+          v => v.length !== 0 || "Пустое поле!"
         ],
         email: [
-          v => v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null || "Невепеый e-mail"
+          v => v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null || "Неверный e-mail"
         ],
         phone: [
-          v => v.length > 11 || "Неверный телефон"
+          v => v.length === 11 || "Неверный телефон"
         ]
       },
       info: {
@@ -120,20 +120,23 @@ export default {
   },
   methods: {
     async doRegister() {
-      this.$store.state.userInfo = this.info;
-      await this.$store.dispatch("register");
-      await this.$store.dispatch("auth");
-      this.alert.loader = true;
-      setTimeout(() => {
-        this.alert.loader = false;
-        this.alert.state = true;
-        if (localStorage["uid"] !== undefined) {
-          this.alert.info = "Успешная регистрация!";
-        } else {
-          this.alert.type = "error";
-          this.alert.info = "Ошибка регистрации!";
-        }
-      }, 1500)
+      if (this.$refs.registerForm.validate()) {
+        this.$store.state.userInfo = this.info;
+        await this.$store.dispatch("register");
+        await this.$store.dispatch("auth");
+        this.alert.loader = true;
+        setTimeout(() => {
+          this.alert.loader = false;
+          this.alert.state = true;
+          if (localStorage["uid"] !== undefined) {
+            this.alert.info = "Успешная регистрация!";
+            this.$router.push("/cabinet");
+          } else {
+            this.alert.type = "error";
+            this.alert.info = "Ошибка регистрации!";
+          }
+        }, 1500)
+      }
     },
   }
 }

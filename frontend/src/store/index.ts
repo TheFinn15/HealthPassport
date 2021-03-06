@@ -18,6 +18,7 @@ export default new Vuex.Store({
         data: state.userInfo
       }).then(resp => {
         localStorage['uid'] = resp.data.token;
+        console.log(resp);
       }).catch(e => {
         console.error(e);
       });
