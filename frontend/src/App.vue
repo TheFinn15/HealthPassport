@@ -37,7 +37,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import BottomNav from "@/components/drawer/BottomNav.vue";
-import jwt from "jsonwebtoken";
+import jwt, {JsonWebTokenError, TokenExpiredError} from "jsonwebtoken";
+import axios from "axios";
 
 export default Vue.extend({
   name: 'App',
@@ -50,7 +51,7 @@ export default Vue.extend({
     BottomNav
   },
   methods: {},
-  mounted() {
+  async mounted() {
     if (/login/i.test(this.$route.fullPath)) {
       this.bottomNav = "auth";
     } else if (/register/i.test(this.$route.fullPath)) {
@@ -62,10 +63,19 @@ export default Vue.extend({
     }
     if (localStorage["uid"] !== undefined) {
       try {
-        jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
+        try {
+          jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
 
-        this.isAuth = true;
-      } catch (e) {
+          this.isAuth = true;
+        } catch (e: TokenExpiredError) {
+          const ip = await axios.get("https://api.ipify.org?format=json");
+          this.$store.state.userInfo = ip.data["ip"];
+          await this.$store.dispatch("logout");
+
+          localStorage.removeItem("uid");
+          window.location.reload();
+        }
+      } catch (e: JsonWebTokenError) {
         localStorage.removeItem("uid");
         window.location.reload();
       }

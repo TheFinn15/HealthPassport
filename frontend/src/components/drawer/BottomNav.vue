@@ -48,13 +48,19 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "BottomNav",
   props: ["bottomVal", "isAuth", "locales"],
   methods: {
-    doLogout() {
+    async doLogout() {
+      const ip = await axios.get("https://api.ipify.org?format=json");
+      this.$store.state.userInfo = ip.data["ip"];
+      await this.$store.dispatch("logout");
+
       localStorage.removeItem("uid");
-      this.$router.push("/");
+      await this.$router.push("/");
       window.location.reload();
     }
   }

@@ -157,7 +157,7 @@ export default Vue.extend({
           type: "TYPE_VACCINE"
         }
       ],
-      isAuth: false,
+      isAuth: localStorage["uid"] !== undefined,
       exampleData: {
         hasConstraint: false,
         ill: [] as any,
@@ -212,16 +212,7 @@ export default Vue.extend({
     }
   },
   mounted() {
-    if (localStorage["uid"] !== undefined) {
-      try {
-        jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
 
-        this.isAuth = true;
-      } catch (e) {
-        localStorage.removeItem("uid");
-        window.location.reload();
-      }
-    }
   }
 });
 </script>

@@ -5,7 +5,7 @@ export class JWTConfigure {
 
   async validateUserToken(token: string, client: PrismaClient) {
     try {
-      let result = {};
+      let result: any = {};
       const tokens = await client.token.findMany({
         where: {token: token}
       });
@@ -20,13 +20,15 @@ export class JWTConfigure {
             result = {
               type: "success",
               tokenVerified: true,
-              role: tokenData.role
+              role: tokenData.role,
+              decoded: jwt.decode(token)
             };
           }else if (nowDate < tokenData.exp) {
             result = {
               type: "success",
               tokenVerified: true,
-              role: tokenData.role
+              role: tokenData.role,
+              decoded: jwt.decode(token)
             };
           } else {
             result = {

@@ -23,6 +23,22 @@ let UserController = class UserController {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
+    async getCurrentUser(req, res) {
+        var _a;
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        if (!verifyToken.tokenVerified)
+            return res.status(401).send("401 Unauthorized");
+        await this.clientDB.user.findMany({
+            where: { auths: { every: { token: token } } }
+        }).then(resp => {
+            return res.status(200).json(resp);
+        }).catch(e => {
+            return res.status(400).json({
+                msg: "Error getting current user | " + e
+            });
+        });
+    }
     async getAll(req, res) {
         var _a;
         try {
@@ -135,7 +151,7 @@ let UserController = class UserController {
                         data: {
                             auths: {
                                 connect: {
-                                    ip: req.ip
+                                    ip: ip
                                 }
                             }
                         }
@@ -303,6 +319,30 @@ let UserController = class UserController {
             });
         }
     }
+    async editCurrentUser(req, res) {
+        var _a;
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        if (!verifyToken.tokenVerified)
+            return res.status(401).send("401 Unauthorized");
+        const { login, pwd, fullName, email, phone } = req.body;
+        await this.clientDB.user.update({
+            where: { login: verifyToken.decoded.data.login },
+            data: {
+                login: login,
+                pwd: pwd,
+                fullName: fullName,
+                email: email,
+                phone: phone
+            }
+        }).then(resp => {
+            return res.status(200).json(resp);
+        }).catch(e => {
+            return res.status(400).json({
+                msg: "Error editing current user | " + e
+            });
+        });
+    }
     async deleteUserById(req, res) {
         var _a;
         try {
@@ -328,6 +368,12 @@ let UserController = class UserController {
         }
     }
 };
+__decorate([
+    core_1.Get("user"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getCurrentUser", null);
 __decorate([
     core_1.Get("users"),
     __metadata("design:type", Function),
@@ -364,6 +410,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "editUserById", null);
+__decorate([
+    core_1.Put("user"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "editCurrentUser", null);
 __decorate([
     core_1.Delete("users/:id"),
     __metadata("design:type", Function),

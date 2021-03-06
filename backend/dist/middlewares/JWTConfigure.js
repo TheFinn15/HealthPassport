@@ -22,14 +22,16 @@ class JWTConfigure {
                         result = {
                             type: "success",
                             tokenVerified: true,
-                            role: tokenData.role
+                            role: tokenData.role,
+                            decoded: jsonwebtoken_1.default.decode(token)
                         };
                     }
                     else if (nowDate < tokenData.exp) {
                         result = {
                             type: "success",
                             tokenVerified: true,
-                            role: tokenData.role
+                            role: tokenData.role,
+                            decoded: jsonwebtoken_1.default.decode(token)
                         };
                     }
                     else {
@@ -73,7 +75,10 @@ class JWTConfigure {
         if (isRemember)
             return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, { subject: 'auth' });
         else
-            return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, { subject: 'auth', expiresIn: process.env.JWT_EXPIRATION });
+            return jsonwebtoken_1.default.sign({ data }, process.env.JWT_SECRET, {
+                subject: 'auth',
+                expiresIn: process.env.JWT_EXPIRATION
+            });
     }
 }
 exports.JWTConfigure = JWTConfigure;

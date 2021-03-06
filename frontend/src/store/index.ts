@@ -11,6 +11,26 @@ export default new Vuex.Store({
   mutations: {
   },
   actions: {
+    async editUser({state}) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
+        data: state.userInfo,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      })
+    },
+    async logout({state}) {
+      await axios({
+        method: "POST",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/login",
+        data: state.userInfo,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      });
+    },
     async auth({state}) {
       await axios({
         method: "POST",
@@ -18,7 +38,6 @@ export default new Vuex.Store({
         data: state.userInfo
       }).then(resp => {
         localStorage['uid'] = resp.data.token;
-        console.log(resp);
       }).catch(e => {
         console.error(e);
       });
@@ -39,13 +58,10 @@ export default new Vuex.Store({
         method: "GET",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
         headers: {
-          Authorization: localStorage['uid']
+          Authorization: "Bearer " + localStorage['uid']
         }
-      }).then(resp => resp.data)
-        .catch(e => {
-          return e
-        });
-    },
+      }).then(resp => resp.data);
+    }
   },
   modules: {
   },

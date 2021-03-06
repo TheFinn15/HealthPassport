@@ -12,6 +12,25 @@ export class UserController {
   clientDB: PrismaClient = new PrismaClient();
   jwtConfigure: JWTConfigure = new JWTConfigure();
 
+  @Get("user")
+  private async getCurrentUser(req: Request, res: Response) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+
+    if (!verifyToken.tokenVerified)
+      return res.status(401).send("401 Unauthorized");
+
+    await this.clientDB.user.findMany({
+      where: {auths: {every: {token: token}}}
+    }).then(resp => {
+      return res.status(200).json(resp);
+    }).catch(e => {
+      return res.status(400).json({
+        msg: "Error getting current user | " + e
+      });
+    })
+  }
+
   @Get("users")
   private async getAll(req: Request, res: Response) {
     try {
@@ -133,7 +152,7 @@ export class UserController {
             data: {
               auths: {
                 connect: {
-                  ip: req.ip
+                  ip: ip
                 }
               }
             }
@@ -305,6 +324,34 @@ export class UserController {
         msg: "Error processing request ! ERROR: " + e
       });
     }
+  }
+
+  @Put("user")
+  private async editCurrentUser(req: Request, res: Response) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+
+    if (!verifyToken.tokenVerified)
+      return res.status(401).send("401 Unauthorized");
+
+    const {login, pwd, fullName, email, phone} = req.body;
+
+    await this.clientDB.user.update({
+      where: {login: verifyToken.decoded.data.login},
+      data: {
+        login: login,
+        pwd: pwd,
+        fullName: fullName,
+        email: email,
+        phone: phone
+      }
+    }).then(resp => {
+      return res.status(200).json(resp);
+    }).catch(e => {
+      return res.status(400).json({
+        msg: "Error editing current user | " + e
+      });
+    });
   }
 
   @Delete("users/:id")
