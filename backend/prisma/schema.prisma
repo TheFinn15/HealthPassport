@@ -16,12 +16,6 @@ enum Role {
   ROLE_ADMIN
 }
 
-enum UserCapability {
-  PERSON_NOT_VALID_FOR_PUBLIC
-  PERSON_HAVE_CONSTRAINTS
-  PERSON_IS_CLEAN
-}
-
 enum Devices {
   DEVICE_BROWSER
   DEVICE_ANDROID
@@ -51,22 +45,32 @@ model User {
   fullName     String?
   email        String?
   phone        String?
-  capabilities UserCapability     @default(PERSON_IS_CLEAN)
+  capabilities UserCapability[]
   role         Role               @default(ROLE_USER)
   auths        Token[]
   services     SupplierServices[]
 }
 
+model UserCapability {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  info               String
+  ill                SupplierServices @relation(fields: [supplierServicesId], references: [id])
+  supplierServicesId Int
+  User               User[]
+}
+
 model SupplierServices {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
-  type        TypeServices @default(TYPE_SURVEY)
-  passingTime DateTime     @default(now())
-  about       String?
-  info        String?
-  users       User[]
-  partner     Partner?     @relation(fields: [partnerId], references: [id])
-  partnerId   Int?
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  type           TypeServices     @default(TYPE_SURVEY)
+  passingTime    DateTime         @default(now())
+  about          String?
+  info           String?
+  users          User[]
+  partner        Partner?         @relation(fields: [partnerId], references: [id])
+  partnerId      Int?
+  UserCapability UserCapability[]
 }
 
 model Partner {

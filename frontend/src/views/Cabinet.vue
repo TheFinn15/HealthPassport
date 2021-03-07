@@ -23,7 +23,7 @@
         <UserData :user="userInfo" />
       </v-tab-item>
       <v-tab-item>
-        <UserConstraint :user="userInfo" />
+        <UserConstraint :constraint="userInfo" />
       </v-tab-item>
       <v-tab-item>
         <UserSessions :user="userInfo" />
