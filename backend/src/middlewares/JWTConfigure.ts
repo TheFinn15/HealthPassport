@@ -20,14 +20,14 @@ export class JWTConfigure {
             result = {
               type: "success",
               tokenVerified: true,
-              role: tokenData.role,
+              role: tokenData.data.role,
               decoded: jwt.decode(token)
             };
           }else if (nowDate < tokenData.exp) {
             result = {
               type: "success",
               tokenVerified: true,
-              role: tokenData.role,
+              role: tokenData.data.role,
               decoded: jwt.decode(token)
             };
           } else {

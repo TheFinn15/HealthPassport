@@ -22,7 +22,7 @@ class JWTConfigure {
                         result = {
                             type: "success",
                             tokenVerified: true,
-                            role: tokenData.role,
+                            role: tokenData.data.role,
                             decoded: jsonwebtoken_1.default.decode(token)
                         };
                     }
@@ -30,7 +30,7 @@ class JWTConfigure {
                         result = {
                             type: "success",
                             tokenVerified: true,
-                            role: tokenData.role,
+                            role: tokenData.data.role,
                             decoded: jsonwebtoken_1.default.decode(token)
                         };
                     }

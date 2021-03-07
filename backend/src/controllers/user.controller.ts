@@ -21,7 +21,17 @@ export class UserController {
       return res.status(401).send("401 Unauthorized");
 
     await this.clientDB.user.findMany({
-      where: {auths: {some: {token: token}}}, include: {auths: true, services: true}
+      where: {auths: {some: {token: token}}},
+      select: {
+        id: true,
+        fullName: true,
+        login: true,
+        email: true,
+        phone: true,
+        auths: true,
+        services: true,
+        capabilities: true
+      }
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
@@ -37,11 +47,21 @@ export class UserController {
       const token = req.headers.authorization?.split(" ")[1];
       const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
 
-      if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+      if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
         return res.status(401).send("401 Unauthorized");
 
+      // include: {services: true, auths: true},
       await this.clientDB.user.findMany({
-        include: {services: true, auths: true}
+        select: {
+          id: true,
+          fullName: true,
+          login: true,
+          email: true,
+          phone: true,
+          auths: true,
+          services: true,
+          capabilities: true
+        }
       }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -52,23 +72,6 @@ export class UserController {
     } catch (e) {
       return res.status(400).json({
         msg: "Error processing request ! ERROR: " + e
-      });
-    }
-  }
-
-  @Get("valid-auth")
-  private async validAuth(req: Request, res: Response) {
-    try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified)
-        return res.status(401).send("401 Unauthorized");
-
-      return res.status(200).json(verifyToken);
-    } catch (e) {
-      return res.status(400).json({
-        msg: "Error verify auth | " + e
       });
     }
   }
@@ -84,7 +87,16 @@ export class UserController {
 
       const id = parseInt(req.params.id);
       await this.clientDB.user.findMany({
-        where: {id: id}, include: {services: true}
+        where: {id: id},
+        select: {
+          id: true,
+          fullName: true,
+          login: true,
+          email: true,
+          phone: true,
+          services: true,
+          capabilities: true
+        }
       }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -230,7 +242,8 @@ export class UserController {
     try {
       const token = req.headers.authorization?.split(" ")[1];
       const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-      if (!verifyToken.tokenVerified)
+
+      if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);
@@ -343,32 +356,6 @@ export class UserController {
     }
   }
 
-  @Put("update-ip")
-  private async editTokenIp(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified)
-      return res.status(401).send("401 Unauthorized");
-
-    const {ip} = req.body;
-    const curToken = await this.clientDB.token.findMany({
-      where: {token: token}
-    });
-    await this.clientDB.token.update({
-      where: {id: curToken[0].id},
-      data: {
-        ip: ip
-      }
-    }).then(resp => {
-      return res.send(200).json(resp);
-    }).catch(e => {
-      return res.send(400).json({
-        msg: "Error edit token | " + e
-      });
-    });
-  }
-
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
     const token = req.headers.authorization?.split(" ")[1];
@@ -402,7 +389,8 @@ export class UserController {
     try {
       const token = req.headers.authorization?.split(" ")[1];
       const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-      if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+
+      if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);

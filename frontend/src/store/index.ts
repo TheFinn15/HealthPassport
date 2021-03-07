@@ -14,7 +14,7 @@ export default new Vuex.Store({
     async updateTokenIp({state}) {
       await axios({
         method: "PUT",
-        url: "http://" + process.env.VUE_APP_SERVER + "/api/update-ip",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/token",
         data: state.userInfo,
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
@@ -63,15 +63,6 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    async validateToken() {
-      return await axios({
-        method: "GET",
-        url: "http://" + process.env.VUE_APP_SERVER + "/api/valid-auth",
-        headers: {
-          Authorization: "Bearer " + localStorage['uid']
-        }
-      }).then(resp => resp.data);
-    },
     async getCurUser() {
       return await axios({
         method: "GET",

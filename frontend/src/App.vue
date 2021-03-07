@@ -4,6 +4,7 @@
       app
       color="#FFA726"
       dark
+      style="justify-content: center; display: flex"
     >
       <v-toolbar-title>
         <v-icon>
@@ -54,11 +55,11 @@ export default Vue.extend({
   async updated() {
     if (localStorage["uid"] !== undefined) {
       const ip = await axios.get("https://api.ipify.org?format=json");
-      const user = (await this.$store.getters.getCurUser)[0];
+      const user = (await this.$store.getters.getCurUser)[0].auths.filter(i => i.token === localStorage["uid"])[0];
       this.$store.state.userInfo = ip.data["ip"];
 
-      if (user.ip !== ip) {
-        this.$store.state.userInfo = {ip: ip};
+      if (user.ip !== ip.data["ip"]) {
+        this.$store.state.userInfo = {ip: ip.data["ip"]};
         await this.$store.dispatch("updateTokenIp");
       }
     }

@@ -47,7 +47,7 @@ model Token {
 model User {
   id           Int                @id @default(autoincrement())
   login        String             @unique
-  pwd          String?            @ignore
+  pwd          String?
   fullName     String?
   email        String?
   phone        String?
