@@ -90,7 +90,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TokenController.prototype, "getTokens", null);
 __decorate([
-    core_1.Get(":id"),
+    core_1.Get("token/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

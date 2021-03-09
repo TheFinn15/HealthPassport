@@ -11,7 +11,9 @@ export class CapabilityController {
 
   @Get("caps")
   private async getCaps(req: Request, res: Response) {
-    await this.clientDB.userCapability.findMany()
+    await this.clientDB.userCapability.findMany({
+      include: {user: true}
+    })
       .then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -21,12 +23,12 @@ export class CapabilityController {
       });
   }
 
-  @Get(":id")
+  @Get("cap/:id")
   private async getCapById(req: Request, res: Response) {
     const {id} = req.params;
 
     await this.clientDB.userCapability.findUnique({
-      where: {id: parseInt(id)}
+      where: {id: parseInt(id)}, include: {user: true}
     }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -38,17 +40,12 @@ export class CapabilityController {
 
   @Post("caps")
   private async createCapability(req: Request, res: Response) {
-    const {name, info, ill} = req.body;
+    const {name, info} = req.body;
 
     await this.clientDB.userCapability.create({
       data: {
         name: name,
-        info: info,
-        ill: {
-          connect: {
-            id: ill
-          }
-        }
+        info: info
       }
     }).then(resp => {
       return res.status(200).json(resp);
@@ -59,10 +56,10 @@ export class CapabilityController {
     });
   }
 
-  @Put(":id")
+  @Put("cap/:id")
   private async editCapById(req: Request, res: Response) {
     const {id} = req.params;
-    const {name, info, ill, user} = req.body;
+    const {name, info, user} = req.body;
 
     if (name !== undefined)
       await this.clientDB.userCapability.update({
@@ -86,35 +83,31 @@ export class CapabilityController {
           msg: "Error edit field info | " + e
         });
       });
-    if (ill !== undefined)
-      await this.clientDB.userCapability.update({
-        where: {id: parseInt(id)},
-        data: {
-          ill: {
-            connect: {
-              id: ill
-            }
-          }
-        }
-      }).catch(e => {
-        return res.status(400).json({
-          msg: "Error edit field name | " + e
-        });
-      });
     if (user !== undefined)
       await this.clientDB.userCapability.update({
         where: {id: parseInt(id)},
         data: {
-          User: user
+         user: user
         }
       }).catch(e => {
         return res.status(400).json({
           msg: "Error edit field user | " + e
         });
       });
+    // if (result !== undefined)
+    //   await this.clientDB.userCapability.update({
+    //     where: {id: parseInt(id)},
+    //     data: {
+    //       resultSurveyId: result
+    //     }
+    //   }).catch(e => {
+    //     return res.status(400).json({
+    //       msg: "Error edit field user | " + e
+    //     });
+    //   });
 
     await this.clientDB.userCapability.findUnique({
-      where: {id: parseInt(id)}, include: {ill: true, User: true}
+      where: {id: parseInt(id)}, include: {user: true}
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
@@ -124,7 +117,7 @@ export class CapabilityController {
     });
   }
 
-  @Delete(":id")
+  @Delete("cap/:id")
   private async delCapById(req: Request, res: Response) {
     const {id} = req.params;
 

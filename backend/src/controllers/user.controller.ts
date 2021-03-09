@@ -4,23 +4,74 @@ import {PrismaClient} from "@prisma/client";
 import argon2 from "argon2";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
 import geo_from_ip from "geoip-lite";
+import {JWTResult} from "../types/jwt.type";
 
 
 @Controller("api")
 export class UserController {
+  // TODO: Обновить класс JWT до обычного использования метода валидация,
+  //  в метод проходит токен, клиент и название метода класса
+
+  // Система получает рекомендации,
+  // которые включают в себя нужные доп. обследования и вакцинации от болезни,
+  // которая была найдена во время обследования.
+  // Также с этим всем у юзера отобразиться уведомление об результате иследования и
+  // рекомендации к лечению, если требуется
 
   clientDB: PrismaClient = new PrismaClient();
   jwtConfigure: JWTConfigure = new JWTConfigure();
 
-  @Get("user")
-  private async getCurrentUser(req: Request, res: Response) {
+  @Get("recommend")
+  private async recommendToUser(req: Request, res: Response) {
     const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+    const verifyToken = await this.jwtConfigure.validateToken(token, this.clientDB);
 
     if (!verifyToken.tokenVerified)
       return res.status(401).send("401 Unauthorized");
 
-    await this.clientDB.user.findMany({
+
+    try {
+      const userResults = (await this.clientDB.resultSurvey.findMany({
+        where: {user: {some: {login: verifyToken.decoded.data.login}}}, include: {survey: true}
+      }))
+      const surveys = (await this.clientDB.supplierServices.findMany()).filter(i => {
+        userResults.filter(i1 => {
+          const regex = new RegExp(i1.survey[0].name, 'i');
+          if (i.type === "TYPE_SURVEY" && regex.test(i.name)) {
+            return i;
+          }
+        });
+      });
+      const vaccines = (await this.clientDB.supplierServices.findMany()).filter(i => {
+        userResults.filter(i1 => {
+          const regex = new RegExp(i1.survey[0].name, 'i');
+          if (i.type === "TYPE_VACCINE" && regex.test(i.name)) {
+            return i;
+          }
+        });
+      });
+
+      return res.status(200).json({
+        user: await this.clientDB.user.findUnique({where: {login: verifyToken.decoded.data.login}}),
+        surveys: surveys,
+        vaccines: vaccines
+      });
+    } catch (e) {
+      return res.status(400).json({
+        msg: "Error getting recommend | " + e
+      });
+    }
+  }
+
+  @Get("user")
+  private async getCurrentUser(req: Request, res: Response) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
+
+    if (!verifyToken.tokenVerified)
+      return res.status(401).send("401 Unauthorized");
+
+    const sd = await this.clientDB.user.findMany({
       where: {auths: {some: {token: token}}},
       select: {
         id: true,
@@ -30,7 +81,7 @@ export class UserController {
         phone: true,
         auths: true,
         services: true,
-        capabilities: true
+        caps: true
       }
     }).then(resp => {
       return res.status(200).json(resp);
@@ -38,16 +89,16 @@ export class UserController {
       return res.status(400).json({
         msg: "Error getting current user | " + e
       });
-    })
+    });
   }
 
   @Get("users")
   private async getAll(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
-      if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
         return res.status(401).send("401 Unauthorized");
 
       // include: {services: true, auths: true},
@@ -60,7 +111,7 @@ export class UserController {
           phone: true,
           auths: true,
           services: true,
-          capabilities: true
+          caps: true
         }
       }).then(resp => {
         return res.status(200).json(resp);
@@ -80,9 +131,9 @@ export class UserController {
   private async getById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
-      if (!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN")
+      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);
@@ -95,7 +146,7 @@ export class UserController {
           email: true,
           phone: true,
           services: true,
-          capabilities: true
+          caps: true
         }
       }).then(resp => {
         return res.status(200).json(resp);
@@ -211,7 +262,7 @@ export class UserController {
   private async logout(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
       if (!verifyToken.tokenVerified)
         return res.status(401).send("401 Unauthorized");
 
@@ -237,11 +288,11 @@ export class UserController {
     }
   }
 
-  @Put("users/:id")
+  @Put("user/:id")
   private async editUserById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
@@ -359,7 +410,7 @@ export class UserController {
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
     const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
     if (!verifyToken.tokenVerified)
       return res.status(401).send("401 Unauthorized");
@@ -384,13 +435,13 @@ export class UserController {
     });
   }
 
-  @Delete("users/:id")
+  @Delete("user/:id")
   private async deleteUserById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
-      if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);

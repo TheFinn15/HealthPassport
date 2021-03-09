@@ -1,9 +1,11 @@
 import jwt from "jsonwebtoken";
 import {PrismaClient} from "@prisma/client";
+import {JWTResult} from "../types/jwt.type";
+
 
 export class JWTConfigure {
 
-  async validateUserToken(token: string, client: PrismaClient) {
+  async validateToken(token: string, client: PrismaClient) : Promise<JWTResult> {
     try {
       let result: any = {};
       const tokens = await client.token.findMany({
@@ -11,31 +13,15 @@ export class JWTConfigure {
       });
       if (tokens.length > 0) {
         const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
-        const nowDate = Math.round((new Date()).getTime() / 1000);
 
         await client.user.findUnique({
           where: {login: tokenData['data'].login}
         }).then(() => {
-          if (tokenData.exp === undefined) {
-            result = {
-              type: "success",
-              tokenVerified: true,
-              role: tokenData.data.role,
-              decoded: jwt.decode(token)
-            };
-          }else if (nowDate < tokenData.exp) {
-            result = {
-              type: "success",
-              tokenVerified: true,
-              role: tokenData.data.role,
-              decoded: jwt.decode(token)
-            };
-          } else {
-            result = {
-              type: "error",
-              tokenVerified: false,
-              msg: "Token is expired !"
-            };
+          result = {
+            type: "success",
+            tokenVerified: true,
+            role: tokenData.data.role,
+            decoded: jwt.decode(token)
           }
         }).catch(() => {
           result = {

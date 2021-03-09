@@ -15,7 +15,7 @@ export class PartnerController {
   private async getAll(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
@@ -40,7 +40,7 @@ export class PartnerController {
   private async getPartnerById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
@@ -66,7 +66,7 @@ export class PartnerController {
   private async createPartner(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
@@ -97,7 +97,7 @@ export class PartnerController {
   private async editPartnerById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");
@@ -174,7 +174,7 @@ export class PartnerController {
   private async delete(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
         return res.status(401).send("401 Unauthorized");

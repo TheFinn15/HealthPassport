@@ -14,33 +14,15 @@ class JWTConfigure {
             });
             if (tokens.length > 0) {
                 const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-                const nowDate = Math.round((new Date()).getTime() / 1000);
                 await client.user.findUnique({
                     where: { login: tokenData['data'].login }
                 }).then(() => {
-                    if (tokenData.exp === undefined) {
-                        result = {
-                            type: "success",
-                            tokenVerified: true,
-                            role: tokenData.data.role,
-                            decoded: jsonwebtoken_1.default.decode(token)
-                        };
-                    }
-                    else if (nowDate < tokenData.exp) {
-                        result = {
-                            type: "success",
-                            tokenVerified: true,
-                            role: tokenData.data.role,
-                            decoded: jsonwebtoken_1.default.decode(token)
-                        };
-                    }
-                    else {
-                        result = {
-                            type: "error",
-                            tokenVerified: false,
-                            msg: "Token is expired !"
-                        };
-                    }
+                    result = {
+                        type: "success",
+                        tokenVerified: true,
+                        role: tokenData.data.role,
+                        decoded: jsonwebtoken_1.default.decode(token)
+                    };
                 }).catch(() => {
                     result = {
                         type: "error",

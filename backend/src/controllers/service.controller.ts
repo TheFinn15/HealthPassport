@@ -13,7 +13,7 @@ export class ServiceController {
   private async getAllService(req: Request, res: Response) {
     try {
       let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
         return res.status(401).send("401 Unauthorized");
@@ -37,7 +37,7 @@ export class ServiceController {
   private async getServiceById(req: Request, res: Response) {
     try {
       let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
         return res.status(401).send("401 Unauthorized");
@@ -63,17 +63,16 @@ export class ServiceController {
   private async createService(req: Request, res: Response) {
     try {
       let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
         return res.status(401).send("401 Unauthorized");
 
-      const {name, type, about, info, partner} = req.body;
+      const {name, type, info, partner} = req.body;
       await this.clientDB.supplierServices.create({
         data: {
           name: name,
           type: type,
-          about: about,
           info: info,
           partnerId: partner
         }
@@ -95,12 +94,12 @@ export class ServiceController {
   private async editServiceById(req: Request, res: Response) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
         return res.status(401).send("401 Unauthorized");
 
-      const {name, type, about, info, partner} = req.body;
+      const {name, type, result, info, partner} = req.body;
       const {id} = req.params;
 
       if (name !== undefined) {
@@ -127,15 +126,19 @@ export class ServiceController {
           })
         });
       }
-      if (about !== undefined) {
+      if (result !== undefined) {
         await this.clientDB.supplierServices.update({
           where: {id: parseInt(id)},
           data: {
-            about: about
+            resultsSurvey: {
+              connect: {
+                id: result
+              }
+            }
           }
         }).catch(e => {
           return res.status(400).json({
-            msg: "Error editing %about% field by id " + id + " | ERROR: " + e
+            msg: "Error editing %result% field by id " + id + " | ERROR: " + e
           })
         });
       }
@@ -184,7 +187,7 @@ export class ServiceController {
   private async deleteServiceById(req: Request, res: Response) {
     try {
       let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
 
       if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
         return res.status(401).send("401 Unauthorized");

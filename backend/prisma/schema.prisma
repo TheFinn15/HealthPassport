@@ -23,6 +23,7 @@ enum Devices {
 }
 
 enum TypeServices {
+  EMPTY
   TYPE_SURVEY
   TYPE_VACCINE
   TYPE_ILL
@@ -39,38 +40,44 @@ model Token {
 }
 
 model User {
-  id           Int                @id @default(autoincrement())
-  login        String             @unique
-  pwd          String?
-  fullName     String?
-  email        String?
-  phone        String?
-  capabilities UserCapability[]
-  role         Role               @default(ROLE_USER)
-  auths        Token[]
-  services     SupplierServices[]
+  id                 Int              @id @default(autoincrement())
+  login              String           @unique
+  pwd                String?
+  fullName           String?
+  email              String?
+  phone              String?
+  caps               UserCapability[]
+  role               Role             @default(ROLE_USER)
+  auths              Token[]
+  services           SupplierServices[]
+  resultsSurvey      ResultSurvey[]
 }
 
 model UserCapability {
-  id                 Int              @id @default(autoincrement())
-  name               String
-  info               String
-  ill                SupplierServices @relation(fields: [supplierServicesId], references: [id])
-  supplierServicesId Int
-  User               User[]
+  id   Int    @id @default(autoincrement())
+  name String
+  info String
+  user User[]
+}
+
+model ResultSurvey {
+  id          Int                @id @default(autoincrement())
+  user        User[]
+  survey      SupplierServices[]
+  info        String
+  passingTime DateTime           @default(now())
+  readyTime   DateTime?
 }
 
 model SupplierServices {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  type           TypeServices     @default(TYPE_SURVEY)
-  passingTime    DateTime         @default(now())
-  about          String?
-  info           String?
-  users          User[]
-  partner        Partner?         @relation(fields: [partnerId], references: [id])
-  partnerId      Int?
-  UserCapability UserCapability[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  type          TypeServices   @default(TYPE_SURVEY)
+  resultsSurvey ResultSurvey[]
+  info          String?
+  partner       Partner?       @relation(fields: [partnerId], references: [id])
+  partnerId     Int?
+  User          User[]
 }
 
 model Partner {

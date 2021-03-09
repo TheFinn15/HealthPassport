@@ -23,6 +23,26 @@ let UserController = class UserController {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
+    async recommendToUser(req, res) {
+        var _a;
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        if (!verifyToken.tokenVerified)
+            return res.status(401).send("401 Unauthorized");
+        const curUser = await this.clientDB.user.findUnique({
+            where: {
+                login: verifyToken.decoded.login
+            },
+            include: {
+                caps: {}
+            }
+        }).then()
+            .catch(e => {
+            return res.status(400).json({
+                msg: "Error getting recommend " + e
+            });
+        });
+    }
     async getCurrentUser(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
@@ -39,7 +59,7 @@ let UserController = class UserController {
                 phone: true,
                 auths: true,
                 services: true,
-                capabilities: true
+                caps: true
             }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -54,7 +74,8 @@ let UserController = class UserController {
         try {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
             const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-            if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+            console.log('user', verifyToken);
+            if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
                 return res.status(401).send("401 Unauthorized");
             // include: {services: true, auths: true},
             await this.clientDB.user.findMany({
@@ -66,7 +87,7 @@ let UserController = class UserController {
                     phone: true,
                     auths: true,
                     services: true,
-                    capabilities: true
+                    caps: true
                 }
             }).then(resp => {
                 return res.status(200).json(resp);
@@ -79,21 +100,6 @@ let UserController = class UserController {
         catch (e) {
             return res.status(400).json({
                 msg: "Error processing request ! ERROR: " + e
-            });
-        }
-    }
-    async validAuth(req, res) {
-        var _a;
-        try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-            if (!verifyToken.tokenVerified)
-                return res.status(401).send("401 Unauthorized");
-            return res.status(200).json(verifyToken);
-        }
-        catch (e) {
-            return res.status(400).json({
-                msg: "Error verify auth | " + e
             });
         }
     }
@@ -114,7 +120,7 @@ let UserController = class UserController {
                     email: true,
                     phone: true,
                     services: true,
-                    capabilities: true
+                    caps: true
                 }
             }).then(resp => {
                 return res.status(200).json(resp);
@@ -363,6 +369,27 @@ let UserController = class UserController {
             });
         }
     }
+    async testEdit(req, res) {
+        const id = parseInt(req.params.id);
+        const { login, pwd, fullName, email, phone, services } = req.body;
+        await this.clientDB.user.update({
+            where: { id: id },
+            data: {
+                login: login,
+                pwd: await argon2_1.default.hash(pwd),
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                services: services
+            }
+        }).then(resp => {
+            return res.status(200).json(resp);
+        }).catch(e => {
+            return res.status(400).json({
+                msg: "Error edit user by id " + id + " | " + e
+            });
+        });
+    }
     async editCurrentUser(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
@@ -413,6 +440,12 @@ let UserController = class UserController {
     }
 };
 __decorate([
+    core_1.Get("recommend"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "recommendToUser", null);
+__decorate([
     core_1.Get("user"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
@@ -424,12 +457,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getAll", null);
-__decorate([
-    core_1.Get("valid-auth"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "validAuth", null);
 __decorate([
     core_1.Get("users/:id"),
     __metadata("design:type", Function),
@@ -459,7 +486,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "editUserById", null);
+], UserController.prototype, "testEdit", null);
 __decorate([
     core_1.Put("user"),
     __metadata("design:type", Function),
