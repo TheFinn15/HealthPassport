@@ -3,6 +3,8 @@ import {PrismaClient} from "@prisma/client";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
 import {Request, Response} from "express";
 import geo_from_ip from "geoip-lite";
+import {Role} from "../types/role.type";
+import jwt from "jsonwebtoken";
 
 
 @Controller("api")
@@ -13,10 +15,7 @@ export class TokenController {
 
   @Get("tokens")
   private async getTokens(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
       return res.status(401).send("401 Unauthorized");
 
     await this.clientDB.token.findMany({
@@ -32,10 +31,7 @@ export class TokenController {
 
   @Get("token/:id")
   private async getTokenById(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
       return res.status(401).send("401 Unauthorized");
 
     const {id} = req.params;
@@ -53,13 +49,11 @@ export class TokenController {
 
   @Put("token")
   private async editTokenById(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified)
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
       return res.status(401).send("401 Unauthorized");
 
     const {ip} = req.body;
+    const token = req.headers.authorization.split(" ")[1];
 
     const geoInfo = geo_from_ip.lookup(ip);
     let location = `${geoInfo.country}, ${geoInfo.city}`;

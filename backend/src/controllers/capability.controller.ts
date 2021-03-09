@@ -1,7 +1,8 @@
 import {PrismaClient} from "@prisma/client";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
-import {Controller, Get, Post, Put, Delete} from "@overnightjs/core";
+import {Controller, Delete, Get, Post, Put} from "@overnightjs/core";
 import {Request, Response} from "express";
+import {Role} from "../types/role.type";
 
 @Controller("api")
 export class CapabilityController {
@@ -11,6 +12,9 @@ export class CapabilityController {
 
   @Get("caps")
   private async getCaps(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     await this.clientDB.userCapability.findMany({
       include: {user: true}
     })
@@ -25,6 +29,9 @@ export class CapabilityController {
 
   @Get("cap/:id")
   private async getCapById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
 
     await this.clientDB.userCapability.findUnique({
@@ -40,6 +47,9 @@ export class CapabilityController {
 
   @Post("caps")
   private async createCapability(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {name, info} = req.body;
 
     await this.clientDB.userCapability.create({
@@ -58,6 +68,9 @@ export class CapabilityController {
 
   @Put("cap/:id")
   private async editCapById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
     const {name, info, user} = req.body;
 
@@ -119,6 +132,9 @@ export class CapabilityController {
 
   @Delete("cap/:id")
   private async delCapById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
 
     await this.clientDB.userCapability.delete({

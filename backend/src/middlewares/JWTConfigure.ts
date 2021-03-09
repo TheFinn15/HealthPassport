@@ -1,50 +1,39 @@
 import jwt from "jsonwebtoken";
 import {PrismaClient} from "@prisma/client";
-import {JWTResult} from "../types/jwt.type";
+import {Request} from "express";
+import {Role} from "../types/role.type";
 
 
 export class JWTConfigure {
 
-  async validateToken(token: string, client: PrismaClient) : Promise<JWTResult> {
+  async validateToken(req: Request, client: PrismaClient, roles: Role[] = [Role.ROLE_USER]) : Promise<boolean> {
     try {
-      let result: any = {};
-      const tokens = await client.token.findMany({
-        where: {token: token}
-      });
-      if (tokens.length > 0) {
-        const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
-
-        await client.user.findUnique({
-          where: {login: tokenData['data'].login}
-        }).then(() => {
-          result = {
-            type: "success",
-            tokenVerified: true,
-            role: tokenData.data.role,
-            decoded: jwt.decode(token)
+      const token = req.headers.authorization?.split(" ")[1];
+      const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
+      const [role1, role2] = roles;
+      const tokenExists = await client.token.findMany({
+        where: {
+          token: token,
+          users: {
+            some: {
+              login: tokenData["data"].login,
+              role: (Role[role1] || Role[role2]) as any
+            }
           }
-        }).catch(() => {
-          result = {
-            type: "error",
-            tokenVerified: false,
-            msg: "User not exists!"
-          };
-        });
+        },
+        include: {users: true}
+      });
+      if (tokenExists.length > 0) {
+        console.info("VERIFY TOKEN: TOKEN INFO \n", tokenData)
 
-        return result;
+        return true;
       } else {
-        return {
-          type: "error",
-          tokenVerified: false,
-          msg: "Token is not exists!"
-        }
+        console.error("VERIFY TOKEN: Token or User is not exists!");
+        return false;
       }
     } catch (e) {
-      return {
-        type: "error",
-        tokenVerified: false,
-        msg: "Invalid signature or token is expired!"
-      };
+      console.error("VERIFY TOKEN: Invalid signature or token is expired!");
+      return false;
     }
   }
 

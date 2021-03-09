@@ -4,7 +4,8 @@ import {PrismaClient} from "@prisma/client";
 import argon2 from "argon2";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
 import geo_from_ip from "geoip-lite";
-import {JWTResult} from "../types/jwt.type";
+import {Role} from "../types/role.type";
+import jwt from "jsonwebtoken";
 
 
 @Controller("api")
@@ -23,16 +24,12 @@ export class UserController {
 
   @Get("recommend")
   private async recommendToUser(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified)
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
       return res.status(401).send("401 Unauthorized");
-
 
     try {
       const userResults = (await this.clientDB.resultSurvey.findMany({
-        where: {user: {some: {login: verifyToken.decoded.data.login}}}, include: {survey: true}
+        where: {user: {some: {login: ""}}}, include: {survey: true}
       }))
       const surveys = (await this.clientDB.supplierServices.findMany()).filter(i => {
         userResults.filter(i1 => {
@@ -52,7 +49,7 @@ export class UserController {
       });
 
       return res.status(200).json({
-        user: await this.clientDB.user.findUnique({where: {login: verifyToken.decoded.data.login}}),
+        user: await this.clientDB.user.findUnique({where: {login: ""}}),
         surveys: surveys,
         vaccines: vaccines
       });
@@ -65,11 +62,10 @@ export class UserController {
 
   @Get("user")
   private async getCurrentUser(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified)
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
       return res.status(401).send("401 Unauthorized");
+
+    const token = req.headers.authorization.split(" ")[1];
 
     const sd = await this.clientDB.user.findMany({
       where: {auths: {some: {token: token}}},
@@ -95,10 +91,7 @@ export class UserController {
   @Get("users")
   private async getAll(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
         return res.status(401).send("401 Unauthorized");
 
       // include: {services: true, auths: true},
@@ -130,10 +123,7 @@ export class UserController {
   @Get("users/:id")
   private async getById(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);
@@ -204,7 +194,6 @@ export class UserController {
         await this.clientDB.token.findUnique({
           where: {ip}
         }).then(token => {
-          console.log(token);
           return res.status(200).json({
             user: user, token: token.token
           })
@@ -261,14 +250,10 @@ export class UserController {
   @Post("logout")
   private async logout(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-      if (!verifyToken.tokenVerified)
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
         return res.status(401).send("401 Unauthorized");
 
       const {ip} = req.body;
-      // const token = req.headers.authorization.split(" ")[1];
-      // const {data: {id, login}} = this.jwtConfigure.decodeToken(token) as {data: any};
 
       await this.clientDB.token.delete({
         where: {ip: ip}
@@ -291,10 +276,7 @@ export class UserController {
   @Put("user/:id")
   private async editUserById(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);
@@ -379,7 +361,7 @@ export class UserController {
             data: {
               services: {
                 connect: {
-                  name: name
+
                 }
               }
             }
@@ -409,16 +391,15 @@ export class UserController {
 
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
-    const token = req.headers.authorization?.split(" ")[1];
-    const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-    if (!verifyToken.tokenVerified)
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
       return res.status(401).send("401 Unauthorized");
+
+    const nativeLogin: any = jwt.decode(req.headers.authorization.split(" ")[1]);
 
     const {login, pwd, fullName, email, phone} = req.body;
 
     await this.clientDB.user.update({
-      where: {login: verifyToken.decoded.data.login},
+      where: {login: nativeLogin["data"].login},
       data: {
         login: login,
         pwd: await argon2.hash(pwd),
@@ -438,10 +419,7 @@ export class UserController {
   @Delete("user/:id")
   private async deleteUserById(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);

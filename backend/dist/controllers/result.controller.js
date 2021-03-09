@@ -51,11 +51,7 @@ let ResultController = class ResultController {
                         login: user
                     }
                 },
-                survey: {
-                    connect: {
-                        name: survey
-                    }
-                },
+                survey: {},
                 info: info
             }
         }).then(resp => {
@@ -69,6 +65,77 @@ let ResultController = class ResultController {
     async editResultById(req, res) {
         const { id } = req.params;
         const { user, survey, info, readyTime } = req.body;
+        if (user !== undefined)
+            await this.clientDB.resultSurvey.update({
+                where: { id: parseInt(id) },
+                data: {
+                    user: {
+                        connect: {
+                            login: user
+                        }
+                    }
+                }
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error edit result field %user% by id " + id + " | " + e
+                });
+            });
+        if (survey !== undefined)
+            await this.clientDB.resultSurvey.update({
+                where: { id: parseInt(id) },
+                data: {
+                    survey: {
+                        connect: {}
+                    }
+                }
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error edit result field %survey% by id " + id + " | " + e
+                });
+            });
+        if (readyTime !== undefined)
+            await this.clientDB.resultSurvey.update({
+                where: { id: parseInt(id) },
+                data: {
+                    readyTime: readyTime
+                }
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error edit result field %readyTime% by id " + id + " | " + e
+                });
+            });
+        if (info !== undefined)
+            await this.clientDB.resultSurvey.update({
+                where: { id: parseInt(id) },
+                data: {
+                    info: info
+                }
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: "Error edit result field %info% by id " + id + " | " + e
+                });
+            });
+        await this.clientDB.resultSurvey.findUnique({
+            where: { id: parseInt(id) }
+        }).then(resp => {
+            return res.status(200).json(resp);
+        }).catch(e => {
+            return res.status(400).json({
+                msg: "Error getting edited user " + id + " | " + e
+            });
+        });
+    }
+    async deleteResultById(req, res) {
+        const { id } = req.params;
+        await this.clientDB.resultSurvey.delete({
+            where: { id: parseInt(id) }
+        }).then(() => {
+            return res.status(200).json(`Result ${id} deleted`);
+        }).catch(e => {
+            return res.status(400).json({
+                msg: `Error delete result ${id} | ${e}`
+            });
+        });
     }
 };
 __decorate([
@@ -95,6 +162,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ResultController.prototype, "editResultById", null);
+__decorate([
+    core_1.Delete("result/:id"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ResultController.prototype, "deleteResultById", null);
 ResultController = __decorate([
     core_1.Controller("api")
 ], ResultController);

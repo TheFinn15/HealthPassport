@@ -5,47 +5,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JWTConfigure = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const role_type_1 = require("../types/role.type");
 class JWTConfigure {
-    async validateUserToken(token, client) {
+    async validateToken(req, client, role = role_type_1.Role.ROLE_USER) {
+        var _a;
         try {
-            let result = {};
-            const tokens = await client.token.findMany({
-                where: { token: token }
+            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+            const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+            const tokenExists = await client.token.findMany({
+                where: { token: token, users: { some: { login: tokenData["data"].login, role: role_type_1.Role[role] } } },
+                include: { users: true }
             });
-            if (tokens.length > 0) {
-                const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-                await client.user.findUnique({
-                    where: { login: tokenData['data'].login }
-                }).then(() => {
-                    result = {
-                        type: "success",
-                        tokenVerified: true,
-                        role: tokenData.data.role,
-                        decoded: jsonwebtoken_1.default.decode(token)
-                    };
-                }).catch(() => {
-                    result = {
-                        type: "error",
-                        tokenVerified: false,
-                        msg: "User not exists!"
-                    };
-                });
-                return result;
+            // const curUser = tokenExists[0].users[0];
+            console.dir(tokenExists[0]);
+            // if (tokenExists.length > 0 && (curUser.role === Role[role] && curUser.login === tokenData["data"].login)) {
+            if (tokenExists.length > 0) {
+                console.info("VERIFY TOKEN: TOKEN INFO", tokenData);
+                return true;
             }
             else {
-                return {
-                    type: "error",
-                    tokenVerified: false,
-                    msg: "Token is not exists!"
-                };
+                console.error("VERIFY TOKEN: Token or User is not exists!");
+                return false;
             }
         }
         catch (e) {
-            return {
-                type: "error",
-                tokenVerified: false,
-                msg: "Invalid signature or token is expired!"
-            };
+            console.error("VERIFY TOKEN: Invalid signature or token is expired!");
+            return false;
         }
     }
     generateJWT(user, isRemember) {

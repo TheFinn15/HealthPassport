@@ -25,7 +25,7 @@ let TokenController = class TokenController {
     async getTokens(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
         if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
             return res.status(401).send("401 Unauthorized");
         await this.clientDB.token.findMany({
@@ -41,8 +41,8 @@ let TokenController = class TokenController {
     async getTokenById(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
-        if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
+        if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
             return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.token.findUnique({
@@ -58,7 +58,7 @@ let TokenController = class TokenController {
     async editTokenById(req, res) {
         var _a;
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
         if (!verifyToken.tokenVerified)
             return res.status(401).send("401 Unauthorized");
         const { ip } = req.body;

@@ -22,7 +22,7 @@ let ServiceController = class ServiceController {
         var _a;
         try {
             let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
                 return res.status(401).send("401 Unauthorized");
             await this.clientDB.supplierServices.findMany({
@@ -45,7 +45,7 @@ let ServiceController = class ServiceController {
         var _a;
         try {
             let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
                 return res.status(401).send("401 Unauthorized");
             const { id } = req.params;
@@ -69,7 +69,7 @@ let ServiceController = class ServiceController {
         var _a;
         try {
             let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
                 return res.status(401).send("401 Unauthorized");
             const { name, type, info, partner } = req.body;
@@ -98,7 +98,7 @@ let ServiceController = class ServiceController {
         var _a;
         try {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
                 return res.status(401).send("401 Unauthorized");
             const { name, type, result, info, partner } = req.body;
@@ -187,7 +187,7 @@ let ServiceController = class ServiceController {
         var _a;
         try {
             let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateUserToken(token, this.clientDB);
+            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
             if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
                 return res.status(401).send("401 Unauthorized");
             const { id } = req.params;

@@ -1,7 +1,8 @@
 import {PrismaClient} from "@prisma/client";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
-import {Controller, Get, Post, Put, Delete} from "@overnightjs/core";
+import {Controller, Delete, Get, Post, Put} from "@overnightjs/core";
 import {Request, Response} from "express";
+import {Role} from "../types/role.type";
 
 @Controller("api/service")
 export class ServiceController {
@@ -12,11 +13,9 @@ export class ServiceController {
   @Get()
   private async getAllService(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
         return res.status(401).send("401 Unauthorized");
+
       await this.clientDB.supplierServices.findMany({
         include: {partner: true}
       }).then(resp => {
@@ -36,10 +35,7 @@ export class ServiceController {
   @Get(":id")
   private async getServiceById(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_USER"))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
         return res.status(401).send("401 Unauthorized");
 
       const {id} = req.params;
@@ -62,10 +58,7 @@ export class ServiceController {
   @Post()
   private async createService(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
       const {name, type, info, partner} = req.body;
@@ -93,10 +86,7 @@ export class ServiceController {
   @Put(":id")
   private async editServiceById(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
       const {name, type, result, info, partner} = req.body;
@@ -186,10 +176,7 @@ export class ServiceController {
   @Delete(":id")
   private async deleteServiceById(req: Request, res: Response) {
     try {
-      let token = req.headers.authorization?.split(" ")[1];
-      const verifyToken: any = await this.jwtConfigure.validateToken(token, this.clientDB);
-
-      if (!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER"))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
       const {id} = req.params;

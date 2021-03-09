@@ -2,6 +2,7 @@ import {Controller, Get, Post, Put, Delete} from "@overnightjs/core";
 import {PrismaClient} from "@prisma/client";
 import {JWTConfigure} from "../middlewares/JWTConfigure";
 import {Request, Response} from "express";
+import {Role} from "../types/role.type";
 
 
 @Controller("api")
@@ -12,6 +13,9 @@ export class ResultController {
 
   @Get("results")
   private async getResults(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     await this.clientDB.resultSurvey.findMany({
       include: {user: true, survey: true}
     }).then(resp => {
@@ -25,6 +29,9 @@ export class ResultController {
 
   @Get("result/:id")
   private async getResultById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
 
     await this.clientDB.resultSurvey.findMany({
@@ -41,6 +48,9 @@ export class ResultController {
 
   @Post("result")
   private async createResult(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {user, survey, info} = req.body;
 
     await this.clientDB.resultSurvey.create({
@@ -51,9 +61,7 @@ export class ResultController {
           }
         },
         survey: {
-          connect: {
-            name: survey
-          }
+
         },
         info: info
       }
@@ -68,6 +76,9 @@ export class ResultController {
 
   @Put("result/:id")
   private async editResultById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
     const {user, survey, info, readyTime} = req.body;
 
@@ -92,7 +103,7 @@ export class ResultController {
         data: {
           survey: {
             connect: {
-              name: survey
+
             }
           }
         }
@@ -137,6 +148,9 @@ export class ResultController {
 
   @Delete("result/:id")
   private async deleteResultById(req: Request, res: Response) {
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
+      return res.status(401).send("401 Unauthorized");
+
     const {id} = req.params;
 
     await this.clientDB.resultSurvey.delete({
