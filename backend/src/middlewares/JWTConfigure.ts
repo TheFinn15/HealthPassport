@@ -11,28 +11,35 @@ export class JWTConfigure {
       const token = req.headers.authorization?.split(" ")[1];
       const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
       const [role1, role2] = roles;
+      console.log();
       const tokenExists = await client.token.findMany({
         where: {
           token: token,
           users: {
-            some: {
+            login: tokenData["data"].login,
+            role: Role[role1] as any
+          },
+          OR: {
+            token: token,
+            users: {
               login: tokenData["data"].login,
-              role: (Role[role1] || Role[role2]) as any
+              role: Role[role2] as any
             }
           }
         },
         include: {users: true}
       });
+      console.dir(tokenExists);
       if (tokenExists.length > 0) {
-        console.info("VERIFY TOKEN: TOKEN INFO \n", tokenData)
+        console.info("VERIFY TOKEN:", "VERIFIED \n TOKEN INFO: ", tokenData)
 
         return true;
       } else {
-        console.error("VERIFY TOKEN: Token or User is not exists!");
+        console.error("VERIFY TOKEN:", "Token or User is not exists!");
         return false;
       }
     } catch (e) {
-      console.error("VERIFY TOKEN: Invalid signature or token is expired!");
+      console.error("VERIFY TOKEN:", "Invalid signature or token is expired!");
       return false;
     }
   }

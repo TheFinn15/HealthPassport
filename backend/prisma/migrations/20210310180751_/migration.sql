@@ -1,14 +1,14 @@
 /*
   Warnings:
 
-  - You are about to drop the column `servicesId` on the `User` table. All the data in the column will be lost.
+  - You are about to drop the column `userId` on the `SupplierServices` table. All the data in the column will be lost.
 
 */
 -- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_servicesId_fkey";
+ALTER TABLE "SupplierServices" DROP CONSTRAINT "SupplierServices_userId_fkey";
 
 -- AlterTable
-ALTER TABLE "User" DROP COLUMN "servicesId";
+ALTER TABLE "SupplierServices" DROP COLUMN "userId";
 
 -- CreateTable
 CREATE TABLE "_SupplierServicesToUser" (

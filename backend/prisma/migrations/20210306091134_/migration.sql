@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "SupplierServices" ALTER COLUMN "passingTime" SET DEFAULT CURRENT_TIMESTAMP;

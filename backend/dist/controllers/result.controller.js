@@ -13,12 +13,15 @@ exports.ResultController = void 0;
 const core_1 = require("@overnightjs/core");
 const client_1 = require("@prisma/client");
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
+const role_type_1 = require("../types/role.type");
 let ResultController = class ResultController {
     constructor() {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getResults(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         await this.clientDB.resultSurvey.findMany({
             include: { user: true, survey: true }
         }).then(resp => {
@@ -30,6 +33,8 @@ let ResultController = class ResultController {
         });
     }
     async getResultById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.resultSurvey.findMany({
             where: { id: parseInt(id) },
@@ -43,6 +48,8 @@ let ResultController = class ResultController {
         });
     }
     async createResult(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { user, survey, info } = req.body;
         await this.clientDB.resultSurvey.create({
             data: {
@@ -51,7 +58,11 @@ let ResultController = class ResultController {
                         login: user
                     }
                 },
-                survey: {},
+                survey: {
+                    connect: {
+                        id: survey
+                    }
+                },
                 info: info
             }
         }).then(resp => {
@@ -63,6 +74,8 @@ let ResultController = class ResultController {
         });
     }
     async editResultById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         const { user, survey, info, readyTime } = req.body;
         if (user !== undefined)
@@ -126,6 +139,8 @@ let ResultController = class ResultController {
         });
     }
     async deleteResultById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.resultSurvey.delete({
             where: { id: parseInt(id) }

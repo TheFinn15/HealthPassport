@@ -13,17 +13,15 @@ exports.PartnerController = void 0;
 const core_1 = require("@overnightjs/core");
 const client_1 = require("@prisma/client");
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
+const role_type_1 = require("../types/role.type");
 let PartnerController = class PartnerController {
     constructor() {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getAll(req, res) {
-        var _a;
         try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-            if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             await this.clientDB.partner.findMany()
                 .then(resp => {
@@ -42,11 +40,8 @@ let PartnerController = class PartnerController {
         }
     }
     async getPartnerById(req, res) {
-        var _a;
         try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-            if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             const id = parseInt(req.params.id);
             await this.clientDB.partner.findUnique({
@@ -66,11 +61,8 @@ let PartnerController = class PartnerController {
         }
     }
     async createPartner(req, res) {
-        var _a;
         try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-            if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             const { name, timeWork, url, about } = req.body;
             await this.clientDB.partner.create({
@@ -95,11 +87,8 @@ let PartnerController = class PartnerController {
         }
     }
     async editPartnerById(req, res) {
-        var _a;
         try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-            if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             const id = parseInt(req.params.id);
             const { name, timeWork, url, about } = req.body;
@@ -168,11 +157,8 @@ let PartnerController = class PartnerController {
         }
     }
     async delete(req, res) {
-        var _a;
         try {
-            const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-            if (!(!verifyToken.tokenVerified && (verifyToken.role !== "ROLE_ADMIN" || verifyToken.role !== "ROLE_PARTNER")))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             const id = parseInt(req.params.id);
             await this.clientDB.partner.delete({

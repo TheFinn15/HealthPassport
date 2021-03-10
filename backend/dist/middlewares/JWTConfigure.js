@@ -7,20 +7,33 @@ exports.JWTConfigure = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const role_type_1 = require("../types/role.type");
 class JWTConfigure {
-    async validateToken(req, client, role = role_type_1.Role.ROLE_USER) {
+    async validateToken(req, client, roles = [role_type_1.Role.ROLE_USER]) {
         var _a;
         try {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
             const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+            const [role1, role2] = roles;
+            console.log();
             const tokenExists = await client.token.findMany({
-                where: { token: token, users: { some: { login: tokenData["data"].login, role: role_type_1.Role[role] } } },
+                where: {
+                    token: token,
+                    users: {
+                        login: tokenData["data"].login,
+                        role: role_type_1.Role[role1]
+                    },
+                    OR: {
+                        token: token,
+                        users: {
+                            login: tokenData["data"].login,
+                            role: role_type_1.Role[role2]
+                        }
+                    }
+                },
                 include: { users: true }
             });
-            // const curUser = tokenExists[0].users[0];
-            console.dir(tokenExists[0]);
-            // if (tokenExists.length > 0 && (curUser.role === Role[role] && curUser.login === tokenData["data"].login)) {
+            console.dir(tokenExists);
             if (tokenExists.length > 0) {
-                console.info("VERIFY TOKEN: TOKEN INFO", tokenData);
+                console.info("VERIFY TOKEN: VERIFIED \n TOKEN INFO: ", tokenData);
                 return true;
             }
             else {

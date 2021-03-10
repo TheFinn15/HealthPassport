@@ -10,8 +10,6 @@ import jwt from "jsonwebtoken";
 
 @Controller("api")
 export class UserController {
-  // TODO: Обновить класс JWT до обычного использования метода валидация,
-  //  в метод проходит токен, клиент и название метода класса
 
   // Система получает рекомендации,
   // которые включают в себя нужные доп. обследования и вакцинации от болезни,
@@ -27,31 +25,50 @@ export class UserController {
     if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
       return res.status(401).send("401 Unauthorized");
 
+    const nativeLogin: any = jwt.decode(req.headers.authorization.split(" ")[1]);
+
     try {
       const userResults = (await this.clientDB.resultSurvey.findMany({
-        where: {user: {some: {login: ""}}}, include: {survey: true}
-      }))
-      const surveys = (await this.clientDB.supplierServices.findMany()).filter(i => {
-        userResults.filter(i1 => {
-          const regex = new RegExp(i1.survey[0].name, 'i');
-          if (i.type === "TYPE_SURVEY" && regex.test(i.name)) {
-            return i;
+        where: {user: {login: nativeLogin["data"].login}}, include: {survey: true}
+      }));
+      const resultsMappedSurveyName = userResults.map(i => i.survey.name);
+      const resultsMappedPartnerId = userResults.map(i => i.survey.partnerId);
+
+      const uniqueSurveys = (await this.clientDB.supplierServices.findMany({
+        include: {
+          partner: true
+        },
+        where: {
+          NOT: {
+            partnerId: {
+              in: resultsMappedPartnerId
+            }
+          },
+          AND: {
+            name: {
+              in: resultsMappedSurveyName
+            },
+            type: "TYPE_SURVEY"
           }
-        });
-      });
-      const vaccines = (await this.clientDB.supplierServices.findMany()).filter(i => {
-        userResults.filter(i1 => {
-          const regex = new RegExp(i1.survey[0].name, 'i');
-          if (i.type === "TYPE_VACCINE" && regex.test(i.name)) {
-            return i;
-          }
-        });
-      });
+        }
+      }));
+
+      const uniqueVaccines = (await this.clientDB.supplierServices.findMany({
+        include: {
+          partner: true
+        },
+        where: {
+          name: {
+            in: resultsMappedSurveyName
+          },
+          type: "TYPE_SURVEY"
+        }
+      }));
 
       return res.status(200).json({
-        user: await this.clientDB.user.findUnique({where: {login: ""}}),
-        surveys: surveys,
-        vaccines: vaccines
+        user: await this.clientDB.user.findUnique({where: {login: nativeLogin["data"].login}}),
+        surveys: uniqueSurveys,
+        vaccines: uniqueVaccines
       });
     } catch (e) {
       return res.status(400).json({
@@ -75,8 +92,11 @@ export class UserController {
         login: true,
         email: true,
         phone: true,
+        role: true,
         auths: true,
-        services: true,
+        services: {
+          include: {partner: true}
+        },
         caps: true
       }
     }).then(resp => {
@@ -102,6 +122,7 @@ export class UserController {
           login: true,
           email: true,
           phone: true,
+          role: true,
           auths: true,
           services: true,
           caps: true
@@ -135,6 +156,7 @@ export class UserController {
           login: true,
           email: true,
           phone: true,
+          role: true,
           services: true,
           caps: true
         }
@@ -155,14 +177,15 @@ export class UserController {
   @Post("register")
   private async registerNewUser(req: Request, res: Response) {
     try {
-      const {login, pwd, fullName, email, phone} = req.body;
+      const {login, pwd, fullName, email, phone, role} = req.body;
       await this.clientDB.user.create({
         data: {
           login: login,
           pwd: await argon2.hash(pwd),
           fullName: fullName,
           email: email,
-          phone: phone
+          phone: phone,
+          role: role === undefined ? "ROLE_USER" : role
         }
       }).then(resp => {
         return res.status(200).json(resp);
@@ -208,26 +231,12 @@ export class UserController {
               typeDevice: device,
               token: newJWToken,
               ip: ip,
-              location: location
+              location: location,
+              userId: user.id
             }
           }).catch(e => {
             return res.status(400).json({
               msg: "Error creating token | " + e
-            });
-          });
-
-          await this.clientDB.user.update({
-            where: {login: login},
-            data: {
-              auths: {
-                connect: {
-                  ip: ip
-                }
-              }
-            }
-          }).catch(e => {
-            return res.status(400).json({
-              msg: "Error connecting token with user | " + e
             });
           });
 
@@ -280,7 +289,7 @@ export class UserController {
         return res.status(401).send("401 Unauthorized");
 
       const id = parseInt(req.params.id);
-      const {login, pwd, fullName, email, phone, services} = req.body;
+      const {login, pwd, fullName, email, phone, services, role} = req.body;
 
       if (login !== undefined) {
         await this.clientDB.user.update({
@@ -355,26 +364,48 @@ export class UserController {
         });
       }
       if (services !== undefined) {
-        for (let name of services) {
+        for (let sId of services) {
           await this.clientDB.user.update({
             where: {id: id},
             data: {
               services: {
                 connect: {
-
+                  id: sId
                 }
               }
             }
           }).catch(e => {
             return res.status(400).json({
               msg: `Error editing services field by id ${id} | ERROR:  ` + e
-            })
-          })
+            });
+          });
         }
+      }
+      if (role !== undefined) {
+        await this.clientDB.user.update({
+          where: {id: id},
+          data: {
+            role: role
+          }
+        }).catch(e => {
+          return res.status(400).json({
+            msg: `Error editing role field by id ${id} | ERROR:  ` + e
+          })
+        });
       }
 
       await this.clientDB.user.findUnique({
-        where: {id: id}, include: {services: true}
+        where: {id: id},
+        select: {
+          id: true,
+          fullName: true,
+          login: true,
+          email: true,
+          phone: true,
+          role: true,
+          services: true,
+          caps: true
+        }
       }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -406,6 +437,16 @@ export class UserController {
         fullName: fullName,
         email: email,
         phone: phone
+      },
+      select: {
+        id: true,
+        fullName: true,
+        login: true,
+        email: true,
+        phone: true,
+        role: true,
+        services: true,
+        caps: true
       }
     }).then(resp => {
       return res.status(200).json(resp);

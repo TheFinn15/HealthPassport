@@ -13,12 +13,15 @@ exports.CapabilityController = void 0;
 const client_1 = require("@prisma/client");
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
 const core_1 = require("@overnightjs/core");
+const role_type_1 = require("../types/role.type");
 let CapabilityController = class CapabilityController {
     constructor() {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getCaps(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         await this.clientDB.userCapability.findMany({
             include: { user: true }
         })
@@ -31,6 +34,8 @@ let CapabilityController = class CapabilityController {
         });
     }
     async getCapById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.userCapability.findUnique({
             where: { id: parseInt(id) }, include: { user: true }
@@ -43,11 +48,14 @@ let CapabilityController = class CapabilityController {
         });
     }
     async createCapability(req, res) {
-        const { name, info } = req.body;
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
+        const { name, info, user } = req.body;
         await this.clientDB.userCapability.create({
             data: {
                 name: name,
-                info: info
+                info: info,
+                userId: user.id
             }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -58,6 +66,8 @@ let CapabilityController = class CapabilityController {
         });
     }
     async editCapById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         const { name, info, user } = req.body;
         if (name !== undefined)
@@ -115,6 +125,8 @@ let CapabilityController = class CapabilityController {
         });
     }
     async delCapById(req, res) {
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
+            return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.userCapability.delete({
             where: { id: parseInt(id) }

@@ -1,5 +1,0 @@
--- CreateEnum
-CREATE TYPE "Devices" AS ENUM ('DEVICE_BROWSER', 'DEVICE_ANDROID', 'DEVICE_IOS');
-
--- AlterTable
-ALTER TABLE "Token" ADD COLUMN     "typeDevice" "Devices" NOT NULL DEFAULT E'DEVICE_BROWSER';

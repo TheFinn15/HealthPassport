@@ -50,12 +50,13 @@ export class CapabilityController {
     if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
       return res.status(401).send("401 Unauthorized");
 
-    const {name, info} = req.body;
+    const {name, info, user} = req.body;
 
     await this.clientDB.userCapability.create({
       data: {
         name: name,
-        info: info
+        info: info,
+        userId: user.id
       }
     }).then(resp => {
       return res.status(200).json(resp);

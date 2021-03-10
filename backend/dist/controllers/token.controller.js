@@ -17,16 +17,14 @@ const core_1 = require("@overnightjs/core");
 const client_1 = require("@prisma/client");
 const JWTConfigure_1 = require("../middlewares/JWTConfigure");
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
+const role_type_1 = require("../types/role.type");
 let TokenController = class TokenController {
     constructor() {
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async getTokens(req, res) {
-        var _a;
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-        if (!(!verifyToken.tokenVerified && verifyToken.role !== "ROLE_ADMIN"))
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN])))
             return res.status(401).send("401 Unauthorized");
         await this.clientDB.token.findMany({
             include: { users: true }
@@ -39,10 +37,7 @@ let TokenController = class TokenController {
         });
     }
     async getTokenById(req, res) {
-        var _a;
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-        if (!verifyToken.tokenVerified || verifyToken.role !== "ROLE_ADMIN")
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN])))
             return res.status(401).send("401 Unauthorized");
         const { id } = req.params;
         await this.clientDB.token.findUnique({
@@ -56,12 +51,10 @@ let TokenController = class TokenController {
         });
     }
     async editTokenById(req, res) {
-        var _a;
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const verifyToken = await this.jwtConfigure.validateToken(req, this.clientDB);
-        if (!verifyToken.tokenVerified)
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN])))
             return res.status(401).send("401 Unauthorized");
         const { ip } = req.body;
+        const token = req.headers.authorization.split(" ")[1];
         const geoInfo = geoip_lite_1.default.lookup(ip);
         let location = `${geoInfo.country}, ${geoInfo.city}`;
         const curToken = await this.clientDB.token.findMany({

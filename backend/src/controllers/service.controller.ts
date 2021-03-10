@@ -61,7 +61,7 @@ export class ServiceController {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
-      const {name, type, info, partner} = req.body;
+      const {name, type, info, user, partner} = req.body;
       await this.clientDB.supplierServices.create({
         data: {
           name: name,
