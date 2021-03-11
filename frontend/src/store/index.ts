@@ -29,7 +29,7 @@ export default new Vuex.Store({
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }
-      })
+      });
     },
     async logout({state}) {
       await axios({

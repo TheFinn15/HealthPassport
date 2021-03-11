@@ -28,23 +28,23 @@
     </v-btn>
 
     <v-btn to="/login" v-if="!isAuth" value="auth">
-        <span>
-          Авторизация
-        </span>
-        <v-icon>
-          login
-        </v-icon>
-      </v-btn>
+      <span>
+        Авторизация
+      </span>
+      <v-icon>
+        login
+      </v-icon>
+    </v-btn>
 
     <v-btn to="/register" v-if="!isAuth" value="register">
-        <span>
-          Регистрация
-        </span>
-        <v-icon>
-          person_add
-        </v-icon>
-      </v-btn>
-    </v-bottom-navigation>
+      <span>
+        Регистрация
+      </span>
+      <v-icon>
+        person_add
+      </v-icon>
+    </v-btn>
+  </v-bottom-navigation>
 </template>
 
 <script>
@@ -56,7 +56,7 @@ export default {
   methods: {
     async doLogout() {
       const ip = await axios.get("https://api.ipify.org?format=json");
-      this.$store.state.userInfo = {ip: ip.data["ip"]};
+      this.$store.state.userInfo = { ip: ip.data["ip"] };
       await this.$store.dispatch("logout");
 
       localStorage.removeItem("uid");
@@ -64,9 +64,7 @@ export default {
       window.location.reload();
     }
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

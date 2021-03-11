@@ -15,7 +15,7 @@
         </router-link>
       </v-toolbar-title>
       <v-menu offset-y>
-        <template v-slot:activator="{on, attrs}">
+        <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
             <v-icon>
               translate
@@ -36,13 +36,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 import BottomNav from "@/components/drawer/BottomNav.vue";
-import jwt, {JsonWebTokenError, TokenExpiredError} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import axios from "axios";
 
 export default Vue.extend({
-  name: 'App',
+  name: "App",
   data: () => ({
     drawer: false,
     isAuth: false,
@@ -55,16 +55,18 @@ export default Vue.extend({
   async updated() {
     if (localStorage["uid"] !== undefined) {
       const ip = await axios.get("https://api.ipify.org?format=json");
-      const user = (await this.$store.getters.getCurUser)[0].auths.filter(i => i.token === localStorage["uid"])[0];
+      const user = (await this.$store.getters.getCurUser)[0].auths.filter(
+        i => i.token === localStorage["uid"]
+      )[0];
       this.$store.state.userInfo = ip.data["ip"];
 
       if (user.ip !== ip.data["ip"]) {
-        this.$store.state.userInfo = {ip: ip.data["ip"]};
+        this.$store.state.userInfo = { ip: ip.data["ip"] };
         await this.$store.dispatch("updateTokenIp");
       }
     }
   },
-  async mounted() {
+  mounted: async function() {
     if (/login/i.test(this.$route.fullPath)) {
       this.bottomNav = "auth";
     } else if (/register/i.test(this.$route.fullPath)) {
@@ -77,10 +79,10 @@ export default Vue.extend({
     if (localStorage["uid"] !== undefined) {
       try {
         try {
-          jwt.verify(localStorage['uid'], 'T0p_S3cr3t');
+          jwt.verify(localStorage["uid"], "T0p_S3cr3t");
 
           this.isAuth = true;
-        } catch (e: TokenExpiredError) {
+        } catch (e) {
           const ip = await axios.get("https://api.ipify.org?format=json");
           this.$store.state.userInfo = ip.data["ip"];
           await this.$store.dispatch("logout");
@@ -88,7 +90,7 @@ export default Vue.extend({
           localStorage.removeItem("uid");
           window.location.reload();
         }
-      } catch (e: JsonWebTokenError) {
+      } catch (e) {
         localStorage.removeItem("uid");
         window.location.reload();
       }

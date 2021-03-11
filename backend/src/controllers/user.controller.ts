@@ -84,7 +84,7 @@ export class UserController {
 
     const token = req.headers.authorization.split(" ")[1];
 
-    const sd = await this.clientDB.user.findMany({
+    await this.clientDB.user.findMany({
       where: {auths: {some: {token: token}}},
       select: {
         id: true,
@@ -114,7 +114,6 @@ export class UserController {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN])))
         return res.status(401).send("401 Unauthorized");
 
-      // include: {services: true, auths: true},
       await this.clientDB.user.findMany({
         select: {
           id: true,
@@ -124,7 +123,11 @@ export class UserController {
           phone: true,
           role: true,
           auths: true,
-          services: true,
+          services: {
+            include: {
+              partner: true
+            }
+          },
           caps: true
         }
       }).then(resp => {
@@ -295,7 +298,7 @@ export class UserController {
         await this.clientDB.user.update({
           where: {id: id},
           data: {
-            login
+            login: login
           }
         }).catch(e => {
           return res.status(400).json({
@@ -429,15 +432,81 @@ export class UserController {
 
     const {login, pwd, fullName, email, phone} = req.body;
 
-    await this.clientDB.user.update({
+    if (login !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          login: login
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing login field by id ${nativeLogin["data"].id} | ERROR: ` + e
+        })
+      });
+    }
+    if (pwd !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          pwd: await argon2.hash(pwd)
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing pwd field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+        })
+      });
+    }
+    if (fullName !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          fullName: fullName
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing fullName field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+        })
+      });
+    }
+    if (email !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          email: email
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing email field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+        })
+      });
+    }
+    if (phone !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          phone: phone
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing phone field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+        })
+      });
+    }
+    if (email !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin["data"].login},
+        data: {
+          email: email
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing email field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+        })
+      });
+    }
+
+    await this.clientDB.user.findUnique({
       where: {login: nativeLogin["data"].login},
-      data: {
-        login: login,
-        pwd: await argon2.hash(pwd),
-        fullName: fullName,
-        email: email,
-        phone: phone
-      },
       select: {
         id: true,
         fullName: true,
@@ -445,7 +514,11 @@ export class UserController {
         email: true,
         phone: true,
         role: true,
-        services: true,
+        services: {
+          include: {
+            partner: true
+          }
+        },
         caps: true
       }
     }).then(resp => {

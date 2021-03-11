@@ -13,7 +13,6 @@ class JWTConfigure {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
             const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
             const [role1, role2] = roles;
-            console.log();
             const tokenExists = await client.token.findMany({
                 where: {
                     token: token,
@@ -31,18 +30,17 @@ class JWTConfigure {
                 },
                 include: { users: true }
             });
-            console.dir(tokenExists);
             if (tokenExists.length > 0) {
-                console.info("VERIFY TOKEN: VERIFIED \n TOKEN INFO: ", tokenData);
+                console.info("VERIFY TOKEN:", "VERIFIED");
                 return true;
             }
             else {
-                console.error("VERIFY TOKEN: Token or User is not exists!");
+                console.error("VERIFY TOKEN:", "Token or User is not exists!");
                 return false;
             }
         }
         catch (e) {
-            console.error("VERIFY TOKEN: Invalid signature or token is expired!");
+            console.error("VERIFY TOKEN:", "Invalid signature or token is expired!");
             return false;
         }
     }

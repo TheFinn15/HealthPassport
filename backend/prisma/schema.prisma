@@ -29,6 +29,14 @@ enum TypeServices {
   TYPE_ILL
 }
 
+enum CapsLevel {
+  OKAY_LEVEL
+  NORMAL_LEVEL
+  NOT_OKAY_LEVEL
+  DANGER_LEVEL
+  DEATHLY_LEVEL
+}
+
 model Token {
   id             Int      @id @default(autoincrement())
   token          String
@@ -55,11 +63,12 @@ model User {
 }
 
 model UserCapability {
-  id     Int    @id @default(autoincrement())
-  name   String
-  info   String
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int
+  id          Int       @id @default(autoincrement())
+  name        String
+  info        String
+  hazardLevel CapsLevel @default(OKAY_LEVEL)
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
 }
 
 model ResultSurvey {

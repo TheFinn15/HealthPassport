@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "CapsLevel" AS ENUM ('OKAY_LEVEL', 'NORMAL_LEVEL', 'NOT_OKAY_LEVEL', 'DANGER_LEVEL', 'DEATHLY_LEVEL');
+
+-- AlterTable
+ALTER TABLE "UserCapability" ADD COLUMN     "hazardLevel" "CapsLevel" NOT NULL DEFAULT E'OKAY_LEVEL';

@@ -2,15 +2,15 @@
   <v-card flat style="margin: 5%">
     <v-alert v-model="alert.state" :type="alert.type" outlined border="left">
       <span>
-        {{alert.info}}
+        {{ alert.info }}
       </span>
     </v-alert>
     <v-progress-linear
-        height="6"
-        indeterminate
-        rounded
-        :active="alert.loader"
-        color="#FB8C00"
+      height="6"
+      indeterminate
+      rounded
+      :active="alert.loader"
+      color="#FB8C00"
     />
     <v-card-title style="justify-content: center; display: flex">
       Авторизация
@@ -20,30 +20,30 @@
         <v-row no-gutters>
           <v-col cols="12">
             <v-text-field
-                label="Логин"
-                outlined
-                shaped
-                v-model="info.login"
-                color="#FFCC80"
-                :rules="rules.text"
+              label="Логин"
+              outlined
+              shaped
+              v-model="info.login"
+              color="#FFCC80"
+              :rules="rules.text"
             />
           </v-col>
           <v-col cols="12">
             <v-text-field
-                type="password"
-                label="Пароль"
-                outlined
-                shaped
-                v-model="info.pwd"
-                color="#FFCC80"
-                :rules="rules.text"
+              type="password"
+              label="Пароль"
+              outlined
+              shaped
+              v-model="info.pwd"
+              color="#FFCC80"
+              :rules="rules.text"
             />
           </v-col>
           <v-col cols="12">
             <v-checkbox
-                color="#FFCC80"
-                label="Запомнить меня"
-                v-model="info.isRememberMe"
+              color="#FFCC80"
+              label="Запомнить меня"
+              v-model="info.isRememberMe"
             />
           </v-col>
         </v-row>
@@ -63,9 +63,7 @@ export default {
   data() {
     return {
       rules: {
-        text: [
-          v => v.length !== 0 || "Пустое поле!"
-        ]
+        text: [v => v.length !== 0 || "Пустое поле!"]
       },
       info: {
         login: "",
@@ -79,15 +77,15 @@ export default {
         type: "success",
         info: "",
         loader: false
-      },
-    }
+      }
+    };
   },
   methods: {
     async doAuth() {
       const ip = await axios.get("https://api.ipify.org?format=json");
       this.info.ip = ip.data["ip"];
       if (this.$refs.authForm.validate()) {
-        console.log(this.info)
+        console.log(this.info);
         this.$store.state.userInfo = this.info;
         await this.$store.dispatch("auth");
         this.alert.loader = true;
@@ -102,16 +100,14 @@ export default {
             this.alert.type = "error";
             this.alert.info = "Ошибка авторизации!";
           }
-        }, 1500)
+        }, 1500);
       }
     }
   },
   mounted() {
     console.log();
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -2,15 +2,15 @@
   <v-card flat style="margin: 5%">
     <v-alert v-model="alert.state" :type="alert.type" outlined border="left">
       <span>
-        {{alert.info}}
+        {{ alert.info }}
       </span>
     </v-alert>
     <v-progress-linear
-        height="6"
-        indeterminate
-        rounded
-        :active="alert.loader"
-        color="#FB8C00"
+      height="6"
+      indeterminate
+      rounded
+      :active="alert.loader"
+      color="#FB8C00"
     />
     <v-card-title style="justify-content: center; display: flex">
       Регистрация
@@ -20,60 +20,60 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-                label="ФИО"
-                outlined
-                shaped
-                v-model="info.fullName"
-                color="#FFCC80"
-                :rules="rules.text"
+              label="ФИО"
+              outlined
+              shaped
+              v-model="info.fullName"
+              color="#FFCC80"
+              :rules="rules.text"
             />
           </v-col>
           <v-col cols="6">
             <v-text-field
-                label="Логин"
-                outlined
-                shaped
-                v-model="info.login"
-                color="#FFCC80"
-                :rules="rules.text"
+              label="Логин"
+              outlined
+              shaped
+              v-model="info.login"
+              color="#FFCC80"
+              :rules="rules.text"
             />
           </v-col>
           <v-col cols="6">
             <v-text-field
-                type="password"
-                label="Пароль"
-                outlined
-                shaped
-                v-model="info.pwd"
-                color="#FFCC80"
-                :rules="rules.text"
+              type="password"
+              label="Пароль"
+              outlined
+              shaped
+              v-model="info.pwd"
+              color="#FFCC80"
+              :rules="rules.text"
             />
           </v-col>
           <v-col cols="6">
             <v-text-field
-                label="E-mail"
-                outlined
-                shaped
-                v-model="info.email"
-                color="#FFCC80"
-                :rules="rules.email"
+              label="E-mail"
+              outlined
+              shaped
+              v-model="info.email"
+              color="#FFCC80"
+              :rules="rules.email"
             />
           </v-col>
           <v-col cols="6">
             <v-text-field
-                label="Телефон"
-                outlined
-                shaped
-                v-model="info.phone"
-                color="#FFCC80"
-                :rules="rules.phone"
+              label="Телефон"
+              outlined
+              shaped
+              v-model="info.phone"
+              color="#FFCC80"
+              :rules="rules.phone"
             />
           </v-col>
           <v-col cols="12">
             <v-checkbox
-                color="#FFCC80"
-                label="Запомнить меня"
-                v-model="info.isRememberMe"
+              color="#FFCC80"
+              label="Запомнить меня"
+              v-model="info.isRememberMe"
             />
           </v-col>
         </v-row>
@@ -91,15 +91,13 @@ export default {
   data: () => {
     return {
       rules: {
-        text: [
-          v => v.length !== 0 || "Пустое поле!"
-        ],
+        text: [v => v.length !== 0 || "Пустое поле!"],
         email: [
-          v => v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null || "Неверный e-mail"
+          v =>
+            v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null ||
+            "Неверный e-mail"
         ],
-        phone: [
-          v => v.length === 11 || "Неверный телефон"
-        ]
+        phone: [v => v.length === 11 || "Неверный телефон"]
       },
       info: {
         fullName: "",
@@ -116,7 +114,7 @@ export default {
         info: "",
         loader: false
       }
-    }
+    };
   },
   methods: {
     async doRegister() {
@@ -135,13 +133,11 @@ export default {
             this.alert.type = "error";
             this.alert.info = "Ошибка регистрации!";
           }
-        }, 1500)
+        }, 1500);
       }
-    },
+    }
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

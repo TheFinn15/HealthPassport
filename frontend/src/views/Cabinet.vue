@@ -20,25 +20,32 @@
         Активные сессии
       </v-tab>
       <v-tab-item>
-        <UserData :user="userInfo" />
+        <UserData :user-info="userInfo" />
       </v-tab-item>
       <v-tab-item>
-        <UserConstraint :constraint="userInfo" />
+        <UserConstraint :user-info="userInfo" />
       </v-tab-item>
       <v-tab-item>
-        <UserSessions :user="userInfo" />
+        <UserSessions :user-info="userInfo" />
       </v-tab-item>
     </v-tabs>
   </v-card>
 </template>
 
-<script>
-import UserData from "@/components/cabinet/UserData";
-import UserConstraint from "@/components/cabinet/UserConstraint";
-import UserSessions from "@/components/cabinet/UserSessions";
-export default {
+<script lang="ts">
+import Vue from "vue";
+import UserData from "@/components/cabinet/UserData.vue";
+import UserConstraint from "@/components/cabinet/UserConstraint.vue";
+import UserSessions from "@/components/cabinet/UserSessions.vue";
+import {UserType} from "@/types/user.type";
+import {ResultType} from "@/types/result.type";
+import {CapsType} from "@/types/caps.type";
+import {AuthType} from "@/types/auth.type";
+import {CapLevelType} from "@/types/capLevel.type";
+
+export default Vue.extend({
   name: "Cabinet",
-  components: {UserSessions, UserConstraint, UserData},
+  components: { UserSessions, UserConstraint, UserData },
   data() {
     return {
       isAuth: localStorage["uid"] === undefined,
@@ -48,15 +55,17 @@ export default {
         pwd: "",
         email: "",
         phone: "",
-      }
-    }
+        services: [],
+        resultsSurvey: [] as ResultType[],
+        caps: [] as CapsType[],
+        auths: [] as AuthType[]
+      } as UserType
+    };
   },
   async mounted() {
     this.userInfo = (await this.$store.getters.getCurUser)[0];
   }
-}
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

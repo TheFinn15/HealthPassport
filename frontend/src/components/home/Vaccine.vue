@@ -19,13 +19,13 @@
             <v-card v-for="(item, i) in vaccines" :key="i" flat>
               <v-divider />
               <v-card-title>
-                {{i+1}} - {{item.name}}
+                {{ i + 1 }} - {{ item.name }}
                 <v-spacer />
                 <v-snackbar color="info" top timeout="3000" v-model="alertInfo">
                   <span>
-                    {{item.info}}
+                    {{ item.info }}
                   </span>
-                  <template v-slot:action="{attrs}">
+                  <template v-slot:action="{ attrs }">
                     <v-btn icon @click="alertInfo = false" v-bind="attrs">
                       <v-icon>
                         close
@@ -34,8 +34,13 @@
                   </template>
                 </v-snackbar>
                 <v-tooltip bottom>
-                  <template v-slot:activator="{on, attrs}">
-                    <v-btn icon v-on="on" v-bind="attrs" @click="alertInfo = !alertInfo">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      v-on="on"
+                      v-bind="attrs"
+                      @click="alertInfo = !alertInfo"
+                    >
                       <v-icon>
                         info
                       </v-icon>
@@ -70,10 +75,8 @@
 <script>
 export default {
   name: "Vaccine",
-  props: ['vaccines']
-}
+  props: ["vaccines"]
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
