@@ -2,10 +2,13 @@
   <v-app> </v-app>
 </template>
 
-<script>
-export default {
-  name: "UserSessions"
-};
+<script lang="ts">
+import Vue from "vue";
+
+export default Vue.extend({
+  name: "UserSessions",
+  props: ["userInfo"]
+});
 </script>
 
 <style scoped></style>

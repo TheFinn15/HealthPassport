@@ -98,7 +98,9 @@ let UserController = class UserController {
                 services: {
                     include: { partner: true }
                 },
-                caps: true
+                caps: {
+                    include: { ill: true }
+                }
             }
         }).then(resp => {
             return res.status(200).json(resp);

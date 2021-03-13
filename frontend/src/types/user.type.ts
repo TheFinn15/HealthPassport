@@ -2,6 +2,7 @@ import {CapsType} from "@/types/caps.type";
 import {AuthType} from "@/types/auth.type";
 import {ResultType} from "@/types/result.type";
 import {RoleType} from "@/types/role.type";
+import {ServiceType} from "@/types/service.type";
 
 export type UserType = {
   id: number
@@ -13,6 +14,6 @@ export type UserType = {
   caps: CapsType[],
   role: RoleType,
   auths: AuthType[],
-  services: [],
+  services: ServiceType[],
   resultsSurvey: ResultType[]
 }

@@ -82,20 +82,20 @@ export default {
   },
   methods: {
     async doAuth() {
-      const ip = await axios.get("https://api.ipify.org?format=json");
-      this.info.ip = ip.data["ip"];
       if (this.$refs.authForm.validate()) {
-        console.log(this.info);
+        this.alert.loader = true;
+
+        const ip = await axios.get("https://api.ipify.org?format=json");
+        this.info.ip = ip.data["ip"];
+
         this.$store.state.userInfo = this.info;
         await this.$store.dispatch("auth");
-        this.alert.loader = true;
         setTimeout(() => {
           this.alert.loader = false;
           this.alert.state = true;
           if (localStorage["uid"] !== undefined) {
             this.alert.info = "Успешная авторизация!";
-            this.$router.push("/cabinet");
-            window.location.reload();
+            window.location.href = "/cabinet";
           } else {
             this.alert.type = "error";
             this.alert.info = "Ошибка авторизации!";

@@ -88,11 +88,11 @@ export default Vue.extend({
           await this.$store.dispatch("logout");
 
           localStorage.removeItem("uid");
-          window.location.reload();
+          window.location.href = "/";
         }
       } catch (e) {
         localStorage.removeItem("uid");
-        window.location.reload();
+        window.location.href = "/";
       }
     }
   }

@@ -86,6 +86,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Register",
   data: () => {
@@ -106,7 +108,8 @@ export default {
         email: "",
         phone: "",
         isRememberMe: false,
-        device: "DEVICE_BROWSER"
+        device: "DEVICE_BROWSER",
+        ip: ""
       },
       alert: {
         state: false,
@@ -119,16 +122,20 @@ export default {
   methods: {
     async doRegister() {
       if (this.$refs.registerForm.validate()) {
+        this.alert.loader = true;
+
+        const ip = await axios.get("https://api.ipify.org?format=json");
+        this.info.ip = ip.data["ip"];
+
         this.$store.state.userInfo = this.info;
         await this.$store.dispatch("register");
         await this.$store.dispatch("auth");
-        this.alert.loader = true;
         setTimeout(() => {
           this.alert.loader = false;
           this.alert.state = true;
           if (localStorage["uid"] !== undefined) {
             this.alert.info = "Успешная регистрация!";
-            this.$router.push("/cabinet");
+            window.location.href = "/cabinet";
           } else {
             this.alert.type = "error";
             this.alert.info = "Ошибка регистрации!";

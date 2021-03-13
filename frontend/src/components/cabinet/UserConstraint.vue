@@ -52,10 +52,18 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-subtitle>
-                  {{item.hazardLevel}}
+                  <v-card-subtitle>
+                    {{ checkCapLevel(item.hazardLevel) }}
+                    <v-spacer />
+                    Болезнь через которую выявлено: <br />
+                    <b>{{ item.ill.name }}</b>
+                  </v-card-subtitle>
                 </v-list-item-subtitle>
                 <v-list-item-title>
-                  {{ item.info }}
+                  О данной болезни: <br />
+                  <v-card-subtitle>
+                    {{ item.info }}
+                  </v-card-subtitle>
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -67,11 +75,25 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue from "vue";
+import { CapsType } from "@/types/caps.type";
+
+export default Vue.extend({
   name: "UserConstraint",
   props: ["userInfo"],
   data() {
     return {
+      checkCapLevel: (level: string) => {
+        let res = "";
+
+        if (level === "OKAY_LEVEL") res = "Состояние здоровое";
+        if (level === "NORMAL_LEVEL") res = "Состояние вполне здоровое";
+        if (level === "NOT_OKAY_LEVEL") res = "Состояние не здоровое";
+        if (level === "DANGER_LEVEL") res = "Состояние критическое";
+        if (level === "DEATHLY_LEVEL") res = "Состояние при смерти";
+
+        return res;
+      },
       statusProfile: {
         activeStatus: ["", "", "", "", ""],
         statusIcon: [
@@ -111,12 +133,12 @@ export default {
   beforeMount() {
     if (this.userInfo.caps.length > 0) {
       const caps = this.userInfo.caps;
-      const result = {
-        OKAY_LEVEL: [],
-        NORMAL_LEVEL: [],
-        NOT_OKAY_LEVEL: [{}],
-        DANGER_LEVEL: [{}],
-        DEATHLY_LEVEL: [{}]
+      const result: any = {
+        OKAY_LEVEL: [] as CapsType[],
+        NORMAL_LEVEL: [] as CapsType[],
+        NOT_OKAY_LEVEL: [{}] as CapsType[],
+        DANGER_LEVEL: [{}] as CapsType[],
+        DEATHLY_LEVEL: [{}] as CapsType[]
       };
       for (const item of caps) {
         result[item.hazardLevel].push(item);
@@ -139,7 +161,7 @@ export default {
       this.statusProfile.activeStatus[0] = "success";
     }
   }
-};
+});
 </script>
 
 <style scoped></style>
