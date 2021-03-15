@@ -48,7 +48,7 @@ export class ResultController {
 
   @Post("result")
   private async createResult(req: Request, res: Response) {
-    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_PARTNER])))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_PARTNER, Role.ROLE_ADMIN])))
       return res.status(401).send("401 Unauthorized");
 
     const {user, survey, info} = req.body;

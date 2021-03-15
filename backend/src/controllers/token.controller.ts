@@ -4,7 +4,6 @@ import {JWTConfigure} from "../middlewares/JWTConfigure";
 import {Request, Response} from "express";
 import geo_from_ip from "geoip-lite";
 import {Role} from "../types/role.type";
-import jwt from "jsonwebtoken";
 
 
 @Controller("api")

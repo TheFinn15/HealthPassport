@@ -6,13 +6,13 @@ import {Role} from "../types/role.type";
 
 
 
-@Controller("api/partner")
+@Controller("api")
 export class PartnerController {
 
   clientDB: PrismaClient = new PrismaClient();
   jwtConfigure: JWTConfigure = new JWTConfigure();
 
-  @Get()
+  @Get("partners")
   private async getAll(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
@@ -34,7 +34,7 @@ export class PartnerController {
     }
   }
 
-  @Get(":id")
+  @Get("partner/:id")
   private async getPartnerById(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
@@ -57,7 +57,7 @@ export class PartnerController {
     }
   }
 
-  @Post()
+  @Post("partner")
   private async createPartner(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
@@ -85,7 +85,7 @@ export class PartnerController {
     }
   }
 
-  @Put(":id")
+  @Put("partner/:id")
   private async editPartnerById(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
@@ -159,7 +159,7 @@ export class PartnerController {
     }
   }
 
-  @Delete(":id")
+  @Delete("partner/:id")
   private async delete(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))

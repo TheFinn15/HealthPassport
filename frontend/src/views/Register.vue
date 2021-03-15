@@ -128,6 +128,7 @@ export default {
         this.info.ip = ip.data["ip"];
 
         this.$store.state.userInfo = this.info;
+        console.log(this.info)
         await this.$store.dispatch("register");
         await this.$store.dispatch("auth");
         setTimeout(() => {

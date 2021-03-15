@@ -11,12 +11,6 @@ import jwt from "jsonwebtoken";
 @Controller("api")
 export class UserController {
 
-  // Система получает рекомендации,
-  // которые включают в себя нужные доп. обследования и вакцинации от болезни,
-  // которая была найдена во время обследования.
-  // Также с этим всем у юзера отобразиться уведомление об результате иследования и
-  // рекомендации к лечению, если требуется
-
   clientDB: PrismaClient = new PrismaClient();
   jwtConfigure: JWTConfigure = new JWTConfigure();
 
@@ -79,7 +73,7 @@ export class UserController {
 
   @Get("user")
   private async getCurrentUser(req: Request, res: Response) {
-    if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
       return res.status(401).send("401 Unauthorized");
 
     const token = req.headers.authorization.split(" ")[1];
@@ -264,7 +258,7 @@ export class UserController {
   @Post("logout")
   private async logout(req: Request, res: Response) {
     try {
-      if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
         return res.status(401).send("401 Unauthorized");
 
       const {ip} = req.body;
@@ -427,7 +421,7 @@ export class UserController {
 
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
-    if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
       return res.status(401).send("401 Unauthorized");
 
     const nativeLogin: any = jwt.decode(req.headers.authorization.split(" ")[1]);

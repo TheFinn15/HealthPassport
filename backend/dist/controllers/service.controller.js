@@ -64,7 +64,7 @@ let ServiceController = class ServiceController {
         try {
             if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
-            const { name, type, info, user, partner } = req.body;
+            const { name, type, info, partner } = req.body;
             await this.clientDB.supplierServices.create({
                 data: {
                     name: name,
@@ -195,37 +195,37 @@ let ServiceController = class ServiceController {
     }
 };
 __decorate([
-    core_1.Get(),
+    core_1.Get("services"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "getAllService", null);
 __decorate([
-    core_1.Get(":id"),
+    core_1.Get("service/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "getServiceById", null);
 __decorate([
-    core_1.Post(),
+    core_1.Post("service"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "createService", null);
 __decorate([
-    core_1.Put(":id"),
+    core_1.Put("service/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "editServiceById", null);
 __decorate([
-    core_1.Delete(":id"),
+    core_1.Delete("service/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "deleteServiceById", null);
 ServiceController = __decorate([
-    core_1.Controller("api/service")
+    core_1.Controller("api")
 ], ServiceController);
 exports.ServiceController = ServiceController;
 //# sourceMappingURL=service.controller.js.map

@@ -4,13 +4,13 @@ import {Controller, Delete, Get, Post, Put} from "@overnightjs/core";
 import {Request, Response} from "express";
 import {Role} from "../types/role.type";
 
-@Controller("api/service")
+@Controller("api")
 export class ServiceController {
 
   clientDB: PrismaClient = new PrismaClient();
   jwtConfigure: JWTConfigure = new JWTConfigure();
 
-  @Get()
+  @Get("services")
   private async getAllService(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
@@ -32,7 +32,7 @@ export class ServiceController {
     }
   }
 
-  @Get(":id")
+  @Get("service/:id")
   private async getServiceById(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
@@ -55,13 +55,13 @@ export class ServiceController {
     }
   }
 
-  @Post()
+  @Post("service")
   private async createService(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
-      const {name, type, info, user, partner} = req.body;
+      const {name, type, info, partner} = req.body;
       await this.clientDB.supplierServices.create({
         data: {
           name: name,
@@ -83,7 +83,7 @@ export class ServiceController {
     }
   }
 
-  @Put(":id")
+  @Put("service/:id")
   private async editServiceById(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
@@ -173,7 +173,7 @@ export class ServiceController {
     }
   }
 
-  @Delete(":id")
+  @Delete("service/:id")
   private async deleteServiceById(req: Request, res: Response) {
     try {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))

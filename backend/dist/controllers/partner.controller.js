@@ -179,37 +179,37 @@ let PartnerController = class PartnerController {
     }
 };
 __decorate([
-    core_1.Get(),
+    core_1.Get("partners"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PartnerController.prototype, "getAll", null);
 __decorate([
-    core_1.Get(":id"),
+    core_1.Get("partner/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PartnerController.prototype, "getPartnerById", null);
 __decorate([
-    core_1.Post(),
+    core_1.Post("partner"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PartnerController.prototype, "createPartner", null);
 __decorate([
-    core_1.Put(":id"),
+    core_1.Put("partner/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PartnerController.prototype, "editPartnerById", null);
 __decorate([
-    core_1.Delete(":id"),
+    core_1.Delete("partner/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PartnerController.prototype, "delete", null);
 PartnerController = __decorate([
-    core_1.Controller("api/partner")
+    core_1.Controller("api")
 ], PartnerController);
 exports.PartnerController = PartnerController;
 //# sourceMappingURL=partner.controller.js.map

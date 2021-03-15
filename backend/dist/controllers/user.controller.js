@@ -22,11 +22,6 @@ const role_type_1 = require("../types/role.type");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 let UserController = class UserController {
     constructor() {
-        // Система получает рекомендации,
-        // которые включают в себя нужные доп. обследования и вакцинации от болезни,
-        // которая была найдена во время обследования.
-        // Также с этим всем у юзера отобразиться уведомление об результате иследования и
-        // рекомендации к лечению, если требуется
         this.clientDB = new client_1.PrismaClient();
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
@@ -82,7 +77,7 @@ let UserController = class UserController {
         }
     }
     async getCurrentUser(req, res) {
-        if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
             return res.status(401).send("401 Unauthorized");
         const token = req.headers.authorization.split(" ")[1];
         await this.clientDB.user.findMany({
@@ -254,7 +249,7 @@ let UserController = class UserController {
     }
     async logout(req, res) {
         try {
-            if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
                 return res.status(401).send("401 Unauthorized");
             const { ip } = req.body;
             await this.clientDB.token.delete({
@@ -410,7 +405,7 @@ let UserController = class UserController {
         }
     }
     async editCurrentUser(req, res) {
-        if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
             return res.status(401).send("401 Unauthorized");
         const nativeLogin = jsonwebtoken_1.default.decode(req.headers.authorization.split(" ")[1]);
         const { login, pwd, fullName, email, phone } = req.body;

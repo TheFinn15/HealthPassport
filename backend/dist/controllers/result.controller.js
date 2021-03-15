@@ -48,7 +48,7 @@ let ResultController = class ResultController {
         });
     }
     async createResult(req, res) {
-        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_PARTNER])))
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_PARTNER, role_type_1.Role.ROLE_ADMIN])))
             return res.status(401).send("401 Unauthorized");
         const { user, survey, info } = req.body;
         await this.clientDB.resultSurvey.create({
