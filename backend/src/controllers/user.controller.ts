@@ -6,6 +6,7 @@ import {JWTConfigure} from "../middlewares/JWTConfigure";
 import geo_from_ip from "geoip-lite";
 import {Role} from "../types/role.type";
 import jwt from "jsonwebtoken";
+import {JwtType} from "../types/jwt.type";
 
 
 @Controller("api")
@@ -73,7 +74,7 @@ export class UserController {
 
   @Get("user")
   private async getCurrentUser(req: Request, res: Response) {
-    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER, Role.ROLE_PARTNER])))
       return res.status(401).send("401 Unauthorized");
 
     const token = req.headers.authorization.split(" ")[1];
@@ -185,6 +186,20 @@ export class UserController {
           email: email,
           phone: phone,
           role: role === undefined ? "ROLE_USER" : role
+        },
+        select: {
+          id: true,
+          fullName: true,
+          login: true,
+          email: true,
+          phone: true,
+          role: true,
+          services: {
+            include: {
+              partner: true
+            }
+          },
+          caps: true
         }
       }).then(resp => {
         return res.status(200).json(resp);
@@ -216,6 +231,7 @@ export class UserController {
         await this.clientDB.token.findUnique({
           where: {ip}
         }).then(token => {
+          delete user.pwd;
           return res.status(200).json({
             user: user, token: token.token
           })
@@ -421,46 +437,46 @@ export class UserController {
 
   @Put("user")
   private async editCurrentUser(req: Request, res: Response) {
-    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+    if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER, Role.ROLE_PARTNER])))
       return res.status(401).send("401 Unauthorized");
 
-    const nativeLogin: any = jwt.decode(req.headers.authorization.split(" ")[1]);
+    const nativeLogin: JwtType = jwt.decode(req.headers.authorization.split(" ")[1]) as JwtType;
 
     const {login, pwd, fullName, email, phone} = req.body;
 
     if (login !== undefined) {
       await this.clientDB.user.update({
-        where: {login: nativeLogin["data"].login},
+        where: {login: nativeLogin.data.login},
         data: {
           login: login
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing login field by id ${nativeLogin["data"].id} | ERROR: ` + e
+          msg: `Error editing login field by id ${nativeLogin.data.id} | ERROR: ` + e
         })
       });
     }
     if (pwd !== undefined) {
       await this.clientDB.user.update({
-        where: {login: nativeLogin["data"].login},
+        where: {login: nativeLogin.data.login},
         data: {
           pwd: await argon2.hash(pwd)
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing pwd field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+          msg: `Error editing pwd field by id ${nativeLogin.data.id} | ERROR:  ` + e
         })
       });
     }
     if (fullName !== undefined) {
       await this.clientDB.user.update({
-        where: {login: nativeLogin["data"].login},
+        where: {login: nativeLogin.data.login},
         data: {
           fullName: fullName
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing fullName field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+          msg: `Error editing fullName field by id ${nativeLogin.data.id} | ERROR:  ` + e
         })
       });
     }
@@ -472,37 +488,37 @@ export class UserController {
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing email field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+          msg: `Error editing email field by id ${nativeLogin.data.id} | ERROR:  ` + e
         })
       });
     }
     if (phone !== undefined) {
       await this.clientDB.user.update({
-        where: {login: nativeLogin["data"].login},
+        where: {login: nativeLogin.data.login},
         data: {
           phone: phone
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing phone field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+          msg: `Error editing phone field by id ${nativeLogin.data.id} | ERROR:  ` + e
         })
       });
     }
     if (email !== undefined) {
       await this.clientDB.user.update({
-        where: {login: nativeLogin["data"].login},
+        where: {login: nativeLogin.data.login},
         data: {
           email: email
         }
       }).catch(e => {
         return res.status(400).json({
-          msg: `Error editing email field by id ${nativeLogin["data"].id} | ERROR:  ` + e
+          msg: `Error editing email field by id ${nativeLogin.data.id} | ERROR:  ` + e
         })
       });
     }
 
     await this.clientDB.user.findUnique({
-      where: {login: nativeLogin["data"].login},
+      where: {login: nativeLogin.data.login},
       select: {
         id: true,
         fullName: true,

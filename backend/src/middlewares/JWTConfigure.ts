@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import {PrismaClient} from "@prisma/client";
 import {Request} from "express";
 import {Role} from "../types/role.type";
+import {JwtType} from "../types/jwt.type";
 
 
 export class JWTConfigure {
@@ -9,15 +10,16 @@ export class JWTConfigure {
   async validateToken(req: Request, client: PrismaClient, roles: Role[] = [Role.ROLE_USER]) : Promise<boolean> {
     try {
       const token = req.headers.authorization?.split(" ")[1];
-      const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
+      const tokenData: JwtType = jwt.verify(token, process.env.JWT_SECRET) as JwtType;
 
-      let tokenExists = undefined;
+      let tokenExists = [];
       for (const role of roles) {
+        if (tokenExists.length > 0) break;
         tokenExists = await client.token.findMany({
           where: {
             token: token,
             users: {
-              login: tokenData["data"].login,
+              login: tokenData.data.login,
               role: Role[role] as any
             }
           },
@@ -29,7 +31,7 @@ export class JWTConfigure {
 
         return true;
       } else {
-        console.error("VERIFY TOKEN:", "Token or User is not exists!");
+        console.error("VERIFY TOKEN:", "Token or User is not valid!");
         return false;
       }
     } catch (e) {

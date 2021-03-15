@@ -12,27 +12,27 @@ class JWTConfigure {
         try {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
             const tokenData = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-            let tokenExists = undefined;
+            let tokenExists = [];
             for (const role of roles) {
-                console.log(role_type_1.Role[role], tokenData["data"].login);
+                if (tokenExists.length > 0)
+                    break;
                 tokenExists = await client.token.findMany({
                     where: {
                         token: token,
                         users: {
-                            login: tokenData["data"].login,
+                            login: tokenData.data.login,
                             role: role_type_1.Role[role]
                         }
                     },
                     include: { users: true }
                 });
             }
-            console.log(tokenExists);
             if (tokenExists.length > 0) {
                 console.info("VERIFY TOKEN:", "VERIFIED");
                 return true;
             }
             else {
-                console.error("VERIFY TOKEN:", "Token or User is not exists!");
+                console.error("VERIFY TOKEN:", "Token or User is not valid!");
                 return false;
             }
         }
