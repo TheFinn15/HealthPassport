@@ -26,7 +26,7 @@ let UserController = class UserController {
         this.jwtConfigure = new JWTConfigure_1.JWTConfigure();
     }
     async recommendToUser(req, res) {
-        if (!(await this.jwtConfigure.validateToken(req, this.clientDB)))
+        if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
             return res.status(401).send("401 Unauthorized");
         const nativeLogin = jsonwebtoken_1.default.decode(req.headers.authorization.split(" ")[1]);
         try {

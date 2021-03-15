@@ -10,25 +10,20 @@ export class JWTConfigure {
     try {
       const token = req.headers.authorization?.split(" ")[1];
       const tokenData: any = jwt.verify(token, process.env.JWT_SECRET);
-      const [role1, role2] = roles;
 
-      const tokenExists = await client.token.findMany({
-        where: {
-          token: token,
-          users: {
-            login: tokenData["data"].login,
-            role: Role[role1] as any
-          },
-          OR: {
+      let tokenExists = undefined;
+      for (const role of roles) {
+        tokenExists = await client.token.findMany({
+          where: {
             token: token,
             users: {
               login: tokenData["data"].login,
-              role: Role[role2] as any
+              role: Role[role] as any
             }
-          }
-        },
-        include: {users: true}
-      });
+          },
+          include: {users: true}
+        });
+      }
       if (tokenExists.length > 0) {
         console.info("VERIFY TOKEN:", "VERIFIED")
 
