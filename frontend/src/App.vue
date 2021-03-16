@@ -22,15 +22,42 @@
             </v-icon>
           </v-btn>
         </template>
+        <v-card rounded>
+          <v-card-subtitle>
+            {{ curLocale.localeMenu.subtitle }}
+          </v-card-subtitle>
+          <v-divider />
+          <v-radio-group v-model="locales">
+            <v-radio
+              :label="curLocale.localeMenu.items[0]"
+              value="ru"
+              @click="changeLocale"
+            />
+            <v-radio
+              :label="curLocale.localeMenu.items[1]"
+              value="en"
+              @click="changeLocale"
+            />
+            <v-radio
+              :label="curLocale.localeMenu.items[2]"
+              value="ua"
+              @click="changeLocale"
+            />
+          </v-radio-group>
+        </v-card>
       </v-menu>
     </v-app-bar>
 
     <v-main>
-      <router-view />
+      <router-view v-model="locales" />
     </v-main>
 
     <footer>
-      <BottomNav :bottom-val="bottomNav" :is-auth="isAuth" />
+      <BottomNav
+        :locales="curLocale"
+        :bottom-val="bottomNav"
+        :is-auth="isAuth"
+      />
     </footer>
   </v-app>
 </template>
@@ -38,7 +65,7 @@
 <script lang="ts">
 import Vue from "vue";
 import BottomNav from "@/components/drawer/BottomNav.vue";
-import jwt, {TokenExpiredError} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import axios from "axios";
 
 export default Vue.extend({
@@ -46,12 +73,30 @@ export default Vue.extend({
   data: () => ({
     drawer: false,
     isAuth: false,
-    bottomNav: "main"
+    locales: "ua",
+    pageLocale: "main",
+    bottomNav: "main",
+    curLocale: {}
   }),
   components: {
     BottomNav
   },
-  methods: {},
+  methods: {
+    changeLocale() {
+      localStorage["locale"] = this.locales;
+      this.$i18n.locale = this.locales;
+      this.curLocale = this.$t(this.pageLocale);
+
+      this.$router.go();
+    }
+  },
+  beforeMount() {
+    this.$i18n.locale =
+      localStorage["locale"] !== undefined ? localStorage["locale"] : "ua";
+    this.curLocale = this.$t(this.pageLocale);
+
+    this.locales = localStorage["locale"];
+  },
   async updated() {
     if (localStorage["uid"] !== undefined) {
       const ip = await axios.get("https://api.ipify.org?format=json");
@@ -66,7 +111,7 @@ export default Vue.extend({
       }
     }
   },
-  mounted: async function() {
+  async mounted() {
     if (/login/i.test(this.$route.fullPath)) {
       this.bottomNav = "auth";
     } else if (/register/i.test(this.$route.fullPath)) {

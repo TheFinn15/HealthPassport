@@ -1,0 +1,18 @@
+{
+  "main": {
+    "localeMenu": {
+      "subtitle": "Language of system:",
+      "items": ["Russian", "English", "Ukrainian"]
+    }
+  },
+  "home": {
+    "filter": {
+      "subtitle": "Filters",
+      "items": [
+        "Exclude ills",
+        "Exclude surveys",
+        "Exclude vaccines"
+      ]
+    }
+  }
+}

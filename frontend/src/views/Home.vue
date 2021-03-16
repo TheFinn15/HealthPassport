@@ -13,24 +13,24 @@
             </template>
             <v-card rounded>
               <v-card-subtitle>
-                Фильтрация:
+                {{ curLocale.filter.subtitle }}
               </v-card-subtitle>
               <v-divider />
               <v-container>
                 <v-checkbox
-                    label="Исключить болезни"
-                    v-model="filterList.ill"
-                    value="Ill"
+                  :label="curLocale.filter.items[0]"
+                  v-model="filterList.ill"
+                  value="Ill"
                 />
                 <v-checkbox
-                    label="Исключить обследования"
-                    v-model="filterList.survey"
-                    value="Survey"
+                  :label="curLocale.filter.items[1]"
+                  v-model="filterList.survey"
+                  value="Survey"
                 />
                 <v-checkbox
-                    label="Исключить вакцины"
-                    v-model="filterList.vaccine"
-                    value="Vaccine"
+                  :label="curLocale.filter.items[2]"
+                  v-model="filterList.vaccine"
+                  value="Vaccine"
                 />
               </v-container>
             </v-card>
@@ -55,7 +55,6 @@
                 @click="constraintInfo = false"
               >
                 ЗАКРЫТЬ
-                {{$t()}}
               </v-btn>
             </template>
           </v-snackbar>
@@ -166,15 +165,14 @@ import Ill from "@/components/home/Ill.vue";
 import Survey from "@/components/home/Survey.vue";
 import Vaccine from "@/components/home/Vaccine.vue";
 import { ServiceType } from "@/types/service.type";
-import { ResultType } from "@/types/result.type";
-import { UserType } from "@/types/user.type";
-import { CapsType } from "@/types/caps.type";
 
 export default Vue.extend({
   name: "Home",
   components: { Vaccine, Survey, Ill },
   data() {
     return {
+      pageLocale: "home",
+      curLocale: {},
       userInfo: {
         services: []
       },
@@ -250,6 +248,9 @@ export default Vue.extend({
     }
   },
   async beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
+
     this.services = await this.$store.getters.getServices;
   },
   async mounted() {

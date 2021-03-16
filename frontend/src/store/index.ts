@@ -1,5 +1,5 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -8,10 +8,9 @@ export default new Vuex.Store({
   state: {
     userInfo: {}
   },
-  mutations: {
-  },
+  mutations: {},
   actions: {
-    async updateTokenIp({state}) {
+    async updateTokenIp({ state }) {
       await axios({
         method: "PUT",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/token",
@@ -21,7 +20,7 @@ export default new Vuex.Store({
         }
       });
     },
-    async editUser({state}) {
+    async editUser({ state }) {
       await axios({
         method: "PUT",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
@@ -31,7 +30,7 @@ export default new Vuex.Store({
         }
       });
     },
-    async logout({state}) {
+    async logout({ state }) {
       await axios({
         method: "POST",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/logout",
@@ -41,18 +40,20 @@ export default new Vuex.Store({
         }
       });
     },
-    async auth({state}) {
+    async auth({ state }) {
       await axios({
         method: "POST",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/login",
         data: state.userInfo
-      }).then(resp => {
-        localStorage['uid'] = resp.data.token;
-      }).catch(e => {
-        console.error(e);
-      });
+      })
+        .then(resp => {
+          localStorage["uid"] = resp.data.token;
+        })
+        .catch(e => {
+          console.error(e);
+        });
     },
-    async register({state}) {
+    async register({ state }) {
       await axios({
         method: "POST",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/register",
@@ -68,7 +69,7 @@ export default new Vuex.Store({
         method: "GET",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/services",
         headers: {
-          Authorization: "Bearer " + localStorage['uid']
+          Authorization: "Bearer " + localStorage["uid"]
         }
       }).then(resp => resp.data);
     },
@@ -77,11 +78,10 @@ export default new Vuex.Store({
         method: "GET",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
         headers: {
-          Authorization: "Bearer " + localStorage['uid']
+          Authorization: "Bearer " + localStorage["uid"]
         }
       }).then(resp => resp.data);
     }
   },
-  modules: {
-  },
+  modules: {}
 });

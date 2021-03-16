@@ -1,10 +1,6 @@
 <template>
   <v-card outlined>
-    <UserSessionsItem
-        v-for="(item, i) in sessions"
-        :key="i"
-        :session="item"
-    />
+    <UserSessionsItem v-for="(item, i) in sessions" :key="i" :session="item" />
   </v-card>
 </template>
 

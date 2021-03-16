@@ -1,6 +1,6 @@
 <template>
   <v-bottom-navigation horizontal app :value="bottomVal" color="#FFB74D">
-    <v-btn to="/" value="main">
+    <v-btn value="main" to="/">
       <span>
         Главная
       </span>

@@ -1,4 +1,3 @@
-
 export enum CapLevelType {
   OKAY_LEVEL,
   NORMAL_LEVEL,

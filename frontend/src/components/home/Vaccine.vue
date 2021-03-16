@@ -81,7 +81,7 @@ export default Vue.extend({
   data() {
     return {
       alertInfo: false
-    }
+    };
   }
 });
 </script>
