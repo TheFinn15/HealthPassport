@@ -1,6 +1,6 @@
 <template>
   <v-card flat>
-    <v-card rounded style="margin: 5%" v-if="!isAuth">
+    <v-card rounded style="margin: 5%" v-if="isAuth">
       <v-tabs color="#FB8C00" icons-and-text grow>
         <v-tab>
           <v-icon>
@@ -53,17 +53,18 @@
               </v-icon>
               Активные сессии
             </v-tab>
-            <v-tab-item></v-tab-item>
-            <v-tab-item></v-tab-item>
-            <v-tab-item></v-tab-item>
+            <v-tab-item>
+              <UserData :user-info="userInfo" />
+            </v-tab-item>
+            <v-tab-item>
+              <UserConstraint :user-info="userInfo" />
+            </v-tab-item>
+            <v-tab-item>
+              <UserSessions :user-info="userInfo" />
+            </v-tab-item>
           </v-tabs>
           <v-fade-transition>
-            <v-overlay
-              z-index="5"
-              v-if="hover"
-              absolute
-              color="#FFA726"
-            >
+            <v-overlay z-index="5" v-if="hover" absolute color="#FFA726">
               <v-card-title style="text-align: center;">
                 Для продолжения <br />
                 выполните одно из этих действий
@@ -93,20 +94,20 @@ import { UserType } from "@/types/user.type";
 import { ResultType } from "@/types/result.type";
 import { CapsType } from "@/types/caps.type";
 import { AuthType } from "@/types/auth.type";
-import {ServiceType} from "@/types/service.type";
+import { ServiceType } from "@/types/service.type";
 
 export default Vue.extend({
   name: "Cabinet",
   components: { UserSessions, UserConstraint, UserData },
   data() {
     return {
-      isAuth: localStorage["uid"] === undefined,
+      isAuth: localStorage["uid"] !== undefined,
       userInfo: {
-        fullName: "",
-        login: "",
+        fullName: "Telo Slo V",
+        login: "TeloSlo12",
         pwd: "",
-        email: "",
-        phone: "",
+        email: "telo@te.com",
+        phone: "1802345645",
         services: [] as ServiceType[],
         resultsSurvey: [] as ResultType[],
         caps: [] as CapsType[],
@@ -115,7 +116,9 @@ export default Vue.extend({
     };
   },
   async mounted() {
-    this.userInfo = (await this.$store.getters.getCurUser)[0];
+    if (this.isAuth) {
+      this.userInfo = (await this.$store.getters.getCurUser)[0];
+    }
   }
 });
 </script>

@@ -38,7 +38,7 @@
 <script lang="ts">
 import Vue from "vue";
 import BottomNav from "@/components/drawer/BottomNav.vue";
-import jwt from "jsonwebtoken";
+import jwt, {TokenExpiredError} from "jsonwebtoken";
 import axios from "axios";
 
 export default Vue.extend({
@@ -56,7 +56,7 @@ export default Vue.extend({
     if (localStorage["uid"] !== undefined) {
       const ip = await axios.get("https://api.ipify.org?format=json");
       const user = (await this.$store.getters.getCurUser)[0].auths.filter(
-        i => i.token === localStorage["uid"]
+        (i: any) => i.token === localStorage["uid"]
       )[0];
       this.$store.state.userInfo = ip.data["ip"];
 
@@ -78,21 +78,19 @@ export default Vue.extend({
     }
     if (localStorage["uid"] !== undefined) {
       try {
-        try {
-          jwt.verify(localStorage["uid"], "T0p_S3cr3t");
+        jwt.verify(localStorage["uid"], "T0p_S3cr3t");
 
-          this.isAuth = true;
-        } catch (e) {
-          const ip = await axios.get("https://api.ipify.org?format=json");
-          this.$store.state.userInfo = ip.data["ip"];
-          await this.$store.dispatch("logout");
-
-          localStorage.removeItem("uid");
-          window.location.href = "/";
-        }
+        this.isAuth = true;
       } catch (e) {
+        if (e.name === "JsonWebTokenError") {
+          if (e.message !== "invalid signature") {
+            const ip = await axios.get("https://api.ipify.org?format=json");
+            this.$store.state.userInfo = ip.data["ip"];
+            await this.$store.dispatch("logout");
+          }
+        }
         localStorage.removeItem("uid");
-        window.location.href = "/";
+        if (this.$route.path !== "/") window.location.href = "/";
       }
     }
   }

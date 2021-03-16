@@ -60,8 +60,7 @@ export default {
       await this.$store.dispatch("logout");
 
       localStorage.removeItem("uid");
-      await this.$router.push("/");
-      window.location.reload();
+      if (this.$route.path !== "/") window.location.href = "/";
     }
   }
 };

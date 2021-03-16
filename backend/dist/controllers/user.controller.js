@@ -65,7 +65,17 @@ let UserController = class UserController {
                 }
             }));
             return res.status(200).json({
-                user: await this.clientDB.user.findUnique({ where: { login: nativeLogin["data"].login } }),
+                user: await this.clientDB.user.findUnique({
+                    where: { login: nativeLogin["data"].login },
+                    select: {
+                        id: true,
+                        fullName: true,
+                        login: true,
+                        email: true,
+                        phone: true,
+                        role: true,
+                    }
+                }),
                 surveys: uniqueSurveys,
                 vaccines: uniqueVaccines
             });

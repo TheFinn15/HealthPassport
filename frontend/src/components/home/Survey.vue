@@ -72,11 +72,18 @@
   </v-card>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+
+export default Vue.extend({
   name: "Survey",
-  props: ["surveys"]
-};
+  props: ["surveys"],
+  data() {
+    return {
+      alertInfo: false
+    }
+  }
+});
 </script>
 
 <style scoped></style>

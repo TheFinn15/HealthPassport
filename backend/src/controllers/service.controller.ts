@@ -13,8 +13,8 @@ export class ServiceController {
   @Get("services")
   private async getAllService(req: Request, res: Response) {
     try {
-      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
-        return res.status(401).send("401 Unauthorized");
+      // if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+      //   return res.status(401).send("401 Unauthorized");
 
       await this.clientDB.supplierServices.findMany({
         include: {partner: true}

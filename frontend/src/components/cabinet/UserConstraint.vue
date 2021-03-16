@@ -32,7 +32,7 @@
       </v-tooltip>
     </v-card-title>
     <v-divider />
-    <v-list>
+    <v-list v-if="userInfo.caps.length > 0">
       <v-list-group
         v-for="(item, i) in userInfo.caps"
         :key="i"
@@ -71,6 +71,16 @@
         </v-list-group>
       </v-list-group>
     </v-list>
+    <div
+      style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 15%"
+    >
+      <v-icon x-large>
+        mood
+      </v-icon>
+      <v-card-title>
+        Ограничения отсутствуют
+      </v-card-title>
+    </div>
   </v-card>
 </template>
 

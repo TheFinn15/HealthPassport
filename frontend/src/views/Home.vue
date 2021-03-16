@@ -6,35 +6,83 @@
           <v-menu offset-x>
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon>
+                <v-icon large>
                   filter_list
                 </v-icon>
               </v-btn>
             </template>
+            <v-card rounded>
+              <v-card-subtitle>
+                Фильтрация:
+              </v-card-subtitle>
+              <v-divider />
+              <v-container>
+                <v-checkbox
+                    label="Исключить болезни"
+                    v-model="filterList.ill"
+                    value="Ill"
+                />
+                <v-checkbox
+                    label="Исключить обследования"
+                    v-model="filterList.survey"
+                    value="Survey"
+                />
+                <v-checkbox
+                    label="Исключить вакцины"
+                    v-model="filterList.vaccine"
+                    value="Vaccine"
+                />
+              </v-container>
+            </v-card>
           </v-menu>
         </v-col>
         <v-col cols="12">
+          <v-snackbar
+            color="red"
+            top
+            outlined
+            timeout="2500"
+            v-model="constraintInfo"
+          >
+            <span>
+              Ваши ограничения находятся в личном кабинете
+            </span>
+            <template v-slot:action="{ attrs }">
+              <v-btn
+                v-bind="attrs"
+                text
+                color="red"
+                @click="constraintInfo = false"
+              >
+                ЗАКРЫТЬ
+                {{$t()}}
+              </v-btn>
+            </template>
+          </v-snackbar>
           <v-card rounded style="padding: 2%">
             <v-card-title style="justify-content: center; display: flex;">
               Мои данные
               <v-btn
                 v-if="mapToServices[0].length > 0"
-                @click="doShowConstraint"
+                @click="constraintInfo = !constraintInfo"
                 outlined
                 color="red"
                 absolute
                 right
               >
-                Ограничения
+                Наложены ограничения
               </v-btn>
               <v-btn v-else text color="green" absolute right>
                 Без ограничений
               </v-btn>
             </v-card-title>
             <v-list>
-              <Ill :ills="mapToServices[0]" />
-              <Survey :surveys="mapToServices[1]" />
-              <Vaccine :vaccines="mapToServices[2]" />
+              <Ill v-if="!filterList.ill" :ills="mapToServices[0]" />
+              <Survey v-if="!filterList.survey" :surveys="mapToServices[1]" />
+              <Vaccine
+                v-if="!filterList.vaccine"
+                :vaccines="mapToServices[2]"
+              />
             </v-list>
           </v-card>
         </v-col>
@@ -87,7 +135,7 @@
           <v-overlay :value="hideExample" z-index="0" style="padding: 2%">
             <v-card rounded light max-width="420">
               <v-card-title
-                style="word-break: break-word;justify-content: center; display: flex"
+                style="text-align: center; display: block; word-break: break-word"
               >
                 Зарегистрируйтесь или войдите в систему для больших возможностей
                 !
@@ -117,6 +165,10 @@ import Vue from "vue";
 import Ill from "@/components/home/Ill.vue";
 import Survey from "@/components/home/Survey.vue";
 import Vaccine from "@/components/home/Vaccine.vue";
+import { ServiceType } from "@/types/service.type";
+import { ResultType } from "@/types/result.type";
+import { UserType } from "@/types/user.type";
+import { CapsType } from "@/types/caps.type";
 
 export default Vue.extend({
   name: "Home",
@@ -127,89 +179,55 @@ export default Vue.extend({
         services: []
       },
       hideExample: false,
-      services: [
-        {
-          name: "COVID",
-          type: "TYPE_ILL"
-        },
-        {
-          name: "GEpa",
-          type: "TYPE_ILL"
-        },
-        {
-          name: "COVID",
-          type: "TYPE_SURVEY"
-        },
-        {
-          name: "GEpa",
-          type: "TYPE_SURVEY"
-        },
-        {
-          name: "COVID",
-          type: "TYPE_VACCINE"
-        },
-        {
-          name: "Jopa",
-          type: "TYPE_VACCINE"
-        }
-      ],
+      services: [] as ServiceType[],
       isAuth: localStorage["uid"] !== undefined,
       exampleData: {
         hasConstraint: false,
-        ill: [],
-        surveys: [],
-        vaccines: []
+        ill: [] as ServiceType[],
+        surveys: [] as ServiceType[],
+        vaccines: [] as ServiceType[]
+      },
+      constraintInfo: false,
+      filterList: {
+        ill: false,
+        survey: false,
+        vaccine: false
       }
     };
   },
   methods: {
     randomizeExampleData() {
       if (this.$data.exampleData.hasConstraint) {
-        const ills = this.$data.services.filter(
-          (i: any) => i.type === "TYPE_ILL"
-        );
-        const surveys = this.$data.services.filter(
+        const ills = this.services.filter((i: any) => i.type === "TYPE_ILL");
+        const surveys = this.services.filter(
           (i: any) => i.type === "TYPE_SURVEY"
         );
-        const vaccines = this.$data.services.filter(
+        const vaccines = this.services.filter(
           (i: any) => i.type === "TYPE_VACCINE"
         );
 
-        let tempChoiceIll = [ills[Math.floor(Math.random() * ills.length)]];
-        const tempChoiceSurvey = [
+        const randChoiceSurvey = [
           surveys[Math.floor(Math.random() * surveys.length)]
         ];
-        const tempChoiceVaccine = [
-          vaccines[Math.floor(Math.random() * vaccines.length)]
-        ];
+        const randChoiceVaccine = vaccines.filter(
+          i => i.name === randChoiceSurvey[0].name
+        );
+        const randChoiceIll = ills.filter(
+          i => i.name === randChoiceSurvey[0].name
+        );
 
-        if (tempChoiceIll[0].name === tempChoiceVaccine[0].name) {
-          tempChoiceIll = tempChoiceIll.filter(
-            (i: any) => i.name !== tempChoiceVaccine[0].name
-          );
-          // this.services.filter(i =>
-          //     i.type === "TYPE_ILL" &&
-          //     i.name !== tempChoiceVaccine[0].name
-          // )[0];
-        }
-        if (tempChoiceIll[0].name !== tempChoiceSurvey[0].name) {
-          tempChoiceIll = [];
-          tempChoiceIll.push(tempChoiceSurvey[0]);
-        } else if (tempChoiceSurvey[0].name !== tempChoiceIll[0].name) {
-          tempChoiceSurvey.push(tempChoiceIll[0]);
-        }
-
-        this.$data.exampleData.ill.push(...tempChoiceIll);
-        this.$data.exampleData.surveys.push(...tempChoiceSurvey);
-        this.$data.exampleData.vaccines.push(...tempChoiceVaccine);
+        this.exampleData.ill.push(
+          ...(randChoiceIll.length > 0 && randChoiceVaccine.length > 0
+            ? []
+            : randChoiceIll)
+        );
+        this.exampleData.surveys.push(...randChoiceSurvey);
+        this.exampleData.vaccines.push(...randChoiceVaccine);
       } else {
-        this.$data.exampleData.ill = [];
-        this.$data.exampleData.surveys = [];
-        this.$data.exampleData.vaccines = [];
+        this.exampleData.ill = [];
+        this.exampleData.surveys = [];
+        this.exampleData.vaccines = [];
       }
-    },
-    doShowConstraint() {
-      this.$data.services = [];
     }
   },
   computed: {
@@ -231,8 +249,13 @@ export default Vue.extend({
       }
     }
   },
+  async beforeMount() {
+    this.services = await this.$store.getters.getServices;
+  },
   async mounted() {
-    this.$data.userInfo = (await this.$store.getters.getCurUser)[0];
+    if (this.isAuth) {
+      this.$data.userInfo = (await this.$store.getters.getCurUser)[0];
+    }
   }
 });
 </script>

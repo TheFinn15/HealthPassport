@@ -136,7 +136,8 @@ export default {
           this.alert.state = true;
           if (localStorage["uid"] !== undefined) {
             this.alert.info = "Успешная регистрация!";
-            window.location.href = "/cabinet";
+            this.$router.push("/cabinet");
+            window.location.reload();
           } else {
             this.alert.type = "error";
             this.alert.info = "Ошибка регистрации!";

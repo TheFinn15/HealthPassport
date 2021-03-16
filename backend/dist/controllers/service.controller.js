@@ -21,8 +21,8 @@ let ServiceController = class ServiceController {
     }
     async getAllService(req, res) {
         try {
-            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
-                return res.status(401).send("401 Unauthorized");
+            // if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+            //   return res.status(401).send("401 Unauthorized");
             await this.clientDB.supplierServices.findMany({
                 include: { partner: true }
             }).then(resp => {
