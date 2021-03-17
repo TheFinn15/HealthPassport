@@ -65,8 +65,23 @@ let PartnerController = class PartnerController {
             const id = parseInt(req.params.id);
             await this.clientDB.partner.findUnique({
                 where: { id: id },
-                include: {
-                    user: true
+                select: {
+                    id: true,
+                    name: true,
+                    timeWork: true,
+                    url: true,
+                    about: true,
+                    services: true,
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            login: true,
+                            email: true,
+                            phone: true,
+                            role: true
+                        }
+                    }
                 }
             }).then(resp => {
                 return res.status(200).json(resp);

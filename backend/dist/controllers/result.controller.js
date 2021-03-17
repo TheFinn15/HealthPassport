@@ -23,7 +23,19 @@ let ResultController = class ResultController {
         if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
             return res.status(401).send("401 Unauthorized");
         await this.clientDB.resultSurvey.findMany({
-            include: { user: true, survey: true }
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        login: true,
+                        email: true,
+                        phone: true,
+                        role: true
+                    }
+                },
+                survey: true
+            }
         }).then(resp => {
             return res.status(200).json(resp);
         }).catch(e => {
@@ -38,7 +50,19 @@ let ResultController = class ResultController {
         const { id } = req.params;
         await this.clientDB.resultSurvey.findMany({
             where: { id: parseInt(id) },
-            include: { user: true, survey: true }
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        login: true,
+                        email: true,
+                        phone: true,
+                        role: true
+                    }
+                },
+                survey: true
+            }
         }).then(resp => {
             return res.status(200).json(resp);
         }).catch(e => {
