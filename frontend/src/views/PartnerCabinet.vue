@@ -8,11 +8,26 @@
 
       <v-tab-item>
         <v-card>
+          <AddForm
+            :is-open="isOpen"
+            :info="forms"
+            :do-close-form="doCloseForm"
+            :update-service="doUpdateServices"
+          />
           <v-card-title style="display: flex; justify-content: center">
             Сервисы в системе
             <v-tooltip left color="#FB8C00">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn fab absolute right color="success" small v-on="on" v-bind="attrs">
+                <v-btn
+                  fab
+                  absolute
+                  right
+                  color="success"
+                  small
+                  v-on="on"
+                  v-bind="attrs"
+                  @click="isOpen = true"
+                >
                   <v-icon>
                     create
                   </v-icon>
@@ -24,7 +39,7 @@
             </v-tooltip>
           </v-card-title>
           <v-divider />
-          <OurServicesList :services="services" />
+          <OurServicesList :do-delete-service="doRemoveService" :services="services" />
         </v-card>
       </v-tab-item>
       <v-tab-item></v-tab-item>
@@ -40,18 +55,40 @@ import { PartnerType } from "@/types/partner.type";
 import { ServiceType } from "@/types/service.type";
 import { UserType } from "@/types/user.type";
 import OurServicesList from "@/components/partner-cabinet/OurServicesList.vue";
+import AddForm from "@/components/partner-cabinet/forms/AddForm.vue";
 
 export default Vue.extend({
   name: "PartnerCabinet",
-  components: {OurServicesList},
+  components: { AddForm, OurServicesList },
   data: () => {
     return {
       isAuth: localStorage["uid"] !== undefined,
       info: {} as PartnerType,
       services: [] as ServiceType[],
       surveys: [] as ServiceType[],
-      clients: [] as UserType[]
+      clients: [] as UserType[],
+      isOpen: false,
+      forms: {
+        name: "",
+        type: "",
+        info: ""
+      }
     };
+  },
+  methods: {
+    doCloseForm(info: { state: boolean }) {
+      this.isOpen = info.state;
+
+      // for (const key of Object.keys(this.forms)) {
+      //   this.forms[key as "name" | "type" | "info"] = "";
+      // }
+    },
+    doRemoveService(id: number) {
+      this.services = this.services.filter((i: ServiceType) => i.id !== id);
+    },
+    doUpdateServices(item: ServiceType) {
+      this.services.push(item);
+    }
   },
   async mounted() {
     if (this.isAuth) {
@@ -60,9 +97,7 @@ export default Vue.extend({
       this.info = (await this.$store.getters.getPartners).filter(
         (i: PartnerType) => i.user.id === user[0].id
       )[0];
-      console.log(this.info)
       this.services = this.info.services;
-      console.log(this.services)
     }
   }
 });

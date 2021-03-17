@@ -90,7 +90,7 @@ let ServiceController = class ServiceController {
         try {
             if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
-            const { name, type, result, info, partner } = req.body;
+            const { name, type, result, info, partner: partnerId } = req.body;
             const { id } = req.params;
             if (name !== undefined) {
                 await this.clientDB.supplierServices.update({
@@ -144,11 +144,11 @@ let ServiceController = class ServiceController {
                     });
                 });
             }
-            if (partner !== undefined) {
+            if (partnerId !== undefined) {
                 await this.clientDB.supplierServices.update({
                     where: { id: parseInt(id) },
                     data: {
-                        partnerId: partner
+                        partnerId: partnerId
                     }
                 }).catch(e => {
                     return res.status(400).json({

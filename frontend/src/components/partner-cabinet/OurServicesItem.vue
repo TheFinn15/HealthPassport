@@ -1,9 +1,29 @@
 <template>
   <v-row>
-    <v-col cols="1" style="display: flex; justify-content: center; align-items: center; flex-direction: column">
+    <EditForm
+      :info="service"
+      :do-close-form="doCloseForm"
+      :is-open="isOpen.edit"
+    />
+    <DeleteForm
+      :do-delete-service="doDelete"
+      :info="service"
+      :do-close-form="doCloseForm"
+      :is-open="isOpen.delete"
+    />
+    <v-col
+      cols="1"
+      style="display: flex; justify-content: center; align-items: center; flex-direction: column"
+    >
       <v-tooltip right color="#FB8C00">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon color="info" @click="doEdit" v-on="on" v-bind="attrs">
+          <v-btn
+            icon
+            color="info"
+            @click="isOpen.edit = true"
+            v-on="on"
+            v-bind="attrs"
+          >
             <v-icon>
               edit
             </v-icon>
@@ -15,9 +35,15 @@
       </v-tooltip>
       <v-tooltip right color="#FB8C00">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon color="red" @click="doDelete" v-on="on" v-bind="attrs">
+          <v-btn
+            icon
+            color="red"
+            @click="isOpen.delete = true"
+            v-on="on"
+            v-bind="attrs"
+          >
             <v-icon>
-              remove
+              remove_circle_outline
             </v-icon>
           </v-btn>
         </template>
@@ -42,7 +68,7 @@
         {{ service.info }}
       </v-card-text>
     </v-col>
-    <v-col>
+    <v-col cols="2">
       <v-card-subtitle class="pb-0">
         Тип сервиса:
       </v-card-subtitle>
@@ -54,10 +80,14 @@
 </template>
 
 <script lang="ts">
+import EditForm from "@/components/partner-cabinet/forms/EditForm.vue";
+import DeleteForm from "@/components/partner-cabinet/forms/DeleteForm.vue";
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
   name: "OurServicesItem",
-  props: ["service"],
+  components: { EditForm, DeleteForm },
+  props: ["service", "doDeleteService"],
   data() {
     return {
       checkTypeService(service: string) {
@@ -67,18 +97,22 @@ export default {
         if (service === "TYPE_VACCINE") res = "Вакцинация";
 
         return res;
+      },
+      isOpen: {
+        edit: false,
+        delete: false
       }
     };
   },
   methods: {
-    doDelete() {
-      console.log("");
+    doCloseForm(info: { state: boolean; name: "edit" | "delete" }) {
+      this.isOpen[info.name] = info.state;
     },
-    doEdit() {
-      console.log("");
+    doDelete(id: number) {
+      this.doDeleteService(id);
     }
   }
-};
+});
 </script>
 
 <style scoped></style>

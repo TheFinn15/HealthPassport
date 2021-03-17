@@ -1,7 +1,7 @@
 <template>
-  <v-card max-height="300" style="overflow-y: scroll">
+  <v-card max-height="400" style="overflow-y: scroll">
     <v-container>
-      <OurServicesItem v-for="(item, i) in services" :key="i" :service="item" />
+      <OurServicesItem v-for="(item, i) in services" :key="i" :service="item" :do-delete-service="doDelete" />
     </v-container>
   </v-card>
 </template>
@@ -11,7 +11,12 @@ import OurServicesItem from "@/components/partner-cabinet/OurServicesItem";
 export default {
   name: "OurServicesList",
   components: {OurServicesItem},
-  props: ["services"]
+  props: ["services", "doDeleteService"],
+  methods: {
+    doDelete(id) {
+      this.doDeleteService(id);
+    }
+  }
 };
 </script>
 

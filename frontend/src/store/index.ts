@@ -6,7 +6,9 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    userInfo: {}
+    userInfo: {},
+    service: {},
+    errors: ""
   },
   mutations: {},
   actions: {
@@ -60,6 +62,41 @@ export default new Vuex.Store({
         data: state.userInfo
       }).catch(e => {
         console.error(e);
+      });
+    },
+    async addService({state}) {
+      await axios({
+        method: "POST",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/service",
+        data: state.service,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async editService({state}, payload) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/service/" + payload.id,
+        data: state.service,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async deleteService({state}, payload) {
+      await axios({
+        method: "DELETE",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/service/" + payload.id,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
       });
     }
   },
