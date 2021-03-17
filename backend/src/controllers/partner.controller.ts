@@ -18,7 +18,26 @@ export class PartnerController {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
-      await this.clientDB.partner.findMany()
+      await this.clientDB.partner.findMany({
+        select: {
+          id: true,
+          name: true,
+          timeWork: true,
+          url: true,
+          about: true,
+          services: true,
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              login: true,
+              email: true,
+              phone: true,
+              role: true
+            }
+          }
+        }
+      })
         .then(resp => {
           return res.status(200).json(resp);
         })
@@ -42,7 +61,25 @@ export class PartnerController {
 
       const id = parseInt(req.params.id);
       await this.clientDB.partner.findUnique({
-        where: {id: id}
+        where: {id: id},
+        select: {
+          id: true,
+          name: true,
+          timeWork: true,
+          url: true,
+          about: true,
+          services: true,
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              login: true,
+              email: true,
+              phone: true,
+              role: true
+            }
+          }
+        }
       }).then(resp => {
         return res.status(200).json(resp);
       }).catch(e => {
@@ -63,13 +100,14 @@ export class PartnerController {
       if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
-      const {name, timeWork, url, about} = req.body;
+      const {name, timeWork, url, about, user} = req.body;
       await this.clientDB.partner.create({
         data: {
           name: name,
           timeWork: timeWork,
           url: url,
-          about: about
+          about: about,
+          userId: user
         }
       }).then(resp => {
         return res.status(200).json(resp);

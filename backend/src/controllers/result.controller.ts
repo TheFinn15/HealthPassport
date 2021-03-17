@@ -17,7 +17,19 @@ export class ResultController {
       return res.status(401).send("401 Unauthorized");
 
     await this.clientDB.resultSurvey.findMany({
-      include: {user: true, survey: true}
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            login: true,
+            email: true,
+            phone: true,
+            role: true
+          }
+        },
+        survey: true
+      }
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {
@@ -36,7 +48,19 @@ export class ResultController {
 
     await this.clientDB.resultSurvey.findMany({
       where: {id: parseInt(id)},
-      include: {user: true, survey: true}
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            login: true,
+            email: true,
+            phone: true,
+            role: true
+          }
+        },
+        survey: true
+      }
     }).then(resp => {
       return res.status(200).json(resp);
     }).catch(e => {

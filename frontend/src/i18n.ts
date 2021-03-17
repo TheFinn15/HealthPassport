@@ -17,7 +17,6 @@ function loadLocaleMessages(): LocaleMessages {
       messages[locale] = locales(key);
     }
   });
-  console.dir(messages)
   return messages;
 }
 

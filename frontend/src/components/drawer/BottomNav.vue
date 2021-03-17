@@ -9,9 +9,9 @@
       </v-icon>
     </v-btn>
 
-    <v-btn to="/cabinet" v-if="isAuth" value="cabinet">
+    <v-btn v-if="isAuth" value="cabinet" @click="goToCabinet">
       <span>
-        Личный кабинет
+        Мой кабинет
       </span>
       <v-icon>
         person
@@ -54,6 +54,9 @@ export default {
   name: "BottomNav",
   props: ["bottomVal", "isAuth", "locales"],
   methods: {
+    goToCabinet() {
+      console.log("");
+    },
     async doLogout() {
       const ip = await axios.get("https://api.ipify.org?format=json");
       this.$store.state.userInfo = { ip: ip.data["ip"] };

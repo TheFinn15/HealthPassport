@@ -64,6 +64,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    async getPartners() {
+      return await axios({
+        method: "GET",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/partners",
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).then(resp => resp.data)
+    },
     async getServices() {
       return await axios({
         method: "GET",
