@@ -35,6 +35,28 @@
               </v-container>
             </v-card>
           </v-menu>
+          <v-tooltip right color="#FB8C00">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-on="on"
+                v-bind="attrs"
+                @click="showAddService = true"
+              >
+                <v-icon large>
+                  add
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>
+              Использовать сервисы
+            </span>
+          </v-tooltip>
+          <AddService
+            :update-service="updateService"
+            :is-open="showAddService"
+            :closer="doClose"
+          />
         </v-col>
         <v-col cols="12">
           <v-snackbar
@@ -62,7 +84,7 @@
             <v-card-title style="justify-content: center; display: flex;">
               Мои данные
               <v-btn
-                v-if="mapToServices[0].length > 0"
+                v-if="services.ills.length > 0"
                 @click="constraintInfo = !constraintInfo"
                 outlined
                 color="red"
@@ -76,11 +98,11 @@
               </v-btn>
             </v-card-title>
             <v-list>
-              <Ill v-if="!filterList.ill" :ills="mapToServices[0]" />
-              <Survey v-if="!filterList.survey" :surveys="mapToServices[1]" />
+              <Ill v-if="!filterList.ill" :ills="services.ills" />
+              <Survey v-if="!filterList.survey" :surveys="services.surveys" />
               <Vaccine
                 v-if="!filterList.vaccine"
-                :vaccines="mapToServices[2]"
+                :vaccines="services.vaccines"
               />
             </v-list>
           </v-card>
@@ -165,10 +187,11 @@ import Ill from "@/components/home/Ill.vue";
 import Survey from "@/components/home/Survey.vue";
 import Vaccine from "@/components/home/Vaccine.vue";
 import { ServiceType } from "@/types/service.type";
+import AddService from "@/components/home/AddService.vue";
 
 export default Vue.extend({
   name: "Home",
-  components: { Vaccine, Survey, Ill },
+  components: { AddService, Vaccine, Survey, Ill },
   data() {
     return {
       pageLocale: "home",
@@ -177,7 +200,11 @@ export default Vue.extend({
         services: []
       },
       hideExample: false,
-      services: [] as ServiceType[],
+      services: {
+        ills: [] as ServiceType[],
+        surveys: [] as ServiceType[],
+        vaccines: [] as ServiceType[]
+      },
       isAuth: localStorage["uid"] !== undefined,
       exampleData: {
         hasConstraint: false,
@@ -190,72 +217,76 @@ export default Vue.extend({
         ill: false,
         survey: false,
         vaccine: false
-      }
+      },
+      showAddService: false
     };
   },
   methods: {
+    updateService(service: ServiceType) {
+      if (service.type === "TYPE_SURVEY") {
+        this.$data.services.surveys.push(service);
+      } else if (service.type === "TYPE_VACCINE") {
+        this.$data.services.surveys.push(service);
+      }
+    },
     randomizeExampleData() {
       if (this.$data.exampleData.hasConstraint) {
-        const ills = this.services.filter((i: any) => i.type === "TYPE_ILL");
-        const surveys = this.services.filter(
-          (i: any) => i.type === "TYPE_SURVEY"
+        const ills = this.$data.services.filter(
+          (i: ServiceType) => i.type === "TYPE_ILL"
         );
-        const vaccines = this.services.filter(
-          (i: any) => i.type === "TYPE_VACCINE"
+        const surveys = this.$data.services.filter(
+          (i: ServiceType) => i.type === "TYPE_SURVEY"
+        );
+        const vaccines = this.$data.services.filter(
+          (i: ServiceType) => i.type === "TYPE_VACCINE"
         );
 
         const randChoiceSurvey = [
           surveys[Math.floor(Math.random() * surveys.length)]
         ];
         const randChoiceVaccine = vaccines.filter(
-          i => i.name === randChoiceSurvey[0].name
+          (i: ServiceType) => i.name === randChoiceSurvey[0].name
         );
         const randChoiceIll = ills.filter(
-          i => i.name === randChoiceSurvey[0].name
+          (i: ServiceType) => i.name === randChoiceSurvey[0].name
         );
 
-        this.exampleData.ill.push(
+        this.$data.exampleData.ill.push(
           ...(randChoiceIll.length > 0 && randChoiceVaccine.length > 0
             ? []
             : randChoiceIll)
         );
-        this.exampleData.surveys.push(...randChoiceSurvey);
-        this.exampleData.vaccines.push(...randChoiceVaccine);
+        this.$data.exampleData.surveys.push(...randChoiceSurvey);
+        this.$data.exampleData.vaccines.push(...randChoiceVaccine);
       } else {
-        this.exampleData.ill = [];
-        this.exampleData.surveys = [];
-        this.exampleData.vaccines = [];
+        this.$data.exampleData.ill = [];
+        this.$data.exampleData.surveys = [];
+        this.$data.exampleData.vaccines = [];
       }
-    }
-  },
-  computed: {
-    mapToServices() {
-      if (this.$data.userInfo.services.length > 0) {
-        const ills = this.$data.userInfo.services.filter(
-          (i: any) => i.type === "TYPE_ILL"
-        );
-        const surveys = this.$data.userInfo.services.filter(
-          (i: any) => i.type === "TYPE_SURVEY"
-        );
-        const vaccines = this.$data.userInfo.services.filter(
-          (i: any) => i.type === "TYPE_VACCINE"
-        );
-
-        return [ills, surveys, vaccines];
-      } else {
-        return [[], [], []];
-      }
+    },
+    doClose(state: boolean) {
+      this.$data.showAddService = state;
     }
   },
   async beforeMount() {
     this.$i18n.locale = localStorage["locale"];
-    this.curLocale = this.$t(this.pageLocale);
+    this.$data.curLocale = this.$t(this.$data.pageLocale);
 
-    this.services = await this.$store.getters.getServices;
+    // this.$data.services = await this.$store.getters.getServices;
   },
   async mounted() {
-    if (this.isAuth) {
+    if (this.$data.isAuth) {
       this.$data.userInfo = (await this.$store.getters.getCurUser)[0];
+
+      this.$data.services.ills = this.$data.userInfo.services.filter(
+        (i: ServiceType) => i.type === "TYPE_ILL"
+      );
+      this.$data.services.surveys = this.$data.userInfo.services.filter(
+        (i: ServiceType) => i.type === "TYPE_SURVEY"
+      );
+      this.$data.services.vaccines = this.$data.userInfo.services.filter(
+        (i: ServiceType) => i.type === "TYPE_VACCINE"
+      );
     }
   }
 });

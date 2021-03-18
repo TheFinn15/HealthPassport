@@ -87,7 +87,7 @@ export default Vue.extend({
       this.$i18n.locale = this.locales;
       this.curLocale = this.$t(this.pageLocale);
 
-      this.$router.go();
+      this.$router.go(0);
     }
   },
   beforeMount() {
@@ -116,7 +116,7 @@ export default Vue.extend({
       this.bottomNav = "auth";
     } else if (/register/i.test(this.$route.fullPath)) {
       this.bottomNav = "register";
-    } else if (/cabinet/i.test(this.$route.fullPath)) {
+    } else if (/cabinet|partner|admin/i.test(this.$route.fullPath)) {
       this.bottomNav = "cabinet";
     } else {
       this.bottomNav = "main";

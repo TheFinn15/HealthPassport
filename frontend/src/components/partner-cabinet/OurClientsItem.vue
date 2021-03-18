@@ -105,9 +105,8 @@ export default Vue.extend({
   computed: {
     getUseCount() {
       let counter = 0;
-      console.log("dsafdfd", this.allResults);
+
       this.allResults.filter((i: ResultType) => {
-        console.log(i.user.id, this.client.id);
         if (i.user.id === this.client.id) {
           counter += 1;
         }

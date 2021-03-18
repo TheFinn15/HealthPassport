@@ -30,6 +30,8 @@ export default new Vuex.Store({
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }
+      }).catch(e => {
+        state.errors = e.message;
       });
     },
     async logout({ state }) {
@@ -40,6 +42,8 @@ export default new Vuex.Store({
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }
+      }).catch(e => {
+        state.errors = e.message;
       });
     },
     async auth({ state }) {

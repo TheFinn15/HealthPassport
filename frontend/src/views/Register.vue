@@ -87,6 +87,7 @@
 
 <script>
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 export default {
   name: "Register",
@@ -135,8 +136,15 @@ export default {
           this.alert.loader = false;
           this.alert.state = true;
           if (localStorage["uid"] !== undefined) {
+            const token = jwt.decode(localStorage["uid"]);
+
             this.alert.info = "Успешная регистрация!";
-            this.$router.push("/cabinet");
+
+            if (token.data.role === "ROLE_USER") this.$router.push("/cabinet");
+            if (token.data.role === "ROLE_PARTNER")
+              this.$router.push("/partner");
+            if (token.data.role === "ROLE_ADMIN") this.$router.push("/admin");
+
             window.location.reload();
           } else {
             this.alert.type = "error";

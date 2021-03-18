@@ -3,7 +3,7 @@
     <v-card-title style="display: flex; justify-content: center">
       Мои активные устройства
       <v-btn text color="red" absolute left @click="hardLogout">
-        ЗАВЕРШИТЬ ДРУГИЕ СЕАНСЫ
+        ЗАВЕРШИТЬ ВСЕ СЕАНСЫ
       </v-btn>
     </v-card-title>
     <v-divider />

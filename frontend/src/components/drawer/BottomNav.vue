@@ -49,21 +49,28 @@
 
 <script>
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 export default {
   name: "BottomNav",
   props: ["bottomVal", "isAuth", "locales"],
   methods: {
     goToCabinet() {
-      console.log("");
+      const token = jwt.decode(localStorage["uid"]);
+
+      if (token.data.role === "ROLE_USER") this.$router.push("/cabinet");
+      if (token.data.role === "ROLE_PARTNER") this.$router.push("/partner");
+      if (token.data.role === "ROLE_ADMIN") this.$router.push("/admin");
     },
     async doLogout() {
       const ip = await axios.get("https://api.ipify.org?format=json");
       this.$store.state.userInfo = { ip: ip.data["ip"] };
       await this.$store.dispatch("logout");
 
-      localStorage.removeItem("uid");
-      if (this.$route.path !== "/") window.location.href = "/";
+      if (this.$store.state.errors === "") {
+        localStorage.removeItem("uid");
+        if (this.$route.path !== "/") window.location.href = "/";
+      }
     }
   }
 };

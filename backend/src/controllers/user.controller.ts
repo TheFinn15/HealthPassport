@@ -239,7 +239,9 @@ export class UserController {
           });
         }
         await this.clientDB.token.findUnique({
-          where: {ip}
+          where: {
+            ip: ip
+          }
         }).then(token => {
           delete user.pwd;
           return res.status(200).json({
@@ -284,7 +286,7 @@ export class UserController {
   @Post("logout")
   private async logout(req: Request, res: Response) {
     try {
-      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER])))
+      if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [Role.ROLE_ADMIN, Role.ROLE_USER, Role.ROLE_PARTNER])))
         return res.status(401).send("401 Unauthorized");
 
       const {ip} = req.body;
@@ -452,7 +454,7 @@ export class UserController {
 
     const nativeLogin: JwtType = jwt.decode(req.headers.authorization.split(" ")[1]) as JwtType;
 
-    const {login, pwd, fullName, email, phone} = req.body;
+    const {login, pwd, fullName, email, phone, service} = req.body;
 
     if (login !== undefined) {
       await this.clientDB.user.update({
@@ -523,6 +525,22 @@ export class UserController {
       }).catch(e => {
         return res.status(400).json({
           msg: `Error editing email field by id ${nativeLogin.data.id} | ERROR:  ` + e
+        })
+      });
+    }
+    if (service !== undefined) {
+      await this.clientDB.user.update({
+        where: {login: nativeLogin.data.login},
+        data: {
+          services: {
+            connect: {
+              id: service
+            }
+          }
+        }
+      }).catch(e => {
+        return res.status(400).json({
+          msg: `Error editing service field by id ${nativeLogin.data.id} | ERROR: ` + e
         })
       });
     }

@@ -233,7 +233,9 @@ let UserController = class UserController {
                     });
                 }
                 await this.clientDB.token.findUnique({
-                    where: { ip }
+                    where: {
+                        ip: ip
+                    }
                 }).then(token => {
                     delete user.pwd;
                     return res.status(200).json({
@@ -274,7 +276,7 @@ let UserController = class UserController {
     }
     async logout(req, res) {
         try {
-            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER])))
+            if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
             const { ip } = req.body;
             await this.clientDB.token.delete({
@@ -433,7 +435,7 @@ let UserController = class UserController {
         if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_USER, role_type_1.Role.ROLE_PARTNER])))
             return res.status(401).send("401 Unauthorized");
         const nativeLogin = jsonwebtoken_1.default.decode(req.headers.authorization.split(" ")[1]);
-        const { login, pwd, fullName, email, phone } = req.body;
+        const { login, pwd, fullName, email, phone, service } = req.body;
         if (login !== undefined) {
             await this.clientDB.user.update({
                 where: { login: nativeLogin.data.login },
@@ -503,6 +505,22 @@ let UserController = class UserController {
             }).catch(e => {
                 return res.status(400).json({
                     msg: `Error editing email field by id ${nativeLogin.data.id} | ERROR:  ` + e
+                });
+            });
+        }
+        if (service !== undefined) {
+            await this.clientDB.user.update({
+                where: { login: nativeLogin.data.login },
+                data: {
+                    services: {
+                        connect: {
+                            id: service
+                        }
+                    }
+                }
+            }).catch(e => {
+                return res.status(400).json({
+                    msg: `Error editing service field by id ${nativeLogin.data.id} | ERROR: ` + e
                 });
             });
         }
