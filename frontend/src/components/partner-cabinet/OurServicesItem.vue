@@ -92,6 +92,7 @@ export default Vue.extend({
     return {
       checkTypeService(service: string) {
         let res = "";
+
         if (service === "TYPE_ILL") res = "Болезнь";
         if (service === "TYPE_SURVEY") res = "Обследование";
         if (service === "TYPE_VACCINE") res = "Вакцинация";

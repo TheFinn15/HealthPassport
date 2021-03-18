@@ -51,7 +51,9 @@
       <v-tab-item>
         <SurveysList :surveys="surveys" />
       </v-tab-item>
-      <v-tab-item></v-tab-item>
+      <v-tab-item>
+        <OurClientsList :clients="clients" :all-results="surveys" />
+      </v-tab-item>
     </v-tabs>
   </v-card>
 </template>
@@ -66,16 +68,23 @@ import AddForm from "@/components/partner-cabinet/forms/AddForm.vue";
 import UserData from "@/components/cabinet/UserData.vue";
 import SurveysList from "@/components/partner-cabinet/SurveysList.vue";
 import { ResultType } from "@/types/result.type";
+import OurClientsList from "@/components/partner-cabinet/OurClientsList.vue";
 
 export default Vue.extend({
   name: "PartnerCabinet",
-  components: { SurveysList, UserData, AddForm, OurServicesList },
+  components: {
+    OurClientsList,
+    SurveysList,
+    UserData,
+    AddForm,
+    OurServicesList
+  },
   data: () => {
     return {
       isAuth: localStorage["uid"] !== undefined,
       info: {} as PartnerType,
       services: [] as ServiceType[],
-      surveys: [] as ServiceType[],
+      surveys: [] as ResultType[],
       clients: [] as UserType[],
       isOpen: false,
       forms: {
@@ -108,6 +117,8 @@ export default Vue.extend({
       this.surveys = (await this.$store.getters.getResults).filter(
         (i: ResultType) => i.survey.partner.id === this.info.id
       );
+
+      this.clients = this.surveys.map(i => i.user);
     }
   }
 });
