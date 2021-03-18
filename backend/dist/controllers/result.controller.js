@@ -34,7 +34,23 @@ let ResultController = class ResultController {
                         role: true
                     }
                 },
-                survey: true
+                survey: {
+                    select: {
+                        id: true,
+                        name: true,
+                        type: true,
+                        info: true,
+                        partner: {
+                            select: {
+                                id: true,
+                                name: true,
+                                timeWork: true,
+                                url: true,
+                                about: true
+                            }
+                        }
+                    }
+                }
             }
         }).then(resp => {
             return res.status(200).json(resp);

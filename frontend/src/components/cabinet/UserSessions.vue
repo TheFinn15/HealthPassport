@@ -37,7 +37,7 @@ export default Vue.extend({
   data() {
     return {
       otherSessions: [] as AuthType[],
-      activeSession: {}
+      activeSession: {} as any
     };
   },
   methods: {

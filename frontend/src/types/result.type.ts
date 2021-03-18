@@ -1,7 +1,10 @@
+import {ServiceType} from "@/types/service.type";
+import {UserType} from "@/types/user.type";
+
 export type ResultType = {
   id: number;
-  userId: number;
-  survey: object;
+  user: UserType
+  survey: ServiceType;
   info: string;
   passingTime: string;
   readyTime: string;

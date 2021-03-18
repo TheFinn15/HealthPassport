@@ -39,11 +39,18 @@
             </v-tooltip>
           </v-card-title>
           <v-divider />
-          <OurServicesList :do-delete-service="doRemoveService" :services="services" />
+          <OurServicesList
+            :do-delete-service="doRemoveService"
+            :services="services"
+          />
         </v-card>
       </v-tab-item>
-      <v-tab-item></v-tab-item>
-      <v-tab-item></v-tab-item>
+      <v-tab-item>
+        <UserData :user-info="info.user" />
+      </v-tab-item>
+      <v-tab-item>
+        <SurveysList :surveys="surveys" />
+      </v-tab-item>
       <v-tab-item></v-tab-item>
     </v-tabs>
   </v-card>
@@ -56,10 +63,13 @@ import { ServiceType } from "@/types/service.type";
 import { UserType } from "@/types/user.type";
 import OurServicesList from "@/components/partner-cabinet/OurServicesList.vue";
 import AddForm from "@/components/partner-cabinet/forms/AddForm.vue";
+import UserData from "@/components/cabinet/UserData.vue";
+import SurveysList from "@/components/partner-cabinet/SurveysList.vue";
+import { ResultType } from "@/types/result.type";
 
 export default Vue.extend({
   name: "PartnerCabinet",
-  components: { AddForm, OurServicesList },
+  components: { SurveysList, UserData, AddForm, OurServicesList },
   data: () => {
     return {
       isAuth: localStorage["uid"] !== undefined,
@@ -78,10 +88,6 @@ export default Vue.extend({
   methods: {
     doCloseForm(info: { state: boolean }) {
       this.isOpen = info.state;
-
-      // for (const key of Object.keys(this.forms)) {
-      //   this.forms[key as "name" | "type" | "info"] = "";
-      // }
     },
     doRemoveService(id: number) {
       this.services = this.services.filter((i: ServiceType) => i.id !== id);
@@ -98,6 +104,10 @@ export default Vue.extend({
         (i: PartnerType) => i.user.id === user[0].id
       )[0];
       this.services = this.info.services;
+
+      this.surveys = (await this.$store.getters.getResults).filter(
+        (i: ResultType) => i.survey.partner.id === this.info.id
+      );
     }
   }
 });
