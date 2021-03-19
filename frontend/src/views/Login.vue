@@ -99,12 +99,15 @@ export default {
 
             this.alert.info = "Успешная авторизация!";
 
-            if (token.data.role === "ROLE_USER") this.$router.push("/cabinet");
-            if (token.data.role === "ROLE_PARTNER")
-              this.$router.push("/partner");
-            if (token.data.role === "ROLE_ADMIN") this.$router.push("/admin");
+            setTimeout(() => {
+              if (token.data.role === "ROLE_USER")
+                this.$router.push("/cabinet");
+              if (token.data.role === "ROLE_PARTNER")
+                this.$router.push("/partner");
+              if (token.data.role === "ROLE_ADMIN") this.$router.push("/admin");
 
-            window.location.reload();
+              window.location.reload();
+            }, 1500);
           } else {
             this.alert.type = "error";
             this.alert.info = "Ошибка авторизации!";

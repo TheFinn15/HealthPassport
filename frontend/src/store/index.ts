@@ -105,6 +105,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    async getCaps() {
+      return await axios({
+        method: "GET",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/caps",
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).then(resp => resp.data)
+    },
     async getResults() {
       return await axios({
         method: "GET",

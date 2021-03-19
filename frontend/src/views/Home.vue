@@ -231,23 +231,16 @@ export default Vue.extend({
     },
     randomizeExampleData() {
       if (this.$data.exampleData.hasConstraint) {
-        const ills = this.$data.services.filter(
-          (i: ServiceType) => i.type === "TYPE_ILL"
-        );
-        const surveys = this.$data.services.filter(
-          (i: ServiceType) => i.type === "TYPE_SURVEY"
-        );
-        const vaccines = this.$data.services.filter(
-          (i: ServiceType) => i.type === "TYPE_VACCINE"
-        );
-
         const randChoiceSurvey = [
-          surveys[Math.floor(Math.random() * surveys.length)]
+          this.$data.services.surveys[
+            Math.floor(Math.random() * this.$data.services.surveys.length)
+          ]
         ];
-        const randChoiceVaccine = vaccines.filter(
+
+        const randChoiceVaccine = this.$data.services.vaccines.filter(
           (i: ServiceType) => i.name === randChoiceSurvey[0].name
         );
-        const randChoiceIll = ills.filter(
+        const randChoiceIll = this.$data.services.ills.filter(
           (i: ServiceType) => i.name === randChoiceSurvey[0].name
         );
 
@@ -285,6 +278,18 @@ export default Vue.extend({
         (i: ServiceType) => i.type === "TYPE_SURVEY"
       );
       this.$data.services.vaccines = this.$data.userInfo.services.filter(
+        (i: ServiceType) => i.type === "TYPE_VACCINE"
+      );
+    } else {
+      const services = await this.$store.getters.getServices;
+
+      this.$data.services.ills = services.filter(
+        (i: ServiceType) => i.type === "TYPE_ILL"
+      );
+      this.$data.services.surveys = services.filter(
+        (i: ServiceType) => i.type === "TYPE_SURVEY"
+      );
+      this.$data.services.vaccines = services.filter(
         (i: ServiceType) => i.type === "TYPE_VACCINE"
       );
     }
