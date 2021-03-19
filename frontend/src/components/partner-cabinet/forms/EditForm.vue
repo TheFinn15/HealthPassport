@@ -42,8 +42,8 @@
                 label="Вид сервиса"
                 outlined
                 shaped
-                v-model="getCurrentType"
-                :items="['Болезнь', 'Обследование', 'Вакцинация']"
+                v-model="info.type"
+                :items="typesServices"
                 :rules="rules.text"
               />
             </v-col>
@@ -83,7 +83,21 @@ export default Vue.extend({
       loader: false,
       rules: {
         text: [v => !!v || "Поле пустое"]
-      }
+      },
+      typesServices: [
+        {
+          text: "Болезнь",
+          value: "TYPE_ILL"
+        },
+        {
+          text: "Обследование",
+          value: "TYPE_SURVEY"
+        },
+        {
+          text: "Вакцина",
+          value: "TYPE_VACCINE"
+        }
+      ]
     };
   },
   methods: {
@@ -119,17 +133,6 @@ export default Vue.extend({
           }
         }, 800);
       }
-    }
-  },
-  computed: {
-    getCurrentType() {
-      let res = "";
-
-      if (this.info.type === "TYPE_ILL") res = "Болезнь";
-      if (this.info.type === "TYPE_SURVEY") res = "Обследование";
-      if (this.info.type === "TYPE_VACCINE") res = "Вакцинация";
-
-      return res;
     }
   }
 });

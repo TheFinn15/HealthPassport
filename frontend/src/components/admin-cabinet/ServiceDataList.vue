@@ -5,6 +5,7 @@
         v-for="(item, i) in tableInfo"
         :key="i"
         :table-item="item"
+        :do-delete-service="doDeleteService"
       />
     </v-container>
   </v-card>
@@ -15,7 +16,7 @@ import ServiceDataItem from "@/components/admin-cabinet/ServiceDataItem";
 export default {
   name: "ServiceDataList",
   components: { ServiceDataItem },
-  props: ["tableInfo"]
+  props: ["tableInfo", "doDeleteService"]
 };
 </script>
 
