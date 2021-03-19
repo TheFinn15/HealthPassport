@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="3">
+  <v-col sm="4" md="2">
     <v-hover>
       <template v-slot:default="{ hover }">
         <v-card max-width="180" max-height="180" height="180" rounded="lg">
@@ -36,14 +36,21 @@
             </v-icon>
           </v-btn>
         </v-card-title>
+        <v-divider />
+        <ServiceDataList
+          v-if="item.name === 'Services'"
+          :table-info="item.data"
+        />
       </v-card>
     </v-dialog>
   </v-col>
 </template>
 
 <script>
+import ServiceDataList from "@/components/admin-cabinet/ServiceDataList";
 export default {
   name: "DataItem",
+  components: { ServiceDataList },
   props: ["item"],
   data() {
     return {

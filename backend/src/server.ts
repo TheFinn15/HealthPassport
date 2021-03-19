@@ -7,6 +7,7 @@ import {ServiceController} from "./controllers/service.controller";
 import {CorsConfigure} from "./middlewares/CorsConfigure";
 import {TokenController} from "./controllers/token.controller";
 import {ResultController} from "./controllers/result.controller";
+import {CapabilityController} from "./controllers/capability.controller";
 
 
 export class HealthPassport extends Server {
@@ -24,13 +25,15 @@ export class HealthPassport extends Server {
     let serviceController = new ServiceController();
     let tokenController = new TokenController();
     let resultController = new ResultController();
+    let capController = new CapabilityController();
 
     this.addControllers([
       userController,
       partnerController,
       serviceController,
       tokenController,
-      resultController
+      resultController,
+      capController
     ]);
   }
 

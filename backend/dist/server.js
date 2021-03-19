@@ -13,6 +13,7 @@ const service_controller_1 = require("./controllers/service.controller");
 const CorsConfigure_1 = require("./middlewares/CorsConfigure");
 const token_controller_1 = require("./controllers/token.controller");
 const result_controller_1 = require("./controllers/result.controller");
+const capability_controller_1 = require("./controllers/capability.controller");
 class HealthPassport extends core_1.Server {
     constructor() {
         super();
@@ -25,12 +26,14 @@ class HealthPassport extends core_1.Server {
         let serviceController = new service_controller_1.ServiceController();
         let tokenController = new token_controller_1.TokenController();
         let resultController = new result_controller_1.ResultController();
+        let capController = new capability_controller_1.CapabilityController();
         this.addControllers([
             userController,
             partnerController,
             serviceController,
             tokenController,
-            resultController
+            resultController,
+            capController
         ]);
     }
     start() {
