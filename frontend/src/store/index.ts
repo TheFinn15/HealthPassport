@@ -12,6 +12,16 @@ export default new Vuex.Store({
   },
   mutations: {},
   actions: {
+    async createPartner({ state }) {
+      await axios({
+        method: "POST",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/partner",
+        data: state.userInfo,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      });
+    },
     async updateTokenIp({ state }) {
       await axios({
         method: "PUT",
@@ -145,6 +155,15 @@ export default new Vuex.Store({
       return await axios({
         method: "GET",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/user",
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).then(resp => resp.data);
+    },
+    async getAllUsers() {
+      return await axios({
+        method: "GET",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/users",
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }

@@ -9,6 +9,8 @@
           :all-partners="partners"
           :do-delete-service="doDeleteService"
           :add-data="addData"
+          :all-users="users"
+          :searcher="searcher"
         />
       </v-row>
     </v-container>
@@ -16,11 +18,11 @@
 </template>
 
 <script>
-import DataItem from "@/components/admin-cabinet/DataItem";
+import DataItem from "@/components/admin-cabinet/data-models/DataItem";
 export default {
   name: "DataList",
   components: { DataItem },
-  props: ["info", "doDeleteService", "addData", "partners"]
+  props: ["info", "doDeleteService", "addData", "partners", "users", "searcher"]
 };
 </script>
 

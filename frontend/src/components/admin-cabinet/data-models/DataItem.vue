@@ -71,6 +71,21 @@
             v-if="item.name === 'Services'"
             :table-info="tableInfo"
           />
+          <PartnerDataList
+            :do-delete-service="doDeleteService"
+            v-if="item.name === 'Partners'"
+            :table-info="tableInfo"
+          />
+          <ResultDataList
+            :do-delete-service="doDeleteService"
+            v-if="item.name === 'Results'"
+            :table-info="tableInfo"
+          />
+          <CapabilityDataList
+            :do-delete-service="doDeleteService"
+            v-if="item.name === 'Capabilities'"
+            :table-info="tableInfo"
+          />
         </v-container>
 
         <AddServiceForm
@@ -80,18 +95,43 @@
           :all-partners="allPartners"
           :update-service="addData"
         />
+        <AddPartnerForm
+          :is-open="showAddForm.partners"
+          :info="addForm"
+          :close-form="closeForm"
+          :all-users="allUsers"
+          :update-service="addData"
+        />
       </v-card>
     </v-dialog>
   </v-col>
 </template>
 
 <script>
-import ServiceDataList from "@/components/admin-cabinet/ServiceDataList";
-import AddServiceForm from "@/components/admin-cabinet/AddServiceForm";
+import ServiceDataList from "@/components/admin-cabinet/data-models/models/ServiceDataList";
+import AddServiceForm from "@/components/admin-cabinet/forms/AddServiceForm";
+import PartnerDataList from "@/components/admin-cabinet/data-models/models/PartnerDataList";
+import ResultDataList from "@/components/admin-cabinet/data-models/models/ResultDataList";
+import CapabilityDataList from "@/components/admin-cabinet/data-models/models/CapabilityDataList";
+import AddPartnerForm from "@/components/admin-cabinet/forms/AddPartnerForm";
 export default {
   name: "DataItem",
-  components: { AddServiceForm, ServiceDataList },
-  props: ["item", "doDeleteService", "addData", "allPartners"],
+  components: {
+    AddPartnerForm,
+    CapabilityDataList,
+    ResultDataList,
+    PartnerDataList,
+    AddServiceForm,
+    ServiceDataList
+  },
+  props: [
+    "item",
+    "doDeleteService",
+    "addData",
+    "allPartners",
+    "allUsers",
+    "searcher"
+  ],
   data() {
     return {
       showInfo: false,
@@ -108,9 +148,7 @@ export default {
   },
   methods: {
     searchData() {
-      if (this.searchText === "") this.tableInfo = this.item.data;
-      const regex = new RegExp(this.searchText, "i");
-      this.tableInfo = this.tableInfo.filter(i => regex.test(i.name) || regex.test(i.info));
+      this.searcher({ name: this.item.name, text: this.searchText });
     },
     closeForm(item) {
       this.addForm = {};
@@ -124,7 +162,7 @@ export default {
         this.showAddForm.capabilities = true;
     }
   },
-  mounted() {
+  beforeUpdate() {
     this.tableInfo = this.item.data;
   }
 };

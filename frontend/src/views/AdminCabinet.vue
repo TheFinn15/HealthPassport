@@ -18,10 +18,12 @@
           </v-card-title>
           <v-divider />
           <DataList
+            :users="tables[1].users"
             :partners="tables[0].partners"
             :add-data="doAddNewData"
             :info="tables"
             :do-delete-service="doDeleteService"
+            :searcher="doSearchData"
           />
         </v-card>
       </v-tab-item>
@@ -36,9 +38,9 @@
 </template>
 
 <script>
-import ManageUser from "@/components/admin-cabinet/ManageUser";
-import Statistics from "@/components/admin-cabinet/Statistics";
-import DataList from "@/components/admin-cabinet/DataList";
+import ManageUser from "@/components/admin-cabinet/tabs/ManageUser";
+import Statistics from "@/components/admin-cabinet/tabs/Statistics";
+import DataList from "@/components/admin-cabinet/data-models/DataList";
 export default {
   name: "AdminCabinet",
   components: { DataList, Statistics, ManageUser },
@@ -54,7 +56,8 @@ export default {
         {
           name: "Partners",
           count: 0,
-          data: []
+          data: [],
+          users: []
         },
         {
           name: "Results",
@@ -70,6 +73,27 @@ export default {
     };
   },
   methods: {
+    async doSearchData(info) {
+      const curTable = this.tables.map(i => i.name).indexOf(info.name);
+      if (info.text.length <= 0) {
+        const res = [];
+
+        if (info.name === "Services") {
+          res.push(...(await this.$store.getters.getServices));
+        } else if (info.name === "Partners") {
+          res.push(...(await this.$store.getters.getPartners));
+        } else if (info.name === "Results") {
+          res.push(...(await this.$store.getters.getResults));
+        } else if (info.name === "Capabilites") {
+          res.push(...(await this.$store.getters.getCaps));
+        }
+        this.tables[curTable].data = res;
+      }
+      const regex = new RegExp(info.text, "i");
+      this.tables[curTable].data = this.tables[curTable].data.filter(
+        i => regex.test(i.name) || regex.test(i.info)
+      );
+    },
     doAddNewData(info) {
       const curTable = this.tables.map(i => i.name).indexOf(info.name);
       this.tables[curTable].data.push(info.data);
@@ -86,6 +110,7 @@ export default {
     const partners = await this.$store.getters.getPartners;
     const results = await this.$store.getters.getResults;
     const caps = await this.$store.getters.getCaps;
+    const users = await this.$store.getters.getAllUsers;
 
     this.$data.tables[0].count = services.length;
     this.$data.tables[0].data = services;
@@ -93,6 +118,7 @@ export default {
 
     this.$data.tables[1].count = partners.length;
     this.$data.tables[1].data = partners;
+    this.$data.tables[1].users = users;
 
     this.$data.tables[2].count = results.length;
     this.$data.tables[2].data = results;
