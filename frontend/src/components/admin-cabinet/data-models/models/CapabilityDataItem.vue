@@ -180,7 +180,11 @@
                 Болезнь
               </v-card-subtitle>
               <v-card-title>
-                {{ tableItem.ill.name }}
+                {{
+                  tableItem.ill === undefined
+                    ? "Отсутствует"
+                    : tableItem.ill.name
+                }}
               </v-card-title>
             </v-col>
           </v-row>
@@ -238,8 +242,7 @@ export default {
       if (this.$refs.editForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
-
-          this.$store.state.service = this.tableItem;
+          this.$store.state.caps = this.tableItem;
 
           await this.$store.dispatch("editCap", { id: this.tableItem.id });
 

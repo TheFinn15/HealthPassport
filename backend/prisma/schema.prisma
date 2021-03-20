@@ -68,8 +68,8 @@ model UserCapability {
   name        String
   info        String
   hazardLevel CapsLevel         @default(OKAY_LEVEL)
-  user        User              @relation(fields: [userId], references: [id])
-  userId      Int
+  user        User?             @relation(fields: [userId], references: [id])
+  userId      Int?
   ill         SupplierServices? @relation(fields: [illId], references: [id])
   illId       Int?
 }

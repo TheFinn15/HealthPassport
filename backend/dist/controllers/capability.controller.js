@@ -55,7 +55,7 @@ let CapabilityController = class CapabilityController {
             data: {
                 name: name,
                 info: info,
-                userId: user.id
+                userId: user
             }
         }).then(resp => {
             return res.status(200).json(resp);
@@ -96,7 +96,11 @@ let CapabilityController = class CapabilityController {
             await this.clientDB.userCapability.update({
                 where: { id: parseInt(id) },
                 data: {
-                    user: user
+                    user: {
+                        connect: {
+                            id: user.id
+                        }
+                    }
                 }
             }).catch(e => {
                 return res.status(400).json({

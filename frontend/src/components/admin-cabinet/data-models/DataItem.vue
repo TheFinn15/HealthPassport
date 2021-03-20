@@ -69,22 +69,22 @@
           <ServiceDataList
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Services'"
-            :table-info="tableInfo"
+            :table-info="item.data"
           />
           <PartnerDataList
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Partners'"
-            :table-info="tableInfo"
+            :table-info="item.data"
           />
           <ResultDataList
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Results'"
-            :table-info="tableInfo"
+            :table-info="item.data"
           />
           <CapabilityDataList
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Capabilities'"
-            :table-info="tableInfo"
+            :table-info="item.data"
           />
         </v-container>
 
@@ -93,29 +93,29 @@
           :info="addForm"
           :close-form="closeForm"
           :all-partners="allPartners"
-          :update-service="addData"
+          :update-data="addData"
         />
         <AddPartnerForm
           :is-open="showAddForm.partners"
           :info="addForm"
           :close-form="closeForm"
           :all-users="allUsers"
-          :update-service="addData"
+          :update-data="addData"
         />
         <AddResultForm
-          :is-open="showAddForm.partners"
+          :is-open="showAddForm.results"
           :info="addForm"
           :close-form="closeForm"
           :all-surveys="allSurveys"
           :all-users="allUsers"
-          :update-service="addData"
+          :update-data="addData"
         />
         <AddCapabilityForm
-          :is-open="showAddForm.partners"
+          :is-open="showAddForm.capabilities"
           :info="addForm"
           :close-form="closeForm"
           :all-users="allUsers"
-          :update-service="addData"
+          :update-data="addData"
         />
       </v-card>
     </v-dialog>
@@ -162,8 +162,7 @@ export default {
         results: false,
         capabilities: false
       },
-      addForm: {},
-      tableInfo: {}
+      addForm: {}
     };
   },
   methods: {
@@ -181,9 +180,6 @@ export default {
       if (this.item.name === "Capabilities")
         this.showAddForm.capabilities = true;
     }
-  },
-  updated() {
-    this.tableInfo = this.item.data;
   }
 };
 </script>

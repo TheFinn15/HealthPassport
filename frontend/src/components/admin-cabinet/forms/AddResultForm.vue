@@ -90,7 +90,7 @@ export default {
     "closeForm",
     "allUsers",
     "allSurveys",
-    "updateService"
+    "updateData"
   ],
   data() {
     return {
@@ -114,7 +114,7 @@ export default {
       if (this.$refs.addForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
-          this.$store.state.userInfo = this.info;
+          this.$store.state.result = this.info;
 
           await this.$store.dispatch("createResult");
           if (this.$store.state.errors !== "") {
@@ -127,7 +127,7 @@ export default {
             this.alert.state = true;
             this.alert.info = "Результат успешно создан";
 
-            this.updateService({ name: "Results", data: this.info });
+            this.updateData({ name: "Results", data: this.info });
 
             setTimeout(() => {
               this.closeForm({ name: "results" });

@@ -25,7 +25,6 @@
             :info="tables"
             :do-delete-data="doDeleteData"
             :searcher="doSearchData"
-            :key="deleter"
           />
         </v-card>
       </v-tab-item>
@@ -72,8 +71,7 @@ export default {
           count: 0,
           data: []
         }
-      ],
-      deleter: 0
+      ]
     };
   },
   methods: {
@@ -107,7 +105,6 @@ export default {
       this.tables[curTable].data = this.tables[curTable].data.filter(
         i => i.id !== item.id
       );
-      this.deleter += 1;
     }
   },
   async mounted() {

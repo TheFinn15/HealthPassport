@@ -73,7 +73,7 @@
 <script>
 export default {
   name: "AddCapabilityForm",
-  props: ["info", "isOpen", "closeForm", "allUsers", "updateService"],
+  props: ["info", "isOpen", "closeForm", "allUsers", "updateData"],
   data() {
     return {
       alert: {
@@ -96,20 +96,25 @@ export default {
       if (this.$refs.addForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
-          this.$store.state.userInfo = this.info;
+          this.$store.state.caps = this.info;
+
+          console.log(this.info);
 
           await this.$store.dispatch("createCapability");
           if (this.$store.state.errors !== "") {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при создание ограничея";
+            this.alert.info = "Ошибка при создание ограничения";
           } else {
             this.loader = false;
             this.alert.state = true;
             this.alert.info = "Ограничие успешно создан";
 
-            this.updateService({ name: "Capabilities", data: this.info });
+            this.info["hazardLevel"] = "OKAY_LEVEL";
+            this.info["user"] = { fullName: "Загружается..." };
+
+            this.updateData({ name: "Capabilities", data: this.info });
 
             setTimeout(() => {
               this.closeForm({ name: "capabilities" });

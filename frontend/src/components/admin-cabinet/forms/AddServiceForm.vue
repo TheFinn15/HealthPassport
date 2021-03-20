@@ -84,7 +84,7 @@
 <script>
 export default {
   name: "AddServiceForm",
-  props: ["info", "isOpen", "closeForm", "allPartners", "updateService"],
+  props: ["info", "isOpen", "closeForm", "allPartners", "updateData"],
   data() {
     return {
       alert: {
@@ -134,7 +134,7 @@ export default {
             this.alert.state = true;
             this.alert.info = "Сервис успешно создан";
 
-            this.updateService({ name: "Services", data: this.info });
+            this.updateData({ name: "Services", data: this.info });
 
             setTimeout(() => {
               this.closeForm({ name: "services" });

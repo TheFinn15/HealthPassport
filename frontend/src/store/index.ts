@@ -18,7 +18,7 @@ export default new Vuex.Store({
       await axios({
         method: "PUT",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/cap/" + payload.id,
-        data: state.service,
+        data: state.caps,
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }
@@ -41,7 +41,7 @@ export default new Vuex.Store({
       await axios({
         method: "PUT",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/result/" + payload.id,
-        data: state.service,
+        data: state.result,
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }
@@ -64,7 +64,7 @@ export default new Vuex.Store({
       await axios({
         method: "PUT",
         url: "http://" + process.env.VUE_APP_SERVER + "/api/partner/" + payload.id,
-        data: state.service,
+        data: state.userInfo,
         headers: {
           Authorization: "Bearer " + localStorage["uid"]
         }

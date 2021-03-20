@@ -214,7 +214,7 @@ export default {
         this.loader = true;
         setTimeout(async () => {
 
-          this.$store.state.service = this.tableItem;
+          this.$store.state.result = this.tableItem;
 
           await this.$store.dispatch("editResult", { id: this.tableItem.id });
 

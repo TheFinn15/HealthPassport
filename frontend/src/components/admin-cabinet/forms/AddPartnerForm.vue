@@ -94,7 +94,7 @@
 <script>
 export default {
   name: "AddPartnerForm",
-  props: ["info", "isOpen", "closeForm", "allUsers", "updateService"],
+  props: ["info", "isOpen", "closeForm", "allUsers", "updateData"],
   data() {
     return {
       alert: {
@@ -130,7 +130,7 @@ export default {
             this.alert.state = true;
             this.alert.info = "Партнер успешно создан";
 
-            this.updateService({ name: "Partners", data: this.info });
+            this.updateData({ name: "Partners", data: this.info });
 
             setTimeout(() => {
               this.closeForm({ name: "partners" });
