@@ -29,7 +29,7 @@
         </v-card>
       </v-tab-item>
       <v-tab-item>
-        <ManageUser />
+        <ManageUser :info="tables[1].users" :do-update-list="doUpdateList" />
       </v-tab-item>
       <v-tab-item>
         <Statistics />
@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import ManageUser from "@/components/admin-cabinet/tabs/ManageUser";
-import Statistics from "@/components/admin-cabinet/tabs/Statistics";
-import DataList from "@/components/admin-cabinet/data-models/DataList";
+import ManageUser from "@/components/admin-cabinet/tabs/managa-user/ManageUser";
+import Statistics from "@/components/admin-cabinet/tabs/statistics/Statistics";
+import DataList from "@/components/admin-cabinet/tabs/manage-data/data-models/DataList";
 export default {
   name: "AdminCabinet",
   components: { DataList, Statistics, ManageUser },
@@ -75,6 +75,11 @@ export default {
     };
   },
   methods: {
+    doUpdateList(info) {
+      if (info.action === "delete")
+        this.tables[1].users = this.tables[1].users.filter(i => i.id !== info.id);
+      else this.tables[1].users.push(info.item);
+    },
     async doSearchData(info) {
       const curTable = this.tables.map(i => i.name).indexOf(info.name);
       if (info.text.length <= 0) {
@@ -124,7 +129,9 @@ export default {
 
     this.$data.tables[2].count = results.length;
     this.$data.tables[2].data = results;
-    this.$data.tables[2].surveys = services.filter(i => i.type === "TYPE_SURVEY");
+    this.$data.tables[2].surveys = services.filter(
+      i => i.type === "TYPE_SURVEY"
+    );
 
     this.$data.tables[3].count = caps.length;
     this.$data.tables[3].data = caps;

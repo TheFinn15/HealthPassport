@@ -58,18 +58,8 @@
               <v-container>
                 <v-row>
                   <v-col cols="6">
-                    <v-text-field
-                      label="Название"
-                      outlined
-                      shaped
-                      color="#FB8C00"
-                      v-model="tableItem.name"
-                      :rules="rules.text"
-                    />
-                  </v-col>
-                  <v-col cols="6">
                     <v-textarea
-                      label="Об ограничение"
+                      label="Об результате"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -77,14 +67,20 @@
                       :rules="rules.text"
                     />
                   </v-col>
+                  <v-col cols="6">
+                    <v-radio-group label="Обнаружена болезнь ?" v-model="tableItem.isSick">
+                      <v-radio name="Да" :value="true" color="#FB8C00" />
+                      <v-radio name="Нет" :value="false" color="#FB8C00" />
+                    </v-radio-group>
+                  </v-col>
                   <v-col cols="12">
-                    <v-select
-                      label="Уровень опасности"
+                    <v-date-picker
+                      label="Дата выдачи результата"
                       outlined
                       shaped
                       color="#FB8C00"
-                      :items="hazardLevels"
-                      v-model="tableItem.hazardLevel"
+                      v-model="tableItem.readyTime"
+                      @click="show"
                       :rules="rules.text"
                     />
                   </v-col>
@@ -130,7 +126,7 @@
                     @click="forms.delete = true"
                   >
                     <v-icon>
-                      remove_circle_outline
+                      delete_outline
                     </v-icon>
                   </v-btn>
                 </template>
@@ -141,15 +137,7 @@
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Название
-              </v-card-subtitle>
-              <v-card-title>
-                {{ tableItem.name }}
-              </v-card-title>
-            </v-col>
-            <v-col sm="4" md="4">
-              <v-card-subtitle class="pb-0">
-                Доп. инфо.
+                Об результате
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -157,34 +145,36 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Уровень опасности
+                Время сдачи анализа
               </v-card-subtitle>
               <v-card-title>
-                {{ getHazardLevel }}
+                {{ getPassedTime }}
+              </v-card-title>
+            </v-col>
+            <v-col sm="4" md="4">
+              <v-card-subtitle class="pb-0">
+                Обнаружена болезнь ?
+              </v-card-subtitle>
+              <v-card-title>
+                {{ tableItem.isSick ? "Да" : "Нет" }}
               </v-card-title>
             </v-col>
           </v-row>
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Пользователь
+                Клиент
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.user.fullName }}
               </v-card-title>
             </v-col>
-          </v-row>
-          <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Болезнь
+                Обследование
               </v-card-subtitle>
               <v-card-title>
-                {{
-                  tableItem.ill === undefined
-                    ? "Отсутствует"
-                    : tableItem.ill.name
-                }}
+                {{ tableItem.survey.name }}
               </v-card-title>
             </v-col>
           </v-row>
@@ -196,7 +186,7 @@
 
 <script>
 export default {
-  name: "CapabilityDataItem",
+  name: "ResultDataItem",
   props: ["tableItem", "doDeleteService"],
   data() {
     return {
@@ -212,49 +202,31 @@ export default {
       loader: false,
       rules: {
         text: [v => !!v || "Поле пустое !"]
-      },
-      hazardLevels: [
-        {
-          text: "Всё в порядке",
-          value: "OKAY_LEVEL"
-        },
-        {
-          text: "В норме",
-          value: "NORMAL_LEVEL"
-        },
-        {
-          text: "Не в порядке",
-          value: "NOT_OKAY_LEVEL"
-        },
-        {
-          text: "Есть угроза",
-          value: "DANGER_LEVEL"
-        },
-        {
-          text: "Смертельная",
-          value: "DEATHLY_LEVEL"
-        }
-      ]
+      }
     };
   },
   methods: {
+    show() {
+      console.log(this.tableItem.readyTime);
+    },
     doEdit() {
       if (this.$refs.editForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
-          this.$store.state.caps = this.tableItem;
 
-          await this.$store.dispatch("editCap", { id: this.tableItem.id });
+          this.$store.state.result = this.tableItem;
+
+          await this.$store.dispatch("editResult", { id: this.tableItem.id });
 
           if (this.$store.state.errors !== "") {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение ограничения";
+            this.alert.info = "Ошибка при изменение результата";
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Ограничение успешно изменен";
+            this.alert.info = "Результат успешно изменен";
 
             this.$data.forms.edit = false;
           }
@@ -264,18 +236,18 @@ export default {
     doDelete() {
       this.loader = true;
       setTimeout(async () => {
-        await this.$store.dispatch("deleteCap", { id: this.tableItem.id });
+        await this.$store.dispatch("editResult", { id: this.tableItem.id });
         if (this.$store.state.errors !== "") {
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление ограничения";
+          this.alert.info = "Ошибка при удаление результата";
         } else {
           this.doDeleteService({ name: "Partners", id: this.tableItem.id });
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Ограничение успешно удалено";
+          this.alert.info = "Результат успешно удален";
 
           setTimeout(() => {
             this.$data.forms.edit = false;
@@ -285,16 +257,9 @@ export default {
     }
   },
   computed: {
-    getHazardLevel() {
-      let res = "";
-
-      if (this.tableItem.hazardLevel === "OKAY_LEVEL") res = "Всё в порядке";
-      if (this.tableItem.hazardLevel === "NORMAL_LEVEL") res = "В норме";
-      if (this.tableItem.hazardLevel === "NOT_OKAY_LEVEL") res = "Не в порядке";
-      if (this.tableItem.hazardLevel === "DANGER_LEVEL") res = "Есть угроза";
-      if (this.tableItem.hazardLevel === "DEATHLY_LEVEL") res = "Смертельная";
-
-      return res;
+    getPassedTime() {
+      const [day, month, year] = new Date(this.tableItem.passingTime).toLocaleDateString().split(".");
+      return `${day}/${month}/${year} - ` + new Date().toLocaleTimeString();
     }
   }
 };

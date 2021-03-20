@@ -58,29 +58,33 @@
               <v-container>
                 <v-row>
                   <v-col cols="6">
-                    <v-textarea
-                      label="Об результате"
+                    <v-text-field
+                      label="Название"
                       outlined
                       shaped
                       color="#FB8C00"
-                      v-model="tableItem.info"
+                      v-model="tableItem.name"
                       :rules="rules.text"
                     />
                   </v-col>
                   <v-col cols="6">
-                    <v-radio-group label="Обнаружена болезнь ?" v-model="tableItem.isSick">
-                      <v-radio name="Да" :value="true" color="#FB8C00" />
-                      <v-radio name="Нет" :value="false" color="#FB8C00" />
-                    </v-radio-group>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-date-picker
-                      label="Дата выдачи результата"
+                    <v-select
+                      label="Вид сервиса"
                       outlined
                       shaped
                       color="#FB8C00"
-                      v-model="tableItem.readyTime"
-                      @click="show"
+                      :items="typesServices"
+                      v-model="tableItem.type"
+                      :rules="rules.text"
+                    />
+                  </v-col>
+                  <v-col cols="12">
+                    <v-textarea
+                      label="О сервисе"
+                      outlined
+                      shaped
+                      color="#FB8C00"
+                      v-model="tableItem.info"
                       :rules="rules.text"
                     />
                   </v-col>
@@ -126,7 +130,7 @@
                     @click="forms.delete = true"
                   >
                     <v-icon>
-                      remove_circle_outline
+                      delete_outline
                     </v-icon>
                   </v-btn>
                 </template>
@@ -137,7 +141,15 @@
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Об результате
+                Название
+              </v-card-subtitle>
+              <v-card-title>
+                {{ tableItem.name }}
+              </v-card-title>
+            </v-col>
+            <v-col sm="4" md="4">
+              <v-card-subtitle class="pb-0">
+                Доп. инфо.
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -145,36 +157,20 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Время сдачи анализа
+                Вид сервиса
               </v-card-subtitle>
               <v-card-title>
-                {{ getPassedTime }}
-              </v-card-title>
-            </v-col>
-            <v-col sm="4" md="4">
-              <v-card-subtitle class="pb-0">
-                Обнаружена болезнь ?
-              </v-card-subtitle>
-              <v-card-title>
-                {{ tableItem.isSick ? "Да" : "Нет" }}
+                {{ getTypeService }}
               </v-card-title>
             </v-col>
           </v-row>
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Клиент
+                Партнер
               </v-card-subtitle>
               <v-card-title>
-                {{ tableItem.user.fullName }}
-              </v-card-title>
-            </v-col>
-            <v-col sm="4" md="4">
-              <v-card-subtitle class="pb-0">
-                Обследование
-              </v-card-subtitle>
-              <v-card-title>
-                {{ tableItem.survey.name }}
+                {{ tableItem.partner.name }}
               </v-card-title>
             </v-col>
           </v-row>
@@ -186,7 +182,7 @@
 
 <script>
 export default {
-  name: "ResultDataItem",
+  name: "ServiceDataItem",
   props: ["tableItem", "doDeleteService"],
   data() {
     return {
@@ -202,31 +198,44 @@ export default {
       loader: false,
       rules: {
         text: [v => !!v || "Поле пустое !"]
-      }
+      },
+      typesServices: [
+        {
+          text: "Болезнь",
+          value: "TYPE_ILL"
+        },
+        {
+          text: "Обследование",
+          value: "TYPE_SURVEY"
+        },
+        {
+          text: "Вакцина",
+          value: "TYPE_VACCINE"
+        }
+      ]
     };
   },
   methods: {
-    show() {
-      console.log(this.tableItem.readyTime);
-    },
     doEdit() {
       if (this.$refs.editForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
+          delete this.tableItem.partner;
+          this.tableItem.partner = this.tableItem.partnerId;
 
-          this.$store.state.result = this.tableItem;
+          this.$store.state.service = this.tableItem;
 
-          await this.$store.dispatch("editResult", { id: this.tableItem.id });
+          await this.$store.dispatch("editService", { id: this.tableItem.id });
 
           if (this.$store.state.errors !== "") {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение результата";
+            this.alert.info = "Ошибка при изменение сервиса";
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Результат успешно изменен";
+            this.alert.info = "Сервис успешно изменен";
 
             this.$data.forms.edit = false;
           }
@@ -236,18 +245,18 @@ export default {
     doDelete() {
       this.loader = true;
       setTimeout(async () => {
-        await this.$store.dispatch("editResult", { id: this.tableItem.id });
+        await this.$store.dispatch("deleteService", { id: this.tableItem.id });
         if (this.$store.state.errors !== "") {
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление результата";
+          this.alert.info = "Ошибка при удаление сервиса";
         } else {
-          this.doDeleteService({ name: "Partners", id: this.tableItem.id });
+          this.doDeleteService({ name: "Services", id: this.tableItem.id });
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Результат успешно удален";
+          this.alert.info = "Сервис успешно удален";
 
           setTimeout(() => {
             this.$data.forms.edit = false;
@@ -257,9 +266,13 @@ export default {
     }
   },
   computed: {
-    getPassedTime() {
-      const [day, month, year] = new Date(this.tableItem.passingTime).toLocaleDateString().split(".");
-      return `${day}/${month}/${year} - ` + new Date().toLocaleTimeString();
+    getTypeService() {
+      let res = "";
+      if (this.tableItem.type === "TYPE_ILL") res = "Болезнь";
+      if (this.tableItem.type === "TYPE_SURVEY") res = "Обследование";
+      if (this.tableItem.type === "TYPE_VACCINE") res = "Вакцина";
+
+      return res;
     }
   }
 };

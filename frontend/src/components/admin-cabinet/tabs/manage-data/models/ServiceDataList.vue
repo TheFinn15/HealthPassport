@@ -1,7 +1,7 @@
 <template>
   <v-card flat>
     <v-container>
-      <ResultDataItem
+      <ServiceDataItem
         v-for="(item, i) in tableInfo"
         :key="i"
         :table-item="item"
@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import ResultDataItem from "@/components/admin-cabinet/data-models/models/ResultDataItem";
+import ServiceDataItem from "@/components/admin-cabinet/tabs/manage-data/models/ServiceDataItem";
 export default {
-  name: "ResultDataList",
-  components: { ResultDataItem },
+  name: "ServiceDataList",
+  components: { ServiceDataItem },
   props: ["tableInfo", "doDeleteService"]
 };
 </script>

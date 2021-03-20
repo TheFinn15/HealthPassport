@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import DataItem from "@/components/admin-cabinet/data-models/DataItem";
+import DataItem from "@/components/admin-cabinet/tabs/manage-data/data-models/DataItem";
 export default {
   name: "DataList",
   components: { DataItem },

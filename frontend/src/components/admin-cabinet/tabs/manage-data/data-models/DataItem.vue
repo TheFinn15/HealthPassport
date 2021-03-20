@@ -123,14 +123,14 @@
 </template>
 
 <script>
-import ServiceDataList from "@/components/admin-cabinet/data-models/models/ServiceDataList";
-import AddServiceForm from "@/components/admin-cabinet/forms/AddServiceForm";
-import PartnerDataList from "@/components/admin-cabinet/data-models/models/PartnerDataList";
-import ResultDataList from "@/components/admin-cabinet/data-models/models/ResultDataList";
-import CapabilityDataList from "@/components/admin-cabinet/data-models/models/CapabilityDataList";
-import AddPartnerForm from "@/components/admin-cabinet/forms/AddPartnerForm";
-import AddResultForm from "@/components/admin-cabinet/forms/AddResultForm";
-import AddCapabilityForm from "@/components/admin-cabinet/forms/AddCapabilityForm";
+import ServiceDataList from "@/components/admin-cabinet/tabs/manage-data/models/ServiceDataList";
+import AddServiceForm from "@/components/admin-cabinet/tabs/manage-data/forms/AddServiceForm";
+import PartnerDataList from "@/components/admin-cabinet/tabs/manage-data/models/PartnerDataList";
+import ResultDataList from "@/components/admin-cabinet/tabs/manage-data/models/ResultDataList";
+import CapabilityDataList from "@/components/admin-cabinet/tabs/manage-data/models/CapabilityDataList";
+import AddPartnerForm from "@/components/admin-cabinet/tabs/manage-data/forms/AddPartnerForm";
+import AddResultForm from "@/components/admin-cabinet/tabs/manage-data/forms/AddResultForm";
+import AddCapabilityForm from "@/components/admin-cabinet/tabs/manage-data/forms/AddCapabilityForm";
 export default {
   name: "DataItem",
   components: {

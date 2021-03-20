@@ -123,6 +123,18 @@ export default new Vuex.Store({
         }
       });
     },
+    async editUserById({ state }, payload) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/user/" + payload.id,
+        data: state.userInfo,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e.message;
+      });
+    },
     async editUser({ state }) {
       await axios({
         method: "PUT",
@@ -133,6 +145,17 @@ export default new Vuex.Store({
         }
       }).catch(e => {
         state.errors = e.message;
+      });
+    },
+    async deleteUserById({state}, payload) {
+      await axios({
+        method: "DELETE",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/user/" + payload.id,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
       });
     },
     async logout({ state }) {

@@ -43,7 +43,7 @@
             v-bind="attrs"
           >
             <v-icon>
-              remove_circle_outline
+              delete_outline
             </v-icon>
           </v-btn>
         </template>

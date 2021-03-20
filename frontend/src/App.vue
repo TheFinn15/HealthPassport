@@ -1,12 +1,30 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="#FFA726"
-      dark
-      style="justify-content: center; display: flex"
-    >
+    <v-app-bar app color="#FFA726" dark class="d-flex justify-center">
       <v-toolbar-title>
+        <v-btn text @click="roleInfo.state = true">
+          <span v-if="roleInfo.role === 'admin'">
+            ADMIN_PANEL
+          </span>
+          <span v-else-if="roleInfo.role === 'partner'">
+            PARTNER_PANEL
+          </span>
+        </v-btn>
+        <v-snackbar top timeout="2000" color="info" v-model="roleInfo.state">
+          <template v-slot:action="{ attrs }">
+            <v-btn v-bind="attrs" icon @click="roleInfo.state = false">
+              <v-icon>
+                close
+              </v-icon>
+            </v-btn>
+          </template>
+          <span v-if="roleInfo.role === 'admin'">
+            Вы находитесь в админ панели
+          </span>
+          <span v-else-if="roleInfo.role === 'partner'">
+            Вы находитесь в кабинете партнера
+          </span>
+        </v-snackbar>
         <v-icon>
           health_and_safety
         </v-icon>
@@ -76,7 +94,11 @@ export default Vue.extend({
     locales: "ua",
     pageLocale: "main",
     bottomNav: "main",
-    curLocale: {}
+    curLocale: {},
+    roleInfo: {
+      state: false,
+      role: ""
+    }
   }),
   components: {
     BottomNav
@@ -91,6 +113,11 @@ export default Vue.extend({
     }
   },
   beforeMount() {
+    this.roleInfo.role = /admin/i.test(this.$route.path)
+      ? "admin"
+      : /partner/i.test(this.$route.path)
+      ? "partner"
+      : "user";
     this.$i18n.locale =
       localStorage["locale"] !== undefined ? localStorage["locale"] : "ua";
     this.curLocale = this.$t(this.pageLocale);

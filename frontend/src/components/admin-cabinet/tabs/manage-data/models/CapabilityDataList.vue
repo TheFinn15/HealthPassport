@@ -1,7 +1,7 @@
 <template>
   <v-card flat>
     <v-container>
-      <PartnerDataItem
+      <CapabilityDataItem
         v-for="(item, i) in tableInfo"
         :key="i"
         :table-item="item"
@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import PartnerDataItem from "@/components/admin-cabinet/data-models/models/PartnerDataItem";
+import CapabilityDataItem from "@/components/admin-cabinet/tabs/manage-data/models/CapabilityDataItem";
 export default {
-  name: "PartnerDataList",
-  components: { PartnerDataItem },
+  name: "CapabilityDataList",
+  components: { CapabilityDataItem },
   props: ["tableInfo", "doDeleteService"]
 };
 </script>
