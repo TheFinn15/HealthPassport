@@ -6,10 +6,11 @@
           v-for="(item, i) in info"
           :key="i"
           :item="item"
-          :all-partners="partners"
-          :do-delete-service="doDeleteService"
+          :do-delete-data="doDeleteData"
           :add-data="addData"
+          :all-partners="partners"
           :all-users="users"
+          :all-surveys="surveys"
           :searcher="searcher"
         />
       </v-row>
@@ -22,7 +23,15 @@ import DataItem from "@/components/admin-cabinet/data-models/DataItem";
 export default {
   name: "DataList",
   components: { DataItem },
-  props: ["info", "doDeleteService", "addData", "partners", "users", "searcher"]
+  props: [
+    "info",
+    "doDeleteData",
+    "addData",
+    "partners",
+    "users",
+    "surveys",
+    "searcher"
+  ]
 };
 </script>
 

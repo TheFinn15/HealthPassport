@@ -58,33 +58,29 @@
               <v-container>
                 <v-row>
                   <v-col cols="6">
-                    <v-text-field
-                      label="Название"
-                      outlined
-                      shaped
-                      color="#FB8C00"
-                      v-model="tableItem.name"
-                      :rules="rules.text"
-                    />
-                  </v-col>
-                  <v-col cols="6">
-                    <v-select
-                      label="Вид сервиса"
-                      outlined
-                      shaped
-                      color="#FB8C00"
-                      :items="typesServices"
-                      v-model="tableItem.type"
-                      :rules="rules.text"
-                    />
-                  </v-col>
-                  <v-col cols="12">
                     <v-textarea
-                      label="О сервисе"
+                      label="Об результате"
                       outlined
                       shaped
                       color="#FB8C00"
                       v-model="tableItem.info"
+                      :rules="rules.text"
+                    />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-radio-group label="Обнаружена болезнь ?" v-model="tableItem.isSick">
+                      <v-radio name="Да" :value="true" color="#FB8C00" />
+                      <v-radio name="Нет" :value="false" color="#FB8C00" />
+                    </v-radio-group>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-date-picker
+                      label="Дата выдачи результата"
+                      outlined
+                      shaped
+                      color="#FB8C00"
+                      v-model="tableItem.readyTime"
+                      @click="show"
                       :rules="rules.text"
                     />
                   </v-col>
@@ -141,15 +137,7 @@
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Название
-              </v-card-subtitle>
-              <v-card-title>
-                {{ tableItem.name }}
-              </v-card-title>
-            </v-col>
-            <v-col sm="4" md="4">
-              <v-card-subtitle class="pb-0">
-                Доп. инфо.
+                Об результате
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -157,20 +145,36 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Вид сервиса
+                Время сдачи анализа
               </v-card-subtitle>
               <v-card-title>
-                {{ getTypeService }}
+                {{ getPassedTime }}
+              </v-card-title>
+            </v-col>
+            <v-col sm="4" md="4">
+              <v-card-subtitle class="pb-0">
+                Обнаружена болезнь ?
+              </v-card-subtitle>
+              <v-card-title>
+                {{ tableItem.isSick ? "Да" : "Нет" }}
               </v-card-title>
             </v-col>
           </v-row>
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Партнер
+                Клиент
               </v-card-subtitle>
               <v-card-title>
-                {{ tableItem.partner.name }}
+                {{ tableItem.user.fullName }}
+              </v-card-title>
+            </v-col>
+            <v-col sm="4" md="4">
+              <v-card-subtitle class="pb-0">
+                Обследование
+              </v-card-subtitle>
+              <v-card-title>
+                {{ tableItem.survey.name }}
               </v-card-title>
             </v-col>
           </v-row>
@@ -202,11 +206,60 @@ export default {
     };
   },
   methods: {
+    show() {
+      console.log(this.tableItem.readyTime);
+    },
     doEdit() {
-      console.log("");
+      if (this.$refs.editForm.validate()) {
+        this.loader = true;
+        setTimeout(async () => {
+
+          this.$store.state.service = this.tableItem;
+
+          await this.$store.dispatch("editResult", { id: this.tableItem.id });
+
+          if (this.$store.state.errors !== "") {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.color = "error";
+            this.alert.info = "Ошибка при изменение результата";
+          } else {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.info = "Результат успешно изменен";
+
+            this.$data.forms.edit = false;
+          }
+        }, 800);
+      }
     },
     doDelete() {
-      console.log("");
+      this.loader = true;
+      setTimeout(async () => {
+        await this.$store.dispatch("editResult", { id: this.tableItem.id });
+        if (this.$store.state.errors !== "") {
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.color = "error";
+          this.alert.info = "Ошибка при удаление результата";
+        } else {
+          this.doDeleteService({ name: "Partners", id: this.tableItem.id });
+
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.info = "Результат успешно удален";
+
+          setTimeout(() => {
+            this.$data.forms.edit = false;
+          }, 1200);
+        }
+      }, 800);
+    }
+  },
+  computed: {
+    getPassedTime() {
+      const [day, month, year] = new Date(this.tableItem.passingTime).toLocaleDateString().split(".");
+      return `${day}/${month}/${year} - ` + new Date().toLocaleTimeString();
     }
   }
 };

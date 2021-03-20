@@ -18,12 +18,14 @@
           </v-card-title>
           <v-divider />
           <DataList
+            :surveys="tables[2].surveys"
             :users="tables[1].users"
             :partners="tables[0].partners"
             :add-data="doAddNewData"
             :info="tables"
-            :do-delete-service="doDeleteService"
+            :do-delete-data="doDeleteData"
             :searcher="doSearchData"
+            :key="deleter"
           />
         </v-card>
       </v-tab-item>
@@ -62,14 +64,16 @@ export default {
         {
           name: "Results",
           count: 0,
-          data: []
+          data: [],
+          surveys: []
         },
         {
           name: "Capabilities",
           count: 0,
           data: []
         }
-      ]
+      ],
+      deleter: 0
     };
   },
   methods: {
@@ -98,11 +102,12 @@ export default {
       const curTable = this.tables.map(i => i.name).indexOf(info.name);
       this.tables[curTable].data.push(info.data);
     },
-    doDeleteService(item) {
+    doDeleteData(item) {
       const curTable = this.tables.map(i => i.name).indexOf(item.name);
       this.tables[curTable].data = this.tables[curTable].data.filter(
         i => i.id !== item.id
       );
+      this.deleter += 1;
     }
   },
   async mounted() {
@@ -122,6 +127,7 @@ export default {
 
     this.$data.tables[2].count = results.length;
     this.$data.tables[2].data = results;
+    this.$data.tables[2].surveys = services.filter(i => i.type === "TYPE_SURVEY");
 
     this.$data.tables[3].count = caps.length;
     this.$data.tables[3].data = caps;

@@ -142,7 +142,6 @@ export default {
   },
   computed: {
     getUsers() {
-      console.log(this.allUsers);
       return this.allUsers.map(i => {
         return {
           text: i.login + " - " + i.email,

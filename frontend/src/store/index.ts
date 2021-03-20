@@ -8,10 +8,101 @@ export default new Vuex.Store({
   state: {
     userInfo: {},
     service: {},
+    result: {},
+    caps: {},
     errors: ""
   },
   mutations: {},
   actions: {
+    async editCap({state}, payload) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/cap/" + payload.id,
+        data: state.service,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async deleteCap({state}, payload) {
+      await axios({
+        method: "DELETE",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/cap/" + payload.id,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async editResult({state}, payload) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/result/" + payload.id,
+        data: state.service,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async deleteResult({state}, payload) {
+      await axios({
+        method: "DELETE",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/result/" + payload.id,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async editPartner({state}, payload) {
+      await axios({
+        method: "PUT",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/partner/" + payload.id,
+        data: state.service,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async deletePartner({state}, payload) {
+      await axios({
+        method: "DELETE",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/partner/" + payload.id,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).catch(e => {
+        state.errors = e
+      });
+    },
+    async createCapability({ state }) {
+      await axios({
+        method: "POST",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/caps",
+        data: state.caps,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      });
+    },
+    async createResult({ state }) {
+      await axios({
+        method: "POST",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/result",
+        data: state.result,
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      });
+    },
     async createPartner({ state }) {
       await axios({
         method: "POST",

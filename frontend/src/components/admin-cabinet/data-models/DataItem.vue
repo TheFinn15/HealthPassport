@@ -67,22 +67,22 @@
             <span> Добавить {{ item.name }} </span>
           </v-tooltip>
           <ServiceDataList
-            :do-delete-service="doDeleteService"
+            :do-delete-service="doDeleteData"
             v-if="item.name === 'Services'"
             :table-info="tableInfo"
           />
           <PartnerDataList
-            :do-delete-service="doDeleteService"
+            :do-delete-service="doDeleteData"
             v-if="item.name === 'Partners'"
             :table-info="tableInfo"
           />
           <ResultDataList
-            :do-delete-service="doDeleteService"
+            :do-delete-service="doDeleteData"
             v-if="item.name === 'Results'"
             :table-info="tableInfo"
           />
           <CapabilityDataList
-            :do-delete-service="doDeleteService"
+            :do-delete-service="doDeleteData"
             v-if="item.name === 'Capabilities'"
             :table-info="tableInfo"
           />
@@ -102,6 +102,21 @@
           :all-users="allUsers"
           :update-service="addData"
         />
+        <AddResultForm
+          :is-open="showAddForm.partners"
+          :info="addForm"
+          :close-form="closeForm"
+          :all-surveys="allSurveys"
+          :all-users="allUsers"
+          :update-service="addData"
+        />
+        <AddCapabilityForm
+          :is-open="showAddForm.partners"
+          :info="addForm"
+          :close-form="closeForm"
+          :all-users="allUsers"
+          :update-service="addData"
+        />
       </v-card>
     </v-dialog>
   </v-col>
@@ -114,9 +129,13 @@ import PartnerDataList from "@/components/admin-cabinet/data-models/models/Partn
 import ResultDataList from "@/components/admin-cabinet/data-models/models/ResultDataList";
 import CapabilityDataList from "@/components/admin-cabinet/data-models/models/CapabilityDataList";
 import AddPartnerForm from "@/components/admin-cabinet/forms/AddPartnerForm";
+import AddResultForm from "@/components/admin-cabinet/forms/AddResultForm";
+import AddCapabilityForm from "@/components/admin-cabinet/forms/AddCapabilityForm";
 export default {
   name: "DataItem",
   components: {
+    AddCapabilityForm,
+    AddResultForm,
     AddPartnerForm,
     CapabilityDataList,
     ResultDataList,
@@ -126,10 +145,11 @@ export default {
   },
   props: [
     "item",
-    "doDeleteService",
+    "doDeleteData",
     "addData",
     "allPartners",
     "allUsers",
+    "allSurveys",
     "searcher"
   ],
   data() {
@@ -162,7 +182,7 @@ export default {
         this.showAddForm.capabilities = true;
     }
   },
-  beforeUpdate() {
+  updated() {
     this.tableInfo = this.item.data;
   }
 };

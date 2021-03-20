@@ -56,7 +56,8 @@ export class CapabilityController {
       data: {
         name: name,
         info: info,
-        userId: user.id
+        userId: user.id,
+
       }
     }).then(resp => {
       return res.status(200).json(resp);

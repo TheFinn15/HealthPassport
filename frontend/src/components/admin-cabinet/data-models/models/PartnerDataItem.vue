@@ -213,10 +213,53 @@ export default {
   },
   methods: {
     doEdit() {
-      console.log("");
+      if (this.$refs.editForm.validate()) {
+        this.loader = true;
+        setTimeout(async () => {
+
+          this.$store.state.service = this.tableItem;
+
+          await this.$store.dispatch("editPartner", { id: this.tableItem.id });
+
+          if (this.$store.state.errors !== "") {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.color = "error";
+            this.alert.info = "Ошибка при изменение партнера";
+          } else {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.info = "Партнер успешно изменен";
+
+            this.$data.forms.edit = false;
+          }
+        }, 800);
+      }
     },
     doDelete() {
-      console.log("");
+      this.loader = true;
+      setTimeout(async () => {
+
+        await this.$store.dispatch("deletePartner", { id: this.tableItem.id });
+
+        if (this.$store.state.errors !== "") {
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.color = "error";
+          this.alert.info = "Ошибка при удаление партнера";
+        } else {
+
+          this.doDeleteService({ name: "Partners", id: this.tableItem.id });
+
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.info = "Партнер успешно удален";
+
+          setTimeout(() => {
+            this.$data.forms.edit = false;
+          }, 1200);
+        }
+      }, 800);
     }
   },
   computed: {

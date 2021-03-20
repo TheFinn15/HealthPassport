@@ -68,23 +68,23 @@
                     />
                   </v-col>
                   <v-col cols="6">
-                    <v-select
-                      label="Вид сервиса"
-                      outlined
-                      shaped
-                      color="#FB8C00"
-                      :items="typesServices"
-                      v-model="tableItem.type"
-                      :rules="rules.text"
-                    />
-                  </v-col>
-                  <v-col cols="12">
                     <v-textarea
-                      label="О сервисе"
+                      label="Об ограничение"
                       outlined
                       shaped
                       color="#FB8C00"
                       v-model="tableItem.info"
+                      :rules="rules.text"
+                    />
+                  </v-col>
+                  <v-col cols="12">
+                    <v-select
+                      label="Уровень опасности"
+                      outlined
+                      shaped
+                      color="#FB8C00"
+                      :items="hazardLevels"
+                      v-model="tableItem.hazardLevel"
                       :rules="rules.text"
                     />
                   </v-col>
@@ -157,20 +157,30 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Вид сервиса
+                Уровень опасности
               </v-card-subtitle>
               <v-card-title>
-                {{ getTypeService }}
+                {{ getHazardLevel }}
               </v-card-title>
             </v-col>
           </v-row>
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Партнер
+                Пользователь
               </v-card-subtitle>
               <v-card-title>
-                {{ tableItem.partner.name }}
+                {{ tableItem.user.fullName }}
+              </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="4" md="4">
+              <v-card-subtitle class="pb-0">
+                Болезнь
+              </v-card-subtitle>
+              <v-card-title>
+                {{ tableItem.ill.name }}
               </v-card-title>
             </v-col>
           </v-row>
@@ -198,15 +208,90 @@ export default {
       loader: false,
       rules: {
         text: [v => !!v || "Поле пустое !"]
-      }
+      },
+      hazardLevels: [
+        {
+          text: "Всё в порядке",
+          value: "OKAY_LEVEL"
+        },
+        {
+          text: "В норме",
+          value: "NORMAL_LEVEL"
+        },
+        {
+          text: "Не в порядке",
+          value: "NOT_OKAY_LEVEL"
+        },
+        {
+          text: "Есть угроза",
+          value: "DANGER_LEVEL"
+        },
+        {
+          text: "Смертельная",
+          value: "DEATHLY_LEVEL"
+        }
+      ]
     };
   },
   methods: {
     doEdit() {
-      console.log("");
+      if (this.$refs.editForm.validate()) {
+        this.loader = true;
+        setTimeout(async () => {
+
+          this.$store.state.service = this.tableItem;
+
+          await this.$store.dispatch("editCap", { id: this.tableItem.id });
+
+          if (this.$store.state.errors !== "") {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.color = "error";
+            this.alert.info = "Ошибка при изменение ограничения";
+          } else {
+            this.loader = false;
+            this.alert.state = true;
+            this.alert.info = "Ограничение успешно изменен";
+
+            this.$data.forms.edit = false;
+          }
+        }, 800);
+      }
     },
     doDelete() {
-      console.log("");
+      this.loader = true;
+      setTimeout(async () => {
+        await this.$store.dispatch("deleteCap", { id: this.tableItem.id });
+        if (this.$store.state.errors !== "") {
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.color = "error";
+          this.alert.info = "Ошибка при удаление ограничения";
+        } else {
+          this.doDeleteService({ name: "Partners", id: this.tableItem.id });
+
+          this.loader = false;
+          this.alert.state = true;
+          this.alert.info = "Ограничение успешно удалено";
+
+          setTimeout(() => {
+            this.$data.forms.edit = false;
+          }, 1200);
+        }
+      }, 800);
+    }
+  },
+  computed: {
+    getHazardLevel() {
+      let res = "";
+
+      if (this.tableItem.hazardLevel === "OKAY_LEVEL") res = "Всё в порядке";
+      if (this.tableItem.hazardLevel === "NORMAL_LEVEL") res = "В норме";
+      if (this.tableItem.hazardLevel === "NOT_OKAY_LEVEL") res = "Не в порядке";
+      if (this.tableItem.hazardLevel === "DANGER_LEVEL") res = "Есть угроза";
+      if (this.tableItem.hazardLevel === "DEATHLY_LEVEL") res = "Смертельная";
+
+      return res;
     }
   }
 };
