@@ -3,7 +3,7 @@
     <v-container>
       <v-row justify="center" align="center">
         <v-col sm="12" md="12" lg="6" xl="6">
-          <v-card elevation="8" max-height="280" height="280">
+          <v-card elevation="8" max-height="500" height="500">
             <v-card-title class="justify-center">
               {{ statistic[0].name }}
             </v-card-title>
@@ -26,8 +26,8 @@
         <v-col sm="12" md="12" lg="6" xl="6">
           <v-card
             elevation="8"
-            max-height="280"
-            height="280"
+            max-height="500"
+            height="500"
             class="overflow-y-auto"
           >
             <v-card-title class="justify-center">
@@ -35,10 +35,7 @@
             </v-card-title>
             <v-divider />
             <v-container>
-              <VaccinesList
-                :popular="statistic[1].data"
-                :all-data="statistic[1].allData"
-              />
+              <VaccinesList :all-data="statistic[1].data" />
             </v-container>
           </v-card>
         </v-col>
@@ -61,68 +58,11 @@ export default {
           data: []
         },
         {
-          name: "Статистика по популярности вакцинаций",
-          data: {},
-          allData: []
-        }
-      ],
-      users: [],
-      months: [
-        {
-          value: 0,
-          text: "Январь"
-        },
-        {
-          value: 1,
-          text: "Февраль"
-        },
-        {
-          value: 2,
-          text: "Март"
-        },
-        {
-          value: 3,
-          text: "Апрель"
-        },
-        {
-          value: 4,
-          text: "Май"
-        },
-        {
-          value: 5,
-          text: "Июнь"
-        },
-        {
-          value: 6,
-          text: "Июль"
-        },
-        {
-          value: 7,
-          text: "Август"
-        },
-        {
-          value: 8,
-          text: "Сентябрь"
-        },
-        {
-          value: 9,
-          text: "Октябрь"
-        },
-        {
-          value: 10,
-          text: "Ноябрь"
-        },
-        {
-          value: 11,
-          text: "Декабрь"
+          name: "Статистика популярности вакцинаций",
+          data: []
         }
       ]
     };
-  },
-  computed: {
-    getPopularVaccine() {
-      return this.statistic[1];
-    }
   },
   async mounted() {
     this.statistic[0].data = (await this.$store.getters.getResults).filter(
@@ -139,14 +79,27 @@ export default {
         }
       })
       .map(i => {
-        return i.filter(i1 => i1.type === "TYPE_VACCINE");
+        return i.filter(i1 => {
+          if (i1.type === "TYPE_VACCINE") {
+            i1["popular"] = true;
+
+            return i1;
+          }
+        });
       });
-    const vaccines = [];
+    let vaccines = [];
     services.filter(i => vaccines.push(...i));
 
-    this.statistic[1].data = vaccines;
-    this.statistic[1].allData = (await this.$store.getters.getServices).filter(
-      i => i.type === "TYPE_VACCINE"
+    this.statistic[1].data.push(...vaccines);
+    vaccines = vaccines.map(i => i.id);
+    this.statistic[1].data.push(
+      ...(await this.$store.getters.getServices).filter(i => {
+        if (i.type === "TYPE_VACCINE" && !vaccines.includes(i.id)) {
+          i["popular"] = false;
+
+          return i;
+        }
+      })
     );
   }
 };
