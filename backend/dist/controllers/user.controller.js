@@ -58,10 +58,10 @@ let UserController = class UserController {
                     partner: true
                 },
                 where: {
-                    name: {
-                        in: resultsMappedSurveyName
-                    },
-                    type: "TYPE_SURVEY"
+                    // name: {
+                    //   in: resultsMappedSurveyName
+                    // },
+                    type: "TYPE_VACCINE"
                 }
             }));
             return res.status(200).json({

@@ -53,10 +53,10 @@ export class UserController {
           partner: true
         },
         where: {
-          name: {
-            in: resultsMappedSurveyName
-          },
-          type: "TYPE_SURVEY"
+          // name: {
+          //   in: resultsMappedSurveyName
+          // },
+          type: "TYPE_VACCINE"
         }
       }));
 

@@ -229,6 +229,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    async getRecommend() {
+      return await axios({
+        method: "GET",
+        url: "http://" + process.env.VUE_APP_SERVER + "/api/recommend",
+        headers: {
+          Authorization: "Bearer " + localStorage["uid"]
+        }
+      }).then(resp => resp.data)
+    },
     async getCaps() {
       return await axios({
         method: "GET",

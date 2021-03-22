@@ -117,6 +117,7 @@ export default {
       if (this.$refs.addForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
+          console.log(this.getUsers);
           this.$store.state.userInfo = this.info;
 
           await this.$store.dispatch("createPartner");

@@ -132,7 +132,7 @@
         <v-col cols="12">
           <v-card rounded style="padding: 2%">
             <v-card-title style="justify-content: center; display: flex;">
-              Примерные данные
+              {{ curLocale.exampleData.title }}
               <v-btn
                 v-if="exampleData.ill.length > 0"
                 @click="hideExample = true"

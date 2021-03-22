@@ -103,7 +103,7 @@ model Partner {
   user     User               @relation(fields: [userId], references: [id])
   userId   Int
   name     String             @unique
-  timeWork DateTime
+  timeWork DateTime @default(now())
   url      String             @unique
   about    String
   services SupplierServices[]
