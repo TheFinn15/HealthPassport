@@ -5,7 +5,7 @@
         <v-list-item-content>
           <v-list-item-title>
             <v-card-title>
-              Вакцинации
+              {{ locales.userData.services.vaccines.title }}
             </v-card-title>
           </v-list-item-title>
         </v-list-item-content>
@@ -14,7 +14,7 @@
         <v-list-item-content>
           <v-card v-if="vaccines.length > 0">
             <v-card-subtitle>
-              Вы привились от:
+              {{ locales.userData.services.vaccines.subtitle }}
             </v-card-subtitle>
             <v-card v-for="(item, i) in vaccines" :key="i" flat>
               <v-divider />
@@ -27,7 +27,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle class="pb-0">
-                      Название
+                      {{ locales.userData.services.labels[0] }}
                     </v-card-subtitle>
                     <v-card-title>
                       {{ item.name }}
@@ -35,7 +35,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle class="pb-0">
-                      Партнер
+                      {{ locales.userData.services.labels[1] }}
                     </v-card-subtitle>
                     <v-card-title>
                       {{ item.partner.name }}
@@ -43,7 +43,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle>
-                      Доп. инфо.
+                      {{ locales.userData.services.labels[2] }}
                     </v-card-subtitle>
                     <v-card-text>
                       {{ item.info }}
@@ -59,7 +59,7 @@
                 warning
               </v-icon>
               <v-card-title>
-                Вакцинации отсутствуют
+                {{ locales.userData.services.vaccines.notFound }}
               </v-card-title>
               <v-icon>
                 warning
@@ -77,7 +77,7 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "Vaccine",
-  props: ["vaccines"],
+  props: ["vaccines", "locales"],
   data() {
     return {
       alertInfo: false

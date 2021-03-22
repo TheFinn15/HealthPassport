@@ -14,13 +14,13 @@
             </v-btn>
           </template>
           <span>
-            Завершить эту сессию
+            {{ locales.context.session.btnLogout }}
           </span>
         </v-tooltip>
       </v-col>
       <v-col cols="4">
         <v-card-subtitle style="padding-bottom: 0">
-          Устройство:
+          {{ locales.context.session.device }}
         </v-card-subtitle>
         <v-card-title>
           {{ analyzeDevice }}
@@ -31,7 +31,7 @@
       </v-col>
       <v-col cols="4">
         <v-card-subtitle style="padding-bottom: 0">
-          Местоположение:
+          {{ locales.context.session.location }}
         </v-card-subtitle>
         <v-card-title>
           {{ session.location }}
@@ -39,7 +39,7 @@
       </v-col>
       <v-col cols="3">
         <v-card-subtitle style="padding-bottom: 0">
-          Последний раз в сети:
+          {{ locales.context.session.lastOnline }}
         </v-card-subtitle>
         <v-card-title>
           {{ mapLastOnline }}
@@ -54,7 +54,7 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "UserSessionsItem",
-  props: ["session"],
+  props: ["session", "locales"],
   methods: {
     async logout() {
       this.$store.state.userInfo = { ip: this.session.ip };
@@ -69,7 +69,8 @@ export default Vue.extend({
     analyzeDevice() {
       let res = "";
 
-      if (this.session.typeDevice === "DEVICE_BROWSER") res = "Браузер";
+      if (this.session.typeDevice === "DEVICE_BROWSER")
+        res = this.locales.context.session.typeDevice[0];
       if (this.session.typeDevice === "DEVICE_IOS") res = "iOS";
       if (this.session.typeDevice === "DEVICE_ANDROID") res = "Android";
 

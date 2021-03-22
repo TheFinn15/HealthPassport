@@ -2,7 +2,7 @@
   <v-dialog max-width="680" persistent v-model="isOpen">
     <v-card>
       <v-card-title style="display: flex; justify-content: center">
-        Выбор сервиса
+        {{ locales.addServices.services.title }}
         <v-btn icon @click="doCloseForm" absolute right>
           <v-icon>
             close
@@ -14,7 +14,7 @@
         <v-row no-gutters>
           <v-col cols="12">
             <v-text-field
-              label="Поиск по названию (вакцины, обследования)"
+              :label="locales.addServices.services.searchLabel"
               outlined
               shaped
               color="#FB8C00"
@@ -24,25 +24,25 @@
           </v-col>
           <v-col cols="12">
             <v-checkbox
-              label="Рекомендации"
+              :label="locales.addServices.services.recommends"
               v-model="recommends.state"
               @click="getRecommends"
               color="#FB8C00"
             />
             <v-radio-group v-model="typesService" @change="filterService">
               <v-radio
-                label="Только вакцины"
+                :label="locales.addServices.services.radioBtns[0]"
                 color="#FB8C00"
                 value="vaccines"
               />
               <v-radio
-                label="Только обследования"
+                :label="locales.addServices.services.radioBtns[1]"
                 color="#FB8C00"
                 value="surveys"
               />
               <v-radio
                 v-if="typesService === 'surveys' || typesService === 'vaccines'"
-                label="Выкл. фильтр"
+                :label="locales.addServices.services.radioBtns[2]"
                 color="#FB8C00"
                 value="off"
               />
@@ -50,6 +50,7 @@
           </v-col>
           <v-col cols="12">
             <ServiceList
+              :locales="locales"
               :close-form="doCloseForm"
               :update-service="updateService"
               :services="services"
@@ -66,7 +67,7 @@ import ServiceList from "@/components/home/ServiceList";
 export default {
   name: "AddService",
   components: { ServiceList },
-  props: ["isOpen", "closer", "updateService", "recommends"],
+  props: ["isOpen", "closer", "updateService", "recommends", "locales"],
   data() {
     return {
       services: [],

@@ -49,7 +49,7 @@
               </v-btn>
             </template>
             <span>
-              Использовать сервисы
+              {{ curLocale.addServices.subtitle }}
             </span>
           </v-tooltip>
           <AddService
@@ -57,6 +57,7 @@
             :is-open="showAddService"
             :closer="doClose"
             :recommends="recommends"
+            :locales="curLocale"
           />
         </v-col>
         <v-col cols="12">
@@ -68,7 +69,7 @@
             v-model="constraintInfo"
           >
             <span>
-              Ваши ограничения находятся в личном кабинете
+              {{ curLocale.alert.constraintLabel }}
             </span>
             <template v-slot:action="{ attrs }">
               <v-btn
@@ -77,13 +78,13 @@
                 color="red"
                 @click="constraintInfo = false"
               >
-                ЗАКРЫТЬ
+                {{ curLocale.alert.closeLabel }}
               </v-btn>
             </template>
           </v-snackbar>
           <v-card rounded style="padding: 2%">
             <v-card-title style="justify-content: center; display: flex;">
-              Мои данные
+              {{ curLocale.userData.title }}
               <v-btn
                 v-if="services.ills.length > 0"
                 @click="constraintInfo = !constraintInfo"
@@ -92,16 +93,25 @@
                 absolute
                 right
               >
-                Наложены ограничения
+                {{ curLocale.userData.btns[0] }}
               </v-btn>
               <v-btn v-else text color="green" absolute right>
-                Без ограничений
+                {{ curLocale.userData.btns[1] }}
               </v-btn>
             </v-card-title>
             <v-list>
-              <Ill v-if="!filterList.ill" :ills="services.ills" />
-              <Survey v-if="!filterList.survey" :surveys="services.surveys" />
+              <Ill
+                :locales="curLocale"
+                v-if="!filterList.ill"
+                :ills="services.ills"
+              />
+              <Survey
+                :locales="curLocale"
+                v-if="!filterList.survey"
+                :surveys="services.surveys"
+              />
               <Vaccine
+                :locales="curLocale"
                 v-if="!filterList.vaccine"
                 :vaccines="services.vaccines"
               />
@@ -142,16 +152,16 @@
                 absolute
                 right
               >
-                Ограничения
+                {{ curLocale.exampleData.btns[0] }}
               </v-btn>
               <v-btn v-else text color="green" absolute right>
-                Без ограничений
+                {{ curLocale.exampleData.btns[1] }}
               </v-btn>
             </v-card-title>
             <v-list>
-              <Ill :ills="exampleData.ill" />
-              <Survey :surveys="exampleData.surveys" />
-              <Vaccine :vaccines="exampleData.vaccines" />
+              <Ill :locales="curLocale" :ills="exampleData.ill" />
+              <Survey :locales="curLocale" :surveys="exampleData.surveys" />
+              <Vaccine :locales="curLocale" :vaccines="exampleData.vaccines" />
             </v-list>
           </v-card>
           <v-overlay :value="hideExample" z-index="0" style="padding: 2%">
@@ -159,19 +169,18 @@
               <v-card-title
                 style="text-align: center; display: block; word-break: break-word"
               >
-                Зарегистрируйтесь или войдите в систему для больших возможностей
-                !
+                {{ curLocale.exampleData.alert.title }}
               </v-card-title>
               <v-divider />
               <v-card-actions style="justify-content: center; display: flex">
                 <v-btn outlined color="info" to="/login">
-                  Авторизация
+                  {{ curLocale.exampleData.alert.btns[0] }}
                 </v-btn>
                 <v-btn text color="red" @click="hideExample = false">
-                  Закрыть
+                  {{ curLocale.exampleData.alert.btns[1] }}
                 </v-btn>
                 <v-btn outlined color="info" to="/register">
-                  Регистрация
+                  {{ curLocale.exampleData.alert.btns[2] }}
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -267,7 +276,8 @@ export default Vue.extend({
     }
   },
   async beforeMount() {
-    this.recommends.data = await this.$store.getters.getRecommend;
+    if (localStorage["uid"] !== undefined)
+      this.recommends.data = await this.$store.getters.getRecommend;
 
     this.$i18n.locale = localStorage["locale"];
     this.$data.curLocale = this.$t(this.$data.pageLocale);

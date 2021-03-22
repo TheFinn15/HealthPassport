@@ -1,6 +1,6 @@
 <template>
   <v-card outlined>
-    <UserSessionsItem v-for="(item, i) in sessions" :key="i" :session="item" />
+    <UserSessionsItem :locales="locales" v-for="(item, i) in sessions" :key="i" :session="item" />
   </v-card>
 </template>
 
@@ -11,7 +11,7 @@ import UserSessionsItem from "./UserSessionsItem.vue";
 export default Vue.extend({
   name: "UserSessionsList",
   components: { UserSessionsItem },
-  props: ["sessions"]
+  props: ["sessions", "locales"]
 });
 </script>
 

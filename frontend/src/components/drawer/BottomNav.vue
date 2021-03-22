@@ -2,7 +2,7 @@
   <v-bottom-navigation horizontal app :value="bottomVal" color="#FFB74D">
     <v-btn value="main" to="/">
       <span>
-        Главная
+        {{ locales.bottomNav.labels[0] }}
       </span>
       <v-icon>
         home
@@ -11,7 +11,7 @@
 
     <v-btn v-if="isAuth" value="cabinet" @click="goToCabinet">
       <span>
-        Мой кабинет
+        {{ locales.bottomNav.labels[1] }}
       </span>
       <v-icon>
         person
@@ -20,7 +20,7 @@
 
     <v-btn @click="doLogout" v-if="isAuth" value="logout">
       <span>
-        Выход
+        {{ locales.bottomNav.labels[2] }}
       </span>
       <v-icon>
         exit_to_app
@@ -29,7 +29,7 @@
 
     <v-btn to="/login" v-if="!isAuth" value="auth">
       <span>
-        Авторизация
+        {{ locales.bottomNav.labels[3] }}
       </span>
       <v-icon>
         login
@@ -38,7 +38,7 @@
 
     <v-btn to="/register" v-if="!isAuth" value="register">
       <span>
-        Регистрация
+        {{ locales.bottomNav.labels[4] }}
       </span>
       <v-icon>
         person_add

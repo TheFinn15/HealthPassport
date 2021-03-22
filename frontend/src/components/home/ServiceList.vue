@@ -8,6 +8,7 @@
           :service="item"
           :close-form="closeForm"
           :update-service="updateService"
+          :locales="locales"
         />
       </v-row>
     </v-container>
@@ -19,7 +20,7 @@ import ServiceItem from "@/components/home/ServiceItem";
 export default {
   name: "ServiceList",
   components: { ServiceItem },
-  props: ["services", "updateService", "closeForm"]
+  props: ["services", "updateService", "closeForm", "locales"]
 };
 </script>
 

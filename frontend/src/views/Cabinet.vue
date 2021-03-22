@@ -6,28 +6,28 @@
           <v-icon>
             person_pin
           </v-icon>
-          Мои данные
+          {{ curLocale.tabs[0].name }}
         </v-tab>
         <v-tab>
           <v-icon>
             block
           </v-icon>
-          Мои ограничения
+          {{ curLocale.tabs[1].name }}
         </v-tab>
         <v-tab>
           <v-icon>
             devices
           </v-icon>
-          Активные сессии
+          {{ curLocale.tabs[2].name }}
         </v-tab>
         <v-tab-item>
-          <UserData :user-info="userInfo" />
+          <UserData :locales="curLocale.tabs[0]" :user-info="userInfo" />
         </v-tab-item>
         <v-tab-item>
-          <UserConstraint :user-info="userInfo" />
+          <UserConstraint :locales="curLocale.tabs[1]" :user-info="userInfo" />
         </v-tab-item>
         <v-tab-item>
-          <UserSessions :user-info="userInfo" />
+          <UserSessions :locales="curLocale.tabs[2]" :user-info="userInfo" />
         </v-tab-item>
       </v-tabs>
     </v-card>
@@ -101,10 +101,12 @@ export default Vue.extend({
   components: { UserSessions, UserConstraint, UserData },
   data() {
     return {
+      curLocale: {},
+      pageLocale: "cabinet",
       isAuth: localStorage["uid"] !== undefined,
       userInfo: {
-        fullName: "Telo Slo V",
-        login: "TeloSlo12",
+        fullName: "Test Test Test",
+        login: "Testo12345",
         pwd: "",
         email: "telo@te.com",
         phone: "1802345645",
@@ -119,6 +121,10 @@ export default Vue.extend({
     if (this.isAuth) {
       this.userInfo = (await this.$store.getters.getCurUser)[0];
     }
+  },
+  beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
   }
 });
 </script>

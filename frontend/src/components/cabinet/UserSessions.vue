@@ -1,25 +1,25 @@
 <template>
   <v-card>
     <v-card-title style="display: flex; justify-content: center">
-      Мои активные устройства
+      {{ locales.context.title }}
       <v-btn text color="red" absolute left @click="hardLogout">
-        ЗАВЕРШИТЬ ВСЕ СЕАНСЫ
+        {{ locales.context.btnLogout }}
       </v-btn>
     </v-card-title>
     <v-divider />
     <v-card elevation="20">
       <v-card-title>
-        Текущая сессия:
+        {{ locales.context.currentSession }}
       </v-card-title>
       <v-divider />
-      <UserSessionsItem :session="activeSession" />
+      <UserSessionsItem :locales="locales" :session="activeSession" />
     </v-card>
     <v-card v-if="otherSessions.length > 0">
       <v-card-title>
-        Остальные сессии:
+        {{ locales.context.otherSession }}
       </v-card-title>
       <v-divider />
-      <UserSessionsList :sessions="otherSessions" />
+      <UserSessionsList :locales="locales" :sessions="otherSessions" />
     </v-card>
   </v-card>
 </template>
@@ -33,7 +33,7 @@ import UserSessionsItem from "@/components/cabinet/UserSessionsItem.vue";
 export default Vue.extend({
   name: "UserSessions",
   components: { UserSessionsList, UserSessionsItem },
-  props: ["userInfo"],
+  props: ["userInfo", "locales"],
   data() {
     return {
       otherSessions: [] as AuthType[],

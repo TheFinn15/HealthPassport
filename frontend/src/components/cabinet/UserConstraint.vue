@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Статус профиля
+      {{ locales.context.title }}
       <v-spacer />
       <v-tooltip
         bottom
@@ -27,7 +27,7 @@
           {{ statusProfile.statusInfo[i].name }}
         </span>
         <span v-else>
-          Статус неактивен
+          {{ locales.context.status.nonactive }}
         </span>
       </v-tooltip>
     </v-card-title>
@@ -55,12 +55,12 @@
                   <v-card-subtitle>
                     {{ checkCapLevel(item.hazardLevel) }}
                     <v-spacer />
-                    Болезнь через которую выявлено: <br />
+                    {{ locales.context.labels[0] }} <br />
                     <b>{{ item.ill.name }}</b>
                   </v-card-subtitle>
                 </v-list-item-subtitle>
                 <v-list-item-title>
-                  О данной болезни: <br />
+                  {{ locales.context.labels[1] }} <br />
                   <v-card-subtitle>
                     {{ item.info }}
                   </v-card-subtitle>
@@ -73,12 +73,13 @@
     </v-list>
     <div
       style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 15%"
+      v-else
     >
       <v-icon x-large>
         mood
       </v-icon>
       <v-card-title>
-        Ограничения отсутствуют
+        {{ locales.context.notFound }}
       </v-card-title>
     </div>
   </v-card>
@@ -90,17 +91,22 @@ import { CapsType } from "@/types/caps.type";
 
 export default Vue.extend({
   name: "UserConstraint",
-  props: ["userInfo"],
+  props: ["userInfo", "locales"],
   data() {
     return {
       checkCapLevel: (level: string) => {
         let res = "";
 
-        if (level === "OKAY_LEVEL") res = "Состояние здоровое";
-        if (level === "NORMAL_LEVEL") res = "Состояние вполне здоровое";
-        if (level === "NOT_OKAY_LEVEL") res = "Состояние не здоровое";
-        if (level === "DANGER_LEVEL") res = "Состояние критическое";
-        if (level === "DEATHLY_LEVEL") res = "Состояние при смерти";
+        if (level === "OKAY_LEVEL")
+          res = this.locales.context.status.capLevels[0];
+        if (level === "NORMAL_LEVEL")
+          res = this.locales.context.status.capLevels[1];
+        if (level === "NOT_OKAY_LEVEL")
+          res = this.locales.context.status.capLevels[2];
+        if (level === "DANGER_LEVEL")
+          res = this.locales.context.status.capLevels[3];
+        if (level === "DEATHLY_LEVEL")
+          res = this.locales.context.status.capLevels[4];
 
         return res;
       },
@@ -115,25 +121,23 @@ export default Vue.extend({
         ],
         statusInfo: [
           {
-            name:
-              "Состояние человека - полностью здоровое. Ограничения отсутствуют",
+            name: this.locales.context.status.statusNames[0],
             level: "OKAY_LEVEL"
           },
           {
-            name:
-              "Состояние человека - есть маленький недуг. Рекомендация, проконсультироваться с врачом",
+            name: this.locales.context.status.statusNames[1],
             level: "NORMAL_LEVEL"
           },
           {
-            name: "Состояние человека - не здоровое, есть отклонения от нормы.",
+            name: this.locales.context.status.statusNames[2],
             level: "NOT_OKAY_LEVEL"
           },
           {
-            name: "Состояние человека - требуется срочная мед. помощь !",
+            name: this.locales.context.status.statusNames[3],
             level: "DANGER_LEVEL"
           },
           {
-            name: "Состояние человека - человек при смерти!",
+            name: this.locales.context.status.statusNames[4],
             level: "DEATHLY_LEVEL"
           }
         ]

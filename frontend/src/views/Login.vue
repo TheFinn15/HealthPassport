@@ -13,14 +13,14 @@
       color="#FB8C00"
     />
     <v-card-title style="justify-content: center; display: flex">
-      Авторизация
+      {{ curLocale.title }}
     </v-card-title>
     <v-form ref="authForm">
       <v-container>
         <v-row no-gutters>
           <v-col cols="12">
             <v-text-field
-              label="Логин"
+              :label="curLocale.labels[0]"
               outlined
               shaped
               v-model="info.login"
@@ -31,7 +31,7 @@
           <v-col cols="12">
             <v-text-field
               type="password"
-              label="Пароль"
+              :label="curLocale.labels[1]"
               outlined
               shaped
               v-model="info.pwd"
@@ -42,13 +42,13 @@
           <v-col cols="12">
             <v-checkbox
               color="#FFCC80"
-              label="Запомнить меня"
+              :label="curLocale.labels[2]"
               v-model="info.isRememberMe"
             />
           </v-col>
         </v-row>
         <v-btn color="#FB8C00" block outlined @click="doAuth">
-          ВОЙТИ
+          {{ curLocale.btn }}
         </v-btn>
       </v-container>
     </v-form>
@@ -63,8 +63,10 @@ export default {
   name: "Login",
   data() {
     return {
+      curLocale: {},
+      pageLocale: "login",
       rules: {
-        text: [v => v.length !== 0 || "Пустое поле!"]
+        text: [v => v.length !== 0 || this.curLocale.rules.text]
       },
       info: {
         login: "",
@@ -97,7 +99,7 @@ export default {
           if (localStorage["uid"] !== undefined) {
             const token = jwt.decode(localStorage["uid"]);
 
-            this.alert.info = "Успешная авторизация!";
+            this.alert.info = this.curLocale.alerts[0];
 
             setTimeout(() => {
               if (token.data.role === "ROLE_USER")
@@ -110,14 +112,15 @@ export default {
             }, 1500);
           } else {
             this.alert.type = "error";
-            this.alert.info = "Ошибка авторизации!";
+            this.alert.info = this.curLocale.alerts[1];
           }
         }, 1500);
       }
     }
   },
-  mounted() {
-    console.log();
+  beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
   }
 };
 </script>

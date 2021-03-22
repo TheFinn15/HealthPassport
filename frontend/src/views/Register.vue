@@ -13,14 +13,14 @@
       color="#FB8C00"
     />
     <v-card-title style="justify-content: center; display: flex">
-      Регистрация
+      {{ curLocale.title }}
     </v-card-title>
     <v-form ref="registerForm">
       <v-container>
         <v-row>
           <v-col cols="12">
             <v-text-field
-              label="ФИО"
+              :label="curLocale.labels[0]"
               outlined
               shaped
               v-model="info.fullName"
@@ -30,7 +30,7 @@
           </v-col>
           <v-col cols="6">
             <v-text-field
-              label="Логин"
+              :label="curLocale.labels[1]"
               outlined
               shaped
               v-model="info.login"
@@ -41,7 +41,7 @@
           <v-col cols="6">
             <v-text-field
               type="password"
-              label="Пароль"
+              :label="curLocale.labels[2]"
               outlined
               shaped
               v-model="info.pwd"
@@ -51,7 +51,7 @@
           </v-col>
           <v-col cols="6">
             <v-text-field
-              label="E-mail"
+              :label="curLocale.labels[3]"
               outlined
               shaped
               v-model="info.email"
@@ -61,7 +61,7 @@
           </v-col>
           <v-col cols="6">
             <v-text-field
-              label="Телефон"
+              :label="curLocale.labels[4]"
               outlined
               shaped
               v-model="info.phone"
@@ -72,13 +72,13 @@
           <v-col cols="12">
             <v-checkbox
               color="#FFCC80"
-              label="Запомнить меня"
+              :label="curLocale.labels[5]"
               v-model="info.isRememberMe"
             />
           </v-col>
         </v-row>
         <v-btn color="#FB8C00" block outlined @click="doRegister">
-          СОЗДАТЬ АККАУНТ
+          {{ curLocale.btn }}
         </v-btn>
       </v-container>
     </v-form>
@@ -93,14 +93,16 @@ export default {
   name: "Register",
   data: () => {
     return {
+      curLocale: {},
+      pageLocale: "register",
       rules: {
-        text: [v => v.length !== 0 || "Пустое поле!"],
+        text: [v => v.length !== 0 || this.curLocale.rules.text],
         email: [
           v =>
             v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null ||
-            "Неверный e-mail"
+            this.curLocale.rules.email
         ],
-        phone: [v => v.length === 11 || "Неверный телефон"]
+        phone: [v => v.length === 11 || this.curLocale.rules.phone]
       },
       info: {
         fullName: "",
@@ -156,6 +158,10 @@ export default {
         }, 1500);
       }
     }
+  },
+  beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
   }
 };
 </script>

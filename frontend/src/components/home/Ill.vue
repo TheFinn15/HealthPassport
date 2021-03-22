@@ -5,7 +5,7 @@
         <v-list-item-content>
           <v-list-item-title>
             <v-card-title>
-              Болезни
+              {{ locales.userData.services.ills.title }}
             </v-card-title>
           </v-list-item-title>
         </v-list-item-content>
@@ -14,7 +14,7 @@
         <v-list-item-content>
           <v-card v-if="ills.length > 0">
             <v-card-subtitle>
-              У вас выявленно:
+              {{ locales.userData.services.ills.subtitle }}
             </v-card-subtitle>
             <v-card v-for="(item, i) in ills" :key="i" flat>
               <v-divider />
@@ -27,7 +27,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle class="pb-0">
-                      Название
+                      {{ locales.userData.services.labels[0] }}
                     </v-card-subtitle>
                     <v-card-title>
                       {{ item.name }}
@@ -35,7 +35,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle class="pb-0">
-                      Партнер
+                      {{ locales.userData.services.labels[1] }}
                     </v-card-subtitle>
                     <v-card-title>
                       {{ item.partner.name }}
@@ -43,7 +43,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-card-subtitle>
-                      Доп. инфо.
+                      {{ locales.userData.services.labels[2] }}
                     </v-card-subtitle>
                     <v-card-text>
                       {{ item.info }}
@@ -59,7 +59,7 @@
                 warning
               </v-icon>
               <v-card-title>
-                Заболевания отсутствуют
+                {{ locales.userData.services.ills.notFound }}
               </v-card-title>
               <v-icon>
                 warning
@@ -77,7 +77,7 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "Ill",
-  props: ["ills"],
+  props: ["ills", "locales"],
   data() {
     return {
       alertInfo: false

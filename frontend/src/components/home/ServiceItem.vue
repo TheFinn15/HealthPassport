@@ -15,7 +15,7 @@
         <v-row>
           <v-col cols="4">
             <v-card-subtitle class="pb-0">
-              Название:
+              {{ locales.addServices.services.labels[0] }}
             </v-card-subtitle>
             <v-card-title>
               {{ service.name }}
@@ -23,15 +23,15 @@
           </v-col>
           <v-col cols="4">
             <v-card-subtitle class="pb-0">
-              Тип сервиса:
+              {{ locales.addServices.services.labels[1] }}
             </v-card-subtitle>
             <v-card-title>
-              {{ service.type === "TYPE_SURVEY" ? "Обследование" : "Вакцина" }}
+              {{ service.type === "TYPE_SURVEY" ? locales.addServices.services.types[0] : locales.addServices.types[1] }}
             </v-card-title>
           </v-col>
           <v-col cols="3">
             <v-card-subtitle class="pb-0">
-              О сервисе:
+              {{ locales.addServices.services.labels[2] }}
             </v-card-subtitle>
             <v-card-title>
               {{ service.info }}
@@ -57,7 +57,7 @@
                 </v-btn>
               </template>
               <span>
-                Выбрать сервис
+                {{ locales.addServices.services.labels[3] }}
               </span>
             </v-tooltip>
           </v-col>
@@ -65,7 +65,7 @@
         <v-row>
           <v-col cols="4">
             <v-card-subtitle class="pb-0">
-              О Партнере
+              {{ locales.addServices.services.labels[4] }}
             </v-card-subtitle>
             <v-card-title>
               {{ service.partner.name }}
@@ -80,7 +80,7 @@
 <script>
 export default {
   name: "ServiceItem",
-  props: ["service", "updateService", "closeForm"],
+  props: ["service", "updateService", "closeForm", "locales"],
   data() {
     return {
       alert: {
@@ -96,13 +96,13 @@ export default {
       await this.$store.dispatch("editUser");
       if (this.$store.state.errors === "") {
         this.alert.state = true;
-        this.alert.info = "Успешный выбор сервиса";
+        this.alert.info = this.locales.addServices.services.alerts[0];
 
         this.updateService(this.service);
       } else {
         this.alert.state = true;
         this.alert.color = "red";
-        this.alert.info = "Ошибка при выборе сервиса";
+        this.alert.info = this.locales.addServices.services.alerts[1];
       }
     }
   }

@@ -5,10 +5,10 @@
     </v-alert>
     <v-card-title style="justify-content: center; display: flex">
       <span v-if="!editMode">
-        Просмотр данных
+        {{ locales.context.titles[0] }}
       </span>
       <span v-else>
-        Редактирование данных
+        {{ locales.context.titles[1] }}
       </span>
       <v-tooltip v-if="!editMode" bottom color="#FB8C00" open-delay="600">
         <template v-slot:activator="{ on, attrs }">
@@ -27,7 +27,7 @@
           </v-btn>
         </template>
         <span>
-          Режим редактирования
+          {{ locales.context.editBtn }}
         </span>
       </v-tooltip>
       <v-tooltip v-if="editMode" bottom color="#FB8C00" open-delay="600">
@@ -47,7 +47,7 @@
           </v-btn>
         </template>
         <span>
-          Сохранить данные
+          {{ locales.context.saveData }}
         </span>
       </v-tooltip>
     </v-card-title>
@@ -56,7 +56,7 @@
       <v-row>
         <v-col cols="12">
           <v-text-field
-            label="ФИО"
+            :label="locales.context.labels[0]"
             v-model="userInfo.fullName"
             outlined
             :readonly="!editMode"
@@ -66,7 +66,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            label="Логин"
+            :label="locales.context.labels[1]"
             v-model="userInfo.login"
             outlined
             :readonly="!editMode"
@@ -77,7 +77,7 @@
         <v-col cols="6">
           <v-text-field
             type="password"
-            label="Пароль"
+            :label="locales.context.labels[2]"
             v-model="userInfo.pwd"
             outlined
             :readonly="!editMode"
@@ -87,7 +87,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            label="E-mail"
+            :label="locales.context.labels[3]"
             v-model="userInfo.email"
             outlined
             :readonly="!editMode"
@@ -97,7 +97,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            label="Телефон"
+            :label="locales.context.labels[4]"
             v-model="userInfo.phone"
             outlined
             :readonly="!editMode"
@@ -113,7 +113,7 @@
 <script>
 export default {
   name: "UserData",
-  props: ["userInfo"],
+  props: ["userInfo", "locales"],
   data() {
     return {
       editMode: false,
@@ -133,11 +133,11 @@ export default {
       const testData = (await this.$store.getters.getCurUser)[0];
       if (testData.login === this.userInfo.login) {
         this.alert.state = true;
-        this.alert.info = "Успешное редактирование!";
+        this.alert.info = this.locales.context.alerts[0];
       } else {
         this.alert.state = true;
         this.alert.type = "error";
-        this.alert.info = "Ошибка редактирования!";
+        this.alert.info = this.locales.context.alerts[1];
       }
 
       this.editMode = false;
