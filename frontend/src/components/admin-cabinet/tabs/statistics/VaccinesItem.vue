@@ -11,7 +11,7 @@
         outlined
       >
         <v-dialog max-width="620" v-model="showInfo">
-          <v-card>
+          <v-card rounded="lg">
             <v-card-title class="justify-center">
               {{ item.name }}
             </v-card-title>
@@ -67,9 +67,9 @@
 
         <v-card-title class="pb-0">
           {{ ind + 1 }} - Место
-          <v-card-title>
-            {{ item.name }}
-          </v-card-title>
+        </v-card-title>
+        <v-card-title class="justify-center">
+          {{ item.name }}
         </v-card-title>
 
         <v-fade-transition v-if="hover">

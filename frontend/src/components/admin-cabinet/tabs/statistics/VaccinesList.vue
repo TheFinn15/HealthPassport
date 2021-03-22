@@ -11,18 +11,7 @@ import VaccinesItem from "@/components/admin-cabinet/tabs/statistics/VaccinesIte
 export default {
   name: "VaccinesList",
   components: { VaccinesItem },
-  props: ["allData", "popular"],
-  data() {
-    return {
-      showInfo: false,
-      aboutPopular: []
-    };
-  },
-  mounted() {
-    for (const item in this.popular[0]) {
-      this.aboutPopular.push(item);
-    }
-  }
+  props: ["allData"]
 };
 </script>
 

@@ -3,21 +3,87 @@
     <v-container>
       <v-row justify="center" align="center">
         <v-col sm="12" md="12" lg="6" xl="6">
-          <v-card elevation="8" max-height="500" height="500">
+          <v-card
+            elevation="8"
+            :max-height="showPart.sickUsers ? 500 : ''"
+            :height="showPart.sickUsers ? 500 : ''"
+            class="overflow-y-auto"
+          >
             <v-card-title class="justify-center">
               {{ statistic[0].name }}
+              <v-tooltip left color="#FB8C00" v-if="!showPart.sickUsers">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    absolute
+                    right
+                    @click="showPart.sickUsers = !showPart.sickUsers"
+                    v-on="on"
+                    v-bind="attrs"
+                  >
+                    <v-icon>
+                      visibility
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>
+                  Вкл. раздел
+                </span>
+              </v-tooltip>
+              <v-tooltip left color="#FB8C00" v-else>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    absolute
+                    right
+                    @click="showPart.sickUsers = !showPart.sickUsers"
+                    v-on="on"
+                    v-bind="attrs"
+                  >
+                    <v-icon>
+                      visibility_off
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>
+                  Выкл. раздел
+                </span>
+              </v-tooltip>
             </v-card-title>
             <v-divider />
-            <v-container>
-              <v-row>
+            <v-container v-if="showPart.sickUsers">
+              <v-row justify="center" align="center">
                 <v-col
-                  cols="4"
-                  v-for="(item1, ind) in statistic[0].data"
-                  :key="ind"
+                  sm="5"
+                  md="3"
+                  lg="4"
+                  xl="2"
+                  v-for="(item, i) in months"
+                  :key="i"
                 >
-                  <v-card-text>
-                    Кол-во болеющих: {{ statistic[0].data.length }}
-                  </v-card-text>
+                  <v-card
+                    rounded="lg"
+                    elevation="8"
+                    max-width="220"
+                    max-height="200"
+                    height="200"
+                  >
+                    <v-btn text color="info">
+                      {{ item.text }}
+                    </v-btn>
+                    <v-card-subtitle class="pb-0">
+                      Кол-во болезней
+                    </v-card-subtitle>
+                    <v-card-title>
+                      {{ statistic[0].data[i][0] }}
+                    </v-card-title>
+                    <v-card-subtitle class="pb-0">
+                      Последний анализ
+                    </v-card-subtitle>
+                    <v-card-title>
+                      {{statistic[0].data[i][1]}}
+                    </v-card-title>
+                  </v-card>
                 </v-col>
               </v-row>
             </v-container>
@@ -26,15 +92,53 @@
         <v-col sm="12" md="12" lg="6" xl="6">
           <v-card
             elevation="8"
-            max-height="500"
-            height="500"
+            :max-height="showPart.vaccines ? 500 : ''"
+            :height="showPart.vaccines ? 500 : ''"
             class="overflow-y-auto"
           >
             <v-card-title class="justify-center">
               {{ statistic[1].name }}
+              <v-tooltip left color="#FB8C00" v-if="!showPart.vaccines">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    absolute
+                    right
+                    @click="showPart.vaccines = !showPart.vaccines"
+                    v-on="on"
+                    v-bind="attrs"
+                  >
+                    <v-icon>
+                      visibility
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>
+                  Вкл. раздел
+                </span>
+              </v-tooltip>
+              <v-tooltip left color="#FB8C00" v-else>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    absolute
+                    right
+                    @click="showPart.vaccines = !showPart.vaccines"
+                    v-on="on"
+                    v-bind="attrs"
+                  >
+                    <v-icon>
+                      visibility_off
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>
+                  Выкл. раздел
+                </span>
+              </v-tooltip>
             </v-card-title>
             <v-divider />
-            <v-container>
+            <v-container v-if="showPart.vaccines">
               <VaccinesList :all-data="statistic[1].data" />
             </v-container>
           </v-card>
@@ -49,25 +153,104 @@ import VaccinesList from "@/components/admin-cabinet/tabs/statistics/VaccinesLis
 export default {
   name: "Statistics",
   components: { VaccinesList },
-  props: ["info"],
   data() {
     return {
+      showPart: {
+        sickUsers: true,
+        vaccines: true
+      },
       statistic: [
         {
           name: "Статистика по кол-ву людей с болезнями",
-          data: []
+          data: [
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0]
+          ]
         },
         {
           name: "Статистика популярности вакцинаций",
           data: []
         }
+      ],
+      months: [
+        {
+          value: 0,
+          text: "Январь"
+        },
+        {
+          value: 1,
+          text: "Февраль"
+        },
+        {
+          value: 2,
+          text: "Март"
+        },
+        {
+          value: 3,
+          text: "Апрель"
+        },
+        {
+          value: 4,
+          text: "Май"
+        },
+        {
+          value: 5,
+          text: "Июнь"
+        },
+        {
+          value: 6,
+          text: "Июль"
+        },
+        {
+          value: 7,
+          text: "Август"
+        },
+        {
+          value: 8,
+          text: "Сентябрь"
+        },
+        {
+          value: 9,
+          text: "Октябрь"
+        },
+        {
+          value: 10,
+          text: "Ноябрь"
+        },
+        {
+          value: 11,
+          text: "Декабрь"
+        }
       ]
     };
   },
   async mounted() {
-    this.statistic[0].data = (await this.$store.getters.getResults).filter(
+    // users with ills
+    const curMonth = new Date().getMonth();
+    const userWithSick = (await this.$store.getters.getResults).filter(
       i => i.isSick
     );
+    for (const item of userWithSick) {
+      const userMonth = new Date(item.passingTime).getMonth();
+      if (curMonth === userMonth) {
+        this.statistic[0].data[curMonth][0] += 1;
+        this.statistic[0].data[curMonth][1] = new Date(item.passingTime).toLocaleDateString();
+      }
+    }
+
+    // this.statistic[0].data = [];
+
+    // top of vaccines
     const users = await this.$store.getters.getAllUsers;
 
     const services = users
@@ -87,14 +270,26 @@ export default {
           }
         });
       });
-    let vaccines = [];
+    let allData = [];
+    const vaccines = [];
+
     services.filter(i => vaccines.push(...i));
 
-    this.statistic[1].data.push(...vaccines);
-    vaccines = vaccines.map(i => i.id);
+    vaccines.reduce((back, next) => {
+      if (back !== undefined) {
+        if (back.name === next.name) {
+          allData.push(next);
+        }
+      } else {
+        allData.push(next);
+      }
+    });
+
+    this.statistic[1].data.push(...allData);
+    allData = allData.map(i => i.id);
     this.statistic[1].data.push(
       ...(await this.$store.getters.getServices).filter(i => {
-        if (i.type === "TYPE_VACCINE" && !vaccines.includes(i.id)) {
+        if (i.type === "TYPE_VACCINE" && !allData.includes(i.id)) {
           i["popular"] = false;
 
           return i;
