@@ -29,6 +29,8 @@ export class UserController {
       const resultsMappedSurveyName = userResults.map(i => i.survey.name);
       const resultsMappedPartnerId = userResults.map(i => i.survey.partnerId);
 
+      console.log(resultsMappedSurveyName, resultsMappedPartnerId);
+
       const uniqueSurveys = (await this.clientDB.supplierServices.findMany({
         include: {
           partner: true
@@ -53,9 +55,9 @@ export class UserController {
           partner: true
         },
         where: {
-          // name: {
-          //   in: resultsMappedSurveyName
-          // },
+          name: {
+            in: resultsMappedSurveyName
+          },
           type: "TYPE_VACCINE"
         }
       }));

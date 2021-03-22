@@ -101,11 +101,10 @@ let PartnerController = class PartnerController {
         try {
             if (!(await this.jwtConfigure.validateToken(req, this.clientDB, [role_type_1.Role.ROLE_ADMIN, role_type_1.Role.ROLE_PARTNER])))
                 return res.status(401).send("401 Unauthorized");
-            const { name, timeWork, url, about, user } = req.body;
+            const { name, url, about, user } = req.body;
             await this.clientDB.partner.create({
                 data: {
                     name: name,
-                    timeWork: timeWork,
                     url: url,
                     about: about,
                     userId: user

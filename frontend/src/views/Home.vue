@@ -56,6 +56,7 @@
             :update-service="updateService"
             :is-open="showAddService"
             :closer="doClose"
+            :recommends="recommends"
           />
         </v-col>
         <v-col cols="12">
@@ -218,7 +219,11 @@ export default Vue.extend({
         survey: false,
         vaccine: false
       },
-      showAddService: false
+      showAddService: false,
+      recommends: {
+        state: false,
+        data: {}
+      }
     };
   },
   methods: {
@@ -262,10 +267,10 @@ export default Vue.extend({
     }
   },
   async beforeMount() {
+    this.recommends.data = await this.$store.getters.getRecommend;
+
     this.$i18n.locale = localStorage["locale"];
     this.$data.curLocale = this.$t(this.$data.pageLocale);
-
-    // this.$data.services = await this.$store.getters.getServices;
   },
   async mounted() {
     if (this.$data.isAuth) {

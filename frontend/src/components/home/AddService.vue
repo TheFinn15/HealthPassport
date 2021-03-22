@@ -23,6 +23,12 @@
             />
           </v-col>
           <v-col cols="12">
+            <v-checkbox
+              label="Рекомендации"
+              v-model="recommends.state"
+              @click="getRecommends"
+              color="#FB8C00"
+            />
             <v-radio-group v-model="typesService" @change="filterService">
               <v-radio
                 label="Только вакцины"
@@ -60,7 +66,7 @@ import ServiceList from "@/components/home/ServiceList";
 export default {
   name: "AddService",
   components: { ServiceList },
-  props: ["isOpen", "closer", "updateService"],
+  props: ["isOpen", "closer", "updateService", "recommends"],
   data() {
     return {
       services: [],
@@ -69,10 +75,25 @@ export default {
     };
   },
   methods: {
+    async getRecommends() {
+      if (this.recommends.state) {
+        const allData = [...this.recommends.data.surveys];
+        allData.push(...this.recommends.data.vaccines);
+
+        this.services = [...allData];
+      } else await this.filterService();
+    },
     async filterService() {
-      this.services = (await this.$store.getters.getServices).filter(
-        i => i.type === "TYPE_SURVEY" || i.type === "TYPE_VACCINE"
-      );
+      if (this.recommends.state) {
+        const allData = [...this.recommends.data.surveys];
+        allData.push(...this.recommends.data.vaccines);
+
+        this.services = [...allData];
+      } else {
+        this.services = (await this.$store.getters.getServices).filter(
+          i => i.type === "TYPE_SURVEY" || i.type === "TYPE_VACCINE"
+        );
+      }
 
       if (this.typesService === "surveys") {
         this.services = this.services.filter(i => i.type !== "TYPE_VACCINE");
