@@ -14,9 +14,10 @@
               :info="forms"
               :do-close-form="doCloseForm"
               :update-service="doUpdateServices"
+              :locales="curLocale.tabs[0].context.addForm"
             />
             <v-card-title style="display: flex; justify-content: center">
-              Сервисы в системе
+              {{ curLocale.tabs[0].context.title }}
               <v-tooltip left color="#FB8C00">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -35,25 +36,33 @@
                   </v-btn>
                 </template>
                 <span>
-                  Добавить сервис
+                  {{ curLocale.tabs[0].context.btnCreate }}
                 </span>
               </v-tooltip>
             </v-card-title>
             <v-divider />
             <OurServicesList
+              :locales="curLocale.tabs[0].context.services"
               :do-delete-service="doRemoveService"
               :services="services"
             />
           </v-card>
         </v-tab-item>
         <v-tab-item>
-          <UserData :user-info="info.user" />
+          <UserData :locales="curLocale.tabs[1]" :user-info="info.user" />
         </v-tab-item>
         <v-tab-item>
-          <SurveysList :surveys="surveys" />
+          <SurveysList
+            :locales="curLocale.tabs[2].context"
+            :surveys="surveys"
+          />
         </v-tab-item>
         <v-tab-item>
-          <OurClientsList :clients="clients" :all-results="surveys" />
+          <OurClientsList
+            :locales="curLocale.tabs[3].context"
+            :clients="clients"
+            :all-results="surveys"
+          />
         </v-tab-item>
       </v-tabs>
     </v-card>
@@ -95,6 +104,8 @@ export default Vue.extend({
   },
   data: () => {
     return {
+      curLocale: {},
+      pageLocale: "partner-cabinet",
       isAuth: localStorage["uid"] !== undefined,
       info: {} as PartnerType,
       services: [] as ServiceType[],
@@ -118,6 +129,10 @@ export default Vue.extend({
     doUpdateServices(item: ServiceType) {
       this.services.push(item);
     }
+  },
+  beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
   },
   async mounted() {
     if (this.isAuth) {

@@ -15,7 +15,7 @@
         {{ alert.info }}
       </v-snackbar>
       <v-card-title style="display: flex; justify-content: center">
-        Удалить сервис
+        {{ locales.title }}
         <v-btn icon absolute right @click="closeForm">
           <v-icon>
             close
@@ -25,10 +25,10 @@
       <v-divider />
       <v-card-actions class="d-flex justify-center pa-5">
         <v-btn outlined color="primary" @click="closeForm">
-          Отменить
+          {{ locales.btns[0] }}
         </v-btn>
         <v-btn outlined color="red" @click="deleteService">
-          Удалить
+          {{ locales.btns[1] }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -40,7 +40,7 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "Delete",
-  props: ["info", "doCloseForm", "isOpen", "doDeleteService"],
+  props: ["info", "doCloseForm", "isOpen", "doDeleteService", "locales"],
   data() {
     return {
       alert: {
@@ -63,13 +63,13 @@ export default Vue.extend({
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление сервиса";
+          this.alert.info = this.locales.alerts[0];
         } else {
           this.doDeleteService(this.info.id);
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Сервис успешно удален";
+          this.alert.info = this.locales.alerts[1];
 
           setTimeout(() => {
             this.doCloseForm({ state: false, name: "delete" });

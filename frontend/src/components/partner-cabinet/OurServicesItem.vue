@@ -4,12 +4,14 @@
       :info="service"
       :do-close-form="doCloseForm"
       :is-open="isOpen.edit"
+      :locales="locales.editForm"
     />
     <DeleteForm
       :do-delete-service="doDelete"
       :info="service"
       :do-close-form="doCloseForm"
       :is-open="isOpen.delete"
+      :locales="locales.deleteForm"
     />
     <v-col
       cols="1"
@@ -30,7 +32,7 @@
           </v-btn>
         </template>
         <span>
-          Изменить сервис
+          {{ locales.btns[0] }}
         </span>
       </v-tooltip>
       <v-tooltip right color="#FB8C00">
@@ -48,13 +50,13 @@
           </v-btn>
         </template>
         <span>
-          Удалить сервис
+          {{ locales.btns[1] }}
         </span>
       </v-tooltip>
     </v-col>
     <v-col cols="4">
       <v-card-subtitle class="pb-0">
-        Название:
+        {{ locales.labels[0] }}
       </v-card-subtitle>
       <v-card-title>
         {{ service.name }}
@@ -62,7 +64,7 @@
     </v-col>
     <v-col cols="4">
       <v-card-subtitle class="pb-0">
-        Информация о сервисе:
+        {{ locales.labels[1] }}
       </v-card-subtitle>
       <v-card-text>
         {{ service.info }}
@@ -70,10 +72,10 @@
     </v-col>
     <v-col cols="2">
       <v-card-subtitle class="pb-0">
-        Тип сервиса:
+        {{ locales.labels[1] }}
       </v-card-subtitle>
       <v-card-title>
-        {{ checkTypeService(service.type) }}
+        {{ checkTypeService }}
       </v-card-title>
     </v-col>
   </v-row>
@@ -87,23 +89,25 @@ import Vue from "vue";
 export default Vue.extend({
   name: "OurServicesItem",
   components: { EditForm, DeleteForm },
-  props: ["service", "doDeleteService"],
+  props: ["service", "doDeleteService", "locales"],
   data() {
     return {
-      checkTypeService(service: string) {
-        let res = "";
-
-        if (service === "TYPE_ILL") res = "Болезнь";
-        if (service === "TYPE_SURVEY") res = "Обследование";
-        if (service === "TYPE_VACCINE") res = "Вакцинация";
-
-        return res;
-      },
       isOpen: {
         edit: false,
         delete: false
       }
     };
+  },
+  computed: {
+    checkTypeService() {
+      let res = "";
+
+      if (this.service.type === "TYPE_ILL") res = this.locales.types[0];
+      if (this.service.type === "TYPE_SURVEY") res = this.locales.types[1];
+      if (this.service.type === "TYPE_VACCINE") res = this.locales.types[2];
+
+      return res;
+    }
   },
   methods: {
     doCloseForm(info: { state: boolean; name: "edit" | "delete" }) {

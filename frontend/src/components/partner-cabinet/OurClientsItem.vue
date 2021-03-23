@@ -2,18 +2,18 @@
   <v-col cols="3">
     <v-hover>
       <template v-slot:default="{ hover }">
-        <v-card rounded="lg" max-width="240" max-height="180" height="180">
+        <v-card rounded="lg" max-width="240" max-height="240" height="240">
           <v-card-title
             style="display: flex; justify-content: center; flex-direction: column"
           >
             <v-card-subtitle class="pb-0">
-              Клиент
+              {{ locales.labels[0] }}
             </v-card-subtitle>
             <span>
               {{ client.fullName }}
             </span>
             <v-card-subtitle class="pb-0">
-              Кол-во использований
+              {{ locales.labels[1] }}
             </v-card-subtitle>
             <span>
               {{ getUseCount }}
@@ -23,7 +23,7 @@
           <v-fade-transition>
             <v-overlay v-if="hover" absolute>
               <v-btn @click="showInfo = true">
-                СВЕДЕНИЯ
+                {{ locales.labels[2] }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -33,7 +33,7 @@
     <v-dialog v-model="showInfo" max-width="620" persistent>
       <v-card>
         <v-card-title style="display: flex; justify-content: center">
-          Информация о {{ client.fullName }}
+          {{ locales.user.title }} {{ client.fullName }}
           <v-btn icon absolute right @click="showInfo = false">
             <v-icon>
               close
@@ -45,7 +45,7 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="ФИО"
+                :label="locales.user.labels[0]"
                 v-model="client.fullName"
                 outlined
                 readonly
@@ -55,7 +55,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="Логин"
+                :label="locales.user.labels[1]"
                 v-model="client.login"
                 outlined
                 readonly
@@ -65,7 +65,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="Телефон"
+                :label="locales.user.labels[2]"
                 v-model="client.phone"
                 outlined
                 readonly
@@ -75,7 +75,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                label="E-mail"
+                :label="locales.user.labels[3]"
                 v-model="client.email"
                 outlined
                 readonly
@@ -96,7 +96,7 @@ import { ResultType } from "@/types/result.type";
 
 export default Vue.extend({
   name: "OurClientsItem",
-  props: ["client", "allResults"],
+  props: ["client", "allResults", "locales"],
   data() {
     return {
       showInfo: false

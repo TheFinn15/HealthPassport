@@ -124,6 +124,9 @@ export default {
       }
     };
   },
+  mounted() {
+    console.log(this.locales)
+  },
   methods: {
     async doEditUser() {
       this.$store.state.userInfoInfo = this.userInfo;

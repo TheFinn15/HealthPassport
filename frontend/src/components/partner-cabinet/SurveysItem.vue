@@ -19,7 +19,7 @@
           </v-btn>
         </template>
         <span>
-          Осмотр
+          {{ locales.btnView }}
         </span>
       </v-tooltip>
       <v-dialog v-model="viewResult" persistent max-width="420">
@@ -28,7 +28,7 @@
             <v-dialog v-model="showUserInfo" max-width="420" persistent>
               <v-card rounded>
                 <v-card-title style="display: flex; justify-content: center">
-                  Информация о клиенте
+                  {{ locales.viewDialog.user.title }}
                   <v-btn icon absolute right @click="showUserInfo = false">
                     <v-icon>
                       close
@@ -40,7 +40,7 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                        label="ФИО"
+                        :label="locales.viewDialog.user.labels[0]"
                         v-model="survey.user.fullName"
                         outlined
                         readonly
@@ -50,7 +50,7 @@
                     </v-col>
                     <v-col cols="6">
                       <v-text-field
-                        label="Логин"
+                        :label="locales.viewDialog.user.labels[1]"
                         v-model="survey.user.login"
                         outlined
                         readonly
@@ -60,7 +60,7 @@
                     </v-col>
                     <v-col cols="6">
                       <v-text-field
-                        label="Телефон"
+                        :label="locales.viewDialog.user.labels[2]"
                         v-model="survey.user.phone"
                         outlined
                         readonly
@@ -70,7 +70,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        label="E-mail"
+                        :label="locales.viewDialog.user.labels[3]"
                         v-model="survey.user.email"
                         outlined
                         readonly
@@ -101,10 +101,10 @@
                 </v-btn>
               </template>
               <span>
-                Клиент
+                {{ locales.viewDialog.btnUser }}
               </span>
             </v-tooltip>
-            Просмотр обследования
+            {{ locales.viewDialog.title }}
             <v-btn icon absolute right @click="viewResult = false">
               <v-icon>
                 close
@@ -116,7 +116,7 @@
             <v-row>
               <v-col cols="6">
                 <v-textarea
-                  label="Информация:"
+                  :label="locales.viewDialog.labels[0]"
                   outlined
                   shaped
                   color="#FB8C00"
@@ -126,23 +126,31 @@
               </v-col>
               <v-col cols="6">
                 <v-card-subtitle class="pb-0">
-                  Выявлена болезнь
+                  {{ locales.viewDialog.labels[1] }}
                 </v-card-subtitle>
                 <v-radio-group v-model="isDone" :readonly="isDone">
-                  <v-radio label="Да" :value="true" color="#FB8C00" />
-                  <v-radio label="Нет" :value="false" color="#FB8C00" />
+                  <v-radio
+                    :label="locales.viewDialog.labels[2][0]"
+                    :value="true"
+                    color="#FB8C00"
+                  />
+                  <v-radio
+                    :label="locales.viewDialog.labels[2][1]"
+                    :value="false"
+                    color="#FB8C00"
+                  />
                 </v-radio-group>
               </v-col>
               <v-col cols="6" v-if="!isDone">
                 <v-checkbox
-                  label="Обследование готов ?"
+                  :label="locales.viewDialog.labels[3]"
                   v-model="isDone"
                   color="#FB8C00"
                 />
               </v-col>
               <v-col cols="12" v-if="isDone">
                 <v-text-field
-                  label="Дата выдачи результата"
+                  :label="locales.viewDialog.labels[4]"
                   shaped
                   outlined
                   color="#FB8C00"
@@ -157,7 +165,7 @@
     </v-col>
     <v-col cols="3">
       <v-card-subtitle class="pb-0">
-        Информация о обследование:
+        {{ locales.labels[0] }}
       </v-card-subtitle>
       <v-card-title>
         {{ survey.info }}
@@ -165,7 +173,7 @@
     </v-col>
     <v-col cols="3">
       <v-card-subtitle class="pb-0">
-        Время сдачи:
+        {{ locales.labels[1] }}
       </v-card-subtitle>
       <v-card-title style="word-break: break-word">
         {{ mapDate(survey.passingTime) }}
@@ -173,7 +181,7 @@
     </v-col>
     <v-col cols="3">
       <v-card-subtitle class="pb-0">
-        Время готовности:
+        {{ locales.labels[2] }}
       </v-card-subtitle>
       <v-card-title style="word-break: break-word">
         {{ mapDate(survey.readyTime) }}
@@ -181,10 +189,10 @@
     </v-col>
     <v-col cols="2">
       <v-card-subtitle class="pb-0">
-        Выявлено ?
+        {{ locales.labels[3] }}
       </v-card-subtitle>
       <v-card-title>
-        {{ survey.isSick ? "Да" : "Нет" }}
+        {{ survey.isSick ? locales.labels[4][0] : locales.labels[4][1] }}
       </v-card-title>
     </v-col>
   </v-row>
@@ -193,7 +201,7 @@
 <script>
 export default {
   name: "SurveysItem",
-  props: ["survey"],
+  props: ["survey", "locales"],
   data() {
     return {
       isDone: this.survey.isSick,
@@ -201,7 +209,7 @@ export default {
       showUserInfo: false,
       mapDate(date) {
         if (date === null) {
-          return "Ещё не готово";
+          return this.locales.labels[5];
         } else {
           const dateTime = new Date(date);
           return dateTime.toLocaleString();

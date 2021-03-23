@@ -15,7 +15,7 @@
         {{ alert.info }}
       </v-snackbar>
       <v-card-title style="display: flex; justify-content: center">
-        Редактировать сервис
+        {{ locales.title }}
         <v-btn icon absolute right @click="closeForm">
           <v-icon>
             close
@@ -29,7 +29,7 @@
             <v-col cols="6">
               <v-text-field
                 color="#FB8C00"
-                label="Название сервиса"
+                :label="locales.labels[0]"
                 outlined
                 shaped
                 v-model="info.name"
@@ -39,7 +39,7 @@
             <v-col cols="6">
               <v-select
                 color="#FB8C00"
-                label="Вид сервиса"
+                :label="locales.labels[1]"
                 outlined
                 shaped
                 v-model="info.type"
@@ -50,7 +50,7 @@
             <v-col cols="12">
               <v-textarea
                 color="#FB8C00"
-                label="Описание сервиса"
+                :label="locales.labels[2]"
                 outlined
                 shaped
                 v-model="info.info"
@@ -59,7 +59,7 @@
             </v-col>
           </v-row>
           <v-btn block color="success" outlined @click="editService">
-            ИЗМЕНИТЬ СЕРВИС
+            {{ locales.btn }}
           </v-btn>
         </v-container>
       </v-form>
@@ -72,7 +72,7 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "EditForm",
-  props: ["info", "doCloseForm", "isOpen"],
+  props: ["info", "doCloseForm", "isOpen", "locales"],
   data() {
     return {
       alert: {
@@ -82,19 +82,19 @@ export default Vue.extend({
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое"]
+        text: [v => !!v || this.locales.rules.text]
       },
       typesServices: [
         {
-          text: "Болезнь",
+          text: this.locales.types[0],
           value: "TYPE_ILL"
         },
         {
-          text: "Обследование",
+          text: this.locales.types[1],
           value: "TYPE_SURVEY"
         },
         {
-          text: "Вакцина",
+          text: this.locales.types[2],
           value: "TYPE_VACCINE"
         }
       ]
@@ -110,24 +110,16 @@ export default Vue.extend({
         setTimeout(async () => {
           this.$store.state.service = this.info;
 
-          if (this.info.type === "Болезнь")
-            this.$store.state.service["type"] = "TYPE_ILL";
-          if (this.info.type === "Обследование")
-            this.$store.state.service["type"] = "TYPE_SURVEY";
-          if (this.info.type === "Вакцинация")
-            this.$store.state.service["type"] = "TYPE_VACCINE";
-
           await this.$store.dispatch("editService", { id: this.info.id });
           if (this.$store.state.errors !== "") {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение сервиса";
+            this.alert.info = this.locales.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Сервис успешно изменен";
-
+            this.alert.info = this.locales.alerts[1];
 
             this.doCloseForm({ state: false, name: "edit" });
           }
