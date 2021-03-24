@@ -1,8 +1,58 @@
 {
   "main": {
     "localeMenu": {
-      "subtitle": "Language of system:",
+      "subtitle": "Language of service:",
       "items": ["Russian", "English", "Ukrainian"]
+    },
+    "panelsInfo": [
+      "You now in admin panel",
+      "You now in partner cabinet"
+    ],
+    "bottomNav": {
+      "labels": [
+        "Main",
+        "My cabinet",
+        "Logout",
+        "Log-in",
+        "Sign-up"
+      ]
+    }
+  },
+  "login": {
+    "title": "Authorization",
+    "labels": [
+      "Login",
+      "Password",
+      "Remember me"
+    ],
+    "btn": "LOG-IN",
+    "alerts": [
+      "Successfully log-in",
+      "Error in log-in"
+    ],
+    "rules": {
+      "text": "Field is empty"
+    }
+  },
+  "register": {
+    "title": "Sign-Up",
+    "labels": [
+      "Full name",
+      "Login",
+      "Password",
+      "E-mail",
+      "Phone",
+      "Remember me"
+    ],
+    "btn": "REGISTER",
+    "alerts": [
+      "Successfully sign-up",
+      "Error in sign-up"
+    ],
+    "rules": {
+      "text": "Field is empty",
+      "email": "Wrong e-mail",
+      "phone": "Wrong phone"
     }
   },
   "home": {
@@ -13,6 +63,746 @@
         "Exclude surveys",
         "Exclude vaccines"
       ]
+    },
+    "exampleData": {
+      "title": "Data for example",
+      "btns": [
+        "Constraint",
+        "Without constraint"
+      ],
+      "alert": {
+        "title": "Sign-up or Log-in for use service !",
+        "btns": [
+          "Log-In",
+          "Cancel",
+          "Sign-Up"
+        ]
+      }
+    },
+    "addServices": {
+      "subtitle": "Use Service",
+      "services": {
+        "title": "Choose service",
+        "searchLabel": "Search of name",
+        "recommends": "Recommends",
+        "radioBtns": [
+          "Only vaccines",
+          "Only surveys",
+          "Off filter"
+        ],
+        "labels": [
+          "Name",
+          "Type of service",
+          "About service",
+          "Choose service",
+          "About partner"
+        ],
+        "types": [
+          "Survey",
+          "Vaccine"
+        ],
+        "alerts": [
+          "Successfully choose of service",
+          "Error in choose of service"
+        ]
+      }
+    },
+    "alert": {
+      "constraintLabel": "Your constraint in cabinet ",
+      "closeLabel": "CLOSE"
+    },
+    "userData": {
+      "title": "My Data",
+      "btns": [
+        "CONSTRAINT",
+        "NO CONSTRAINT"
+      ],
+      "services": {
+        "ills": {
+          "title": "Ills",
+          "subtitle": "Founded: ",
+          "notFound": "Ills not found"
+        },
+        "surveys": {
+          "title": "Surveys",
+          "subtitle": "You do the survey: ",
+          "notFound": "Surveys not found"
+        },
+        "vaccines": {
+          "title": "Vaccines",
+          "subtitle": "You do the vaccine: ",
+          "notFound": "Vaccine not found"
+        },
+        "labels": [
+          "Name",
+          "Partner",
+          "Info"
+        ]
+      }
     }
+  },
+  "cabinet": {
+    "tabs": [
+      {
+        "name": "My Data",
+        "context": {
+          "titles": [
+            "View data",
+            "Edit data"
+          ],
+          "editBtn": "Edit mode",
+          "saveData": "Save data",
+          "labels": [
+            "Full name",
+            "Login",
+            "Password",
+            "E-mail",
+            "Phone"
+          ],
+          "alerts": [
+            "Successfully edit",
+            "Error in edit"
+          ]
+        }
+      },
+      {
+        "name": "My Constraint",
+        "context": {
+          "title": "Status profile",
+          "status": {
+            "nonactive": "Not active",
+            "statusNames": [
+              "Health status - full healthy",
+              "Health status - a little sick",
+              "Health status - not healthy",
+              "Health status - need medical helps",
+              "Health status - is dying"
+            ],
+            "capLevels": [
+              "Status healthy",
+              "Status normal",
+              "Status not healthy",
+              "Status is critical",
+              "Status is dying"
+            ]
+          },
+          "labels": [
+            "The disease arose due to: ",
+            "Extra information"
+          ],
+          "notFound": "Constraint not found"
+        }
+      },
+      {
+        "name": "Active sessions",
+        "context": {
+          "title": "My device",
+          "btnLogout": "SHUTDOWN ALL SESSION",
+          "currentSession": "Current session",
+          "otherSession": "Other session",
+          "session": {
+            "btnLogout": "Shutdown this session",
+            "device": "Device",
+            "location": "Location",
+            "lastOnline": "Last time online",
+            "typeDevice": [
+              "Browser"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "partner-cabinet": {
+    "tabs": [
+      {
+        "name": "Your services",
+        "context": {
+          "title": "Service in system",
+          "btnCreate": "Create service",
+          "addForm": {
+            "title": "Add service",
+            "labels": [
+              "Name service",
+              "Type of service",
+              "About service"
+            ],
+            "btn": "CREATE SERVICE",
+            "types": [
+              "Ill",
+              "Survey",
+              "Vaccine"
+            ],
+            "rules": {
+              "text": "Field is empty"
+            },
+            "alerts": [
+              "Error in create service",
+              "Successfully create service"
+            ]
+          },
+          "services": {
+            "editForm": {
+              "title": "Edit service",
+              "labels": [
+                "Name service",
+                "Type of service",
+                "About service"
+              ],
+              "types": [
+                "Ill",
+                "Survey",
+                "Vaccine"
+              ],
+              "rules": {
+                "text": "Field is empty"
+              },
+              "alerts": [
+                "Error in edit service",
+                "Successfully edit service"
+              ],
+              "btn": "EDIT SERVICE"
+            },
+            "deleteForm": {
+              "title": "Delete service",
+              "btns": [
+                "Cancel",
+                "Delete"
+              ],
+              "alerts": [
+                "Error in delete service",
+                "Successfully delete service"
+              ]
+            },
+            "btns": [
+              "Edit service",
+              "Delete service"
+            ],
+            "labels": [
+              "Name",
+              "About service",
+              "Type of service"
+            ],
+            "types": [
+              "Ill",
+              "Survey",
+              "Vaccine"
+            ]
+          }
+        }
+      },
+      {
+        "name": "My Data",
+        "context": {
+          "titles": [
+            "View data",
+            "Edit data"
+          ],
+          "editBtn": "Edit mode",
+          "saveData": "Save data",
+          "labels": [
+            "Full name",
+            "Login",
+            "Password",
+            "E-mail",
+            "Phone"
+          ],
+          "alerts": [
+            "Successfully edit",
+            "Error in edit"
+          ]
+        }
+      },
+      {
+        "name": "Constraint",
+        "context": {
+          "btnView": "View",
+          "labels": [
+            "About constraint",
+            "Delivery time",
+            "Ready time",
+            "Founded ?",
+            [
+              "Yes", "No"
+            ],
+            "Yet not ready"
+          ],
+          "viewDialog": {
+            "title": "View survey",
+            "labels": [
+              "Information",
+              "Founded ill",
+              [
+                "Yes", "No"
+              ],
+              "Survey is ready ?",
+              "Date of issuance of results"
+            ],
+            "btnUser": "Client",
+            "user": {
+              "title": "Information of client",
+              "labels": [
+                "Full name",
+                "Login",
+                "Phone",
+                "E-mail"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "name": "Our clients",
+        "context": {
+          "title": "Information of clients",
+          "labels": [
+            "Client",
+            "Counts uses",
+            "MORE"
+          ],
+          "user": {
+            "title": "Information of ",
+            "labels": [
+              "Full name",
+              "Login",
+              "Phone",
+              "E-mail"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "admin-cabinet": {
+    "tabs": [
+      {
+        "name": "Manage Data",
+        "context": {
+          "title": "All data in system",
+          "dataLabels": [
+            "Name",
+            "Count records",
+            "MORE"
+          ],
+          "dataTable": {
+            "title": "Table ",
+            "searchBar": "Search in table ",
+            "addBtn": "Create ",
+            "services": {
+              "rules": {
+                "text": "Field is empty"
+              },
+              "types": [
+                "Ill",
+                "Survey",
+                "Vaccine"
+              ],
+              "viewForm": {
+                "btns": [
+                  "Edit record",
+                  "Delete record"
+                ],
+                "labels": [
+                  "Name",
+                  "Extra info",
+                  "Type of service",
+                  "Partner"
+                ]
+              },
+              "addForm": {
+                "title": "Add service",
+                "labels": [
+                  "Name",
+                  "Type of service",
+                  "About service",
+                  "Partner"
+                ],
+                "btn": "CREATE",
+                "alerts": [
+                  "Error in creating service",
+                  "Successfully create service"
+                ]
+              },
+              "editForm": {
+                "title": "Edit record ",
+                "labels": [
+                  "Name",
+                  "Type of service",
+                  "About service"
+                ],
+                "alerts": [
+                  "Error in edit service",
+                  "Successfully edit service"
+                ],
+                "btn": "EDIT"
+              },
+              "deleteForm": {
+                "title": "Delete record ?",
+                "btns": [
+                  "Cancel",
+                  "Delete"
+                ],
+                "alerts": [
+                  "Error in delete service",
+                  "Successfully delete service"
+                ]
+              }
+            },
+            "partners": {
+              "rules": {
+                "text": "Field is empty"
+              },
+              "addForm": {
+                "title": "Add partner",
+                "labels": [
+                  "Name",
+                  "Link to partner",
+                  "About partner",
+                  "User",
+                  "Begin working at"
+                ],
+                "btn": "CREATE",
+                "alerts": [
+                  "Error in creating partner",
+                  "Successfully create partner"
+                ]
+              },
+              "viewForm": {
+                "btns": [
+                  "Edit record",
+                  "Delete record"
+                ],
+                "labels": [
+                  "Name",
+                  "Extra info",
+                  "Link to partner",
+                  "User"
+                ]
+              },
+              "editForm": {
+                "title": "Edit record ",
+                "labels": [
+                  "Name",
+                  "Link to partner",
+                  "About partner",
+                  "Begin working at"
+                ],
+                "alerts": [
+                  "Error in edit partner",
+                  "Successfully edit partner"
+                ],
+                "btn": "EDIT"
+              },
+              "deleteForm": {
+                "title": "Delete record ?",
+                "btns": [
+                  "Cancel",
+                  "Delete"
+                ],
+                "alerts": [
+                  "Error in delete partner",
+                  "Successfully delete partner"
+                ]
+              }
+            },
+            "results": {
+              "rules": {
+                "text": "Field is empty"
+              },
+              "addForm": {
+                "title": "Add result",
+                "labels": [
+                  "About result",
+                  "Delivery time",
+                  "Client",
+                  "Survey"
+                ],
+                "btn": "CREATE",
+                "alerts": [
+                  "Error in creating result",
+                  "Successfully create result"
+                ]
+              },
+              "viewForm": {
+                "btns": [
+                  "Edit record",
+                  "Delete record"
+                ],
+                "labels": [
+                  "About result",
+                  "Time of ready survey",
+                  "Founded ill ?",
+                  [
+                    "Yes", "No"
+                  ],
+                  "Client",
+                  "Survey"
+                ]
+              },
+              "editForm": {
+                "title": "Edit record ",
+                "labels": [
+                  "About result",
+                  "Founded ill ?",
+                  [
+                    "Yes", "No"
+                  ],
+                  "Time of ready survey"
+                ],
+                "alerts": [
+                  "Error in edit result",
+                  "Successfully edit result"
+                ],
+                "btn": "EDIT"
+              },
+              "deleteForm": {
+                "title": "Delete record ?",
+                "btns": [
+                  "Cancel",
+                  "Delete"
+                ],
+                "alerts": [
+                  "Error in delete result",
+                  "Successfully delete result"
+                ]
+              }
+            },
+            "caps": {
+              "rules": {
+                "text": "Field is empty"
+              },
+              "hazardLevels": [
+                "All is good",
+                "Normal",
+                "Not normal",
+                "Dangerous",
+                "Is dying"
+              ],
+              "addForm": {
+                "title": "Add constraint",
+                "labels": [
+                  "Name",
+                  "About constraint",
+                  "Client"
+                ],
+                "btn": "CREATE",
+                "alerts": [
+                  "Error in creating constraint",
+                  "Successfully create constraint"
+                ],
+                "userTip": "Loading..."
+              },
+              "viewForm": {
+                "btns": [
+                  "Edit record",
+                  "Delete record"
+                ],
+                "labels": [
+                  "Name",
+                  "Extra info",
+                  "Hazard level",
+                  "User",
+                  "Ill"
+                ],
+                "illsNotFound": "Haven`t"
+              },
+              "editForm": {
+                "title": "Edit record ",
+                "labels": [
+                  "Name",
+                  "About constraint",
+                  "Level"
+                ],
+                "alerts": [
+                  "Error in edit constraint",
+                  "Successfully edit constraint"
+                ],
+                "btn": "EDIT"
+              },
+              "deleteForm": {
+                "title": "Delete record ?",
+                "btns": [
+                  "Cancel",
+                  "Delete"
+                ],
+                "alerts": [
+                  "Error in delete constraint",
+                  "Successfully delete constraint"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Manage user",
+        "context": {
+          "title": "User",
+          "btnCreate": "Create",
+          "addForm": {
+            "title": "Create user",
+            "labels": [
+              "Full name",
+              "Login",
+              "Password",
+              "E-mail",
+              "Phone",
+              "Role of user"
+            ],
+            "btn": "Create",
+            "alerts": [
+              "Error in create user",
+              "Successfully create user"
+            ]
+          },
+          "usersList": {
+            "role": "Role of user",
+            "btns": [
+              "Edit",
+              "Delete"
+            ],
+            "labels": [
+              "Login",
+              "Full name",
+              "E-mail",
+              "Phone"
+            ],
+            "services": {
+              "titles": [
+                "Ills",
+                "Vaccines",
+                "Surveys"
+              ],
+              "notFound": [
+                "Ills not found",
+                "Vaccines not found",
+                "Surveys not found"
+              ]
+            },
+            "editForm": {
+              "title": "Edit",
+              "labels": [
+                "Full name",
+                "Login",
+                "Password",
+                "E-mail",
+                "Phone",
+                "Role of user"
+              ],
+              "btn": "EDIT",
+              "alerts": [
+                "Error in edit",
+                "Changes is done"
+              ]
+            },
+            "deleteForm": {
+              "title": "Delete ",
+              "btns": [
+                "Cancel",
+                "Delete"
+              ],
+              "alerts": [
+                "Error in delete user",
+                "Successfully delete user"
+              ]
+            }
+          },
+          "roles": [
+            "Casual",
+            "Admin",
+            "Partner"
+          ],
+          "rules": {
+            "text": "Field is empty",
+            "email": "Invalid e-mail",
+            "phone": "Invalid телефон"
+          }
+        }
+      },
+      {
+        "name": "Statistics",
+        "context": {
+          "statistic": [
+            {
+              "title": "Statistics on the number of people with diseases",
+              "btns": [
+                "Turn on part",
+                "Turn of part"
+              ],
+              "labels": [
+                "Counts of diseases",
+                "Last survey"
+              ],
+              "months": [
+                {
+                  "value": 0,
+                  "text": "January"
+                },
+                {
+                  "value": 1,
+                  "text": "February"
+                },
+                {
+                  "value": 2,
+                  "text": "March"
+                },
+                {
+                  "value": 3,
+                  "text": "April"
+                },
+                {
+                  "value": 4,
+                  "text": "May"
+                },
+                {
+                  "value": 5,
+                  "text": "June"
+                },
+                {
+                  "value": 6,
+                  "text": "July"
+                },
+                {
+                  "value": 7,
+                  "text": "August"
+                },
+                {
+                  "value": 8,
+                  "text": "September"
+                },
+                {
+                  "value": 9,
+                  "text": "October"
+                },
+                {
+                  "value": 10,
+                  "text": "November"
+                },
+                {
+                  "value": 11,
+                  "text": "December"
+                }
+              ]
+            },
+            {
+              "title": "Vaccination popularity statistics",
+              "btns": [
+                "Turn on part",
+                "Turn of part"
+              ],
+              "labels": [
+                "Name",
+                "Extra info",
+                "Partner",
+                "About partner",
+                "Link of partner",
+                " - place",
+                "MORE"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }
