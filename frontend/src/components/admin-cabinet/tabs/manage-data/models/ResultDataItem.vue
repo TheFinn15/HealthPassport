@@ -26,15 +26,15 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Удалить эту запись ?
+              {{ locales.deleteForm.title }}
             </v-card-title>
             <v-divider />
             <v-card-actions class="d-flex justify-center">
               <v-btn outlined color="info" @click="forms.delete = false">
-                Отмена
+                {{ locales.deleteForm.btns[0] }}
               </v-btn>
               <v-btn outlined color="red" @click="doDelete">
-                Удалить
+                {{ locales.deleteForm.btns[1] }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -46,7 +46,7 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Изменить запись {{ tableItem.name }}
+              {{ locales.editForm.title }} {{ tableItem.name }}
               <v-btn icon @click="forms.edit = false" absolute right>
                 <v-icon>
                   close
@@ -59,7 +59,7 @@
                 <v-row>
                   <v-col cols="6">
                     <v-textarea
-                      label="Об результате"
+                      :label="locales.editForm.labels[0]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -68,14 +68,25 @@
                     />
                   </v-col>
                   <v-col cols="6">
-                    <v-radio-group label="Обнаружена болезнь ?" v-model="tableItem.isSick">
-                      <v-radio name="Да" :value="true" color="#FB8C00" />
-                      <v-radio name="Нет" :value="false" color="#FB8C00" />
+                    <v-radio-group
+                      :label="locales.editForm.labels[1]"
+                      v-model="tableItem.isSick"
+                    >
+                      <v-radio
+                        :name="locales.editForm.labels[2][0]"
+                        :value="true"
+                        color="#FB8C00"
+                      />
+                      <v-radio
+                        :name="locales.editForm.labels[2][1]"
+                        :value="false"
+                        color="#FB8C00"
+                      />
                     </v-radio-group>
                   </v-col>
                   <v-col cols="12">
                     <v-date-picker
-                      label="Дата выдачи результата"
+                      :label="locales.editForm.labels[3]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -86,7 +97,7 @@
                   </v-col>
                 </v-row>
                 <v-btn block color="success" @click="doEdit">
-                  Редактировать
+                  {{ locales.editForm.btn }}
                 </v-btn>
               </v-container>
             </v-form>
@@ -113,7 +124,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Изменить запись
+                  {{ locales.viewForm.btns[0] }}
                 </span>
               </v-tooltip>
               <v-tooltip right color="#FB8C00">
@@ -131,13 +142,13 @@
                   </v-btn>
                 </template>
                 <span>
-                  Удалить запись
+                  {{ locales.viewForm.btns[1] }}
                 </span>
               </v-tooltip>
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Об результате
+                {{ locales.viewForm.labels[0] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -145,7 +156,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Время сдачи анализа
+                {{ locales.viewForm.labels[1] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ getPassedTime }}
@@ -153,17 +164,21 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Обнаружена болезнь ?
+                {{ locales.viewForm.labels[2] }}
               </v-card-subtitle>
               <v-card-title>
-                {{ tableItem.isSick ? "Да" : "Нет" }}
+                {{
+                  tableItem.isSick
+                    ? locales.viewForm.labels[3][0]
+                    : locales.viewForm.labels[3][1]
+                }}
               </v-card-title>
             </v-col>
           </v-row>
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Клиент
+                {{ locales.viewForm.labels[4] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.user.fullName }}
@@ -171,7 +186,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Обследование
+                {{ locales.viewForm.labels[5] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.survey.name }}
@@ -187,7 +202,7 @@
 <script>
 export default {
   name: "ResultDataItem",
-  props: ["tableItem", "doDeleteService"],
+  props: ["tableItem", "doDeleteService", "locales"],
   data() {
     return {
       alert: {
@@ -201,7 +216,7 @@ export default {
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое !"]
+        text: [v => !!v || this.locales.rules.text]
       }
     };
   },
@@ -213,7 +228,6 @@ export default {
       if (this.$refs.editForm.validate()) {
         this.loader = true;
         setTimeout(async () => {
-
           this.$store.state.result = this.tableItem;
 
           await this.$store.dispatch("editResult", { id: this.tableItem.id });
@@ -222,11 +236,11 @@ export default {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение результата";
+            this.alert.info = this.locales.editForm.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Результат успешно изменен";
+            this.alert.info = this.locales.editForm.alerts[1];
 
             this.$data.forms.edit = false;
           }
@@ -241,13 +255,13 @@ export default {
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление результата";
+          this.alert.info = this.locales.deleteForm.alerts[0];
         } else {
           this.doDeleteService({ name: "Partners", id: this.tableItem.id });
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Результат успешно удален";
+          this.alert.info = this.locales.deleteForm.alerts[1];
 
           setTimeout(() => {
             this.$data.forms.edit = false;
@@ -258,7 +272,9 @@ export default {
   },
   computed: {
     getPassedTime() {
-      const [day, month, year] = new Date(this.tableItem.passingTime).toLocaleDateString().split(".");
+      const [day, month, year] = new Date(this.tableItem.passingTime)
+        .toLocaleDateString()
+        .split(".");
       return `${day}/${month}/${year} - ` + new Date().toLocaleTimeString();
     }
   }

@@ -18,6 +18,7 @@
         :close-form="doCloseForm"
         :show-alert="doShowAlert"
         :roles="roles"
+        :locales="locales.editForm"
       />
       <DeleteForm
         :is-open="forms.delete"
@@ -26,6 +27,7 @@
         :show-alert="doShowAlert"
         :roles="roles"
         :update="doUpdateList"
+        :locales="locales.deleteForm"
       />
       <v-container>
         <v-row>
@@ -37,7 +39,7 @@
                 </v-btn>
               </template>
               <span>
-                Роль пользователя
+                {{locales.role}}
               </span>
             </v-tooltip>
           </v-col>
@@ -58,7 +60,7 @@
                         <v-icon>
                           edit
                         </v-icon>
-                        Редактировать
+                        {{locales.btns[0]}}
                       </v-btn>
                     </v-col>
                     <v-col cols="12">
@@ -66,7 +68,7 @@
                         <v-icon>
                           delete_outline
                         </v-icon>
-                        Удалить
+                        {{locales.btns[1]}}
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -78,7 +80,7 @@
         <v-row>
           <v-col cols="6">
             <v-card-subtitle class="pa-0">
-              Логин:
+              {{ locales.labels[0] }}
               <v-card-text class="font-weight-bold">
                 {{ item.login }}
               </v-card-text>
@@ -86,7 +88,7 @@
           </v-col>
           <v-col cols="6">
             <v-card-subtitle class="pa-0">
-              ФИО:
+              {{ locales.labels[1] }}
               <v-card-text class="font-weight-bold">
                 {{ item.fullName }}
               </v-card-text>
@@ -94,7 +96,7 @@
           </v-col>
           <v-col cols="6">
             <v-card-subtitle class="pa-0">
-              E-mail:
+              {{ locales.labels[2] }}
               <v-card-text class="font-weight-bold">
                 {{ item.email }}
               </v-card-text>
@@ -102,7 +104,7 @@
           </v-col>
           <v-col cols="6">
             <v-card-subtitle class="pa-0">
-              Телефон:
+              {{ locales.labels[3] }}
               <v-card-text class="font-weight-bold">
                 {{ item.phone }}
               </v-card-text>
@@ -114,7 +116,7 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn text v-on="on" v-bind="attrs">
-                  БОЛЕЗНИ
+                  {{ locales.services.titles[0] }}
                 </v-btn>
               </template>
               <v-card>
@@ -125,7 +127,7 @@
                 </v-card-text>
                 <v-card-text v-else>
                   <span class="font-weight-bold">
-                    Болезни отсутствуют
+                    {{ locales.services.notFound[0] }}
                   </span>
                 </v-card-text>
               </v-card>
@@ -135,7 +137,7 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn text v-on="on" v-bind="attrs">
-                  ВАКЦИНЫ
+                  {{ locales.services.titles[1] }}
                 </v-btn>
               </template>
               <v-card>
@@ -146,7 +148,7 @@
                 </v-card-text>
                 <v-card-text v-else>
                   <span class="font-weight-bold">
-                    Вакцинации отсутствуют
+                    {{ locales.services.notFound[1] }}
                   </span>
                 </v-card-text>
               </v-card>
@@ -156,7 +158,7 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn text v-on="on" v-bind="attrs">
-                  ОБСЛЕДОВАНИЯ
+                  {{ locales.services.titles[2] }}
                 </v-btn>
               </template>
               <v-card>
@@ -167,7 +169,7 @@
                 </v-card-text>
                 <v-card-text v-else>
                   <span class="font-weight-bold">
-                    Обследования отсутствуют
+                    {{ locales.services.notFound[2] }}
                   </span>
                 </v-card-text>
               </v-card>
@@ -186,7 +188,7 @@ import DeleteForm from "@/components/admin-cabinet/tabs/managa-user/forms/Delete
 export default {
   name: "UsersItem",
   components: { DeleteForm, EditForm },
-  props: ["item", "doUpdateList", "roles", "rules"],
+  props: ["item", "doUpdateList", "roles", "rules", "locales"],
   data() {
     return {
       alert: {

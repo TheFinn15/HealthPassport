@@ -6,6 +6,7 @@
         :key="i"
         :table-item="item"
         :do-delete-service="doDeleteService"
+        :locales="locales"
       />
     </v-container>
   </v-card>
@@ -16,7 +17,7 @@ import ServiceDataItem from "@/components/admin-cabinet/tabs/manage-data/models/
 export default {
   name: "ServiceDataList",
   components: { ServiceDataItem },
-  props: ["tableInfo", "doDeleteService"]
+  props: ["tableInfo", "doDeleteService", "locales"]
 };
 </script>
 

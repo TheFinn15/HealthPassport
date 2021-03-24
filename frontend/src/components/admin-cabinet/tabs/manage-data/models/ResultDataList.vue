@@ -6,6 +6,7 @@
         :key="i"
         :table-item="item"
         :do-delete-service="doDeleteService"
+        :locales="locales"
       />
     </v-container>
   </v-card>
@@ -16,7 +17,7 @@ import ResultDataItem from "@/components/admin-cabinet/tabs/manage-data/models/R
 export default {
   name: "ResultDataList",
   components: { ResultDataItem },
-  props: ["tableInfo", "doDeleteService"]
+  props: ["tableInfo", "doDeleteService", "locales"]
 };
 </script>
 

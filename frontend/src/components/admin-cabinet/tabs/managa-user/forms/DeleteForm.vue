@@ -2,7 +2,7 @@
   <v-dialog max-width="420" persistent v-model="isOpen">
     <v-card>
       <v-card-title class="d-flex justify-center">
-        Удалить {{ info.fullName }} ?
+        {{ locales.title }} {{ info.fullName }}
         <v-btn icon absolute right @click="doCloseForm">
           <v-icon>
             close
@@ -12,10 +12,10 @@
       <v-divider />
       <v-card-actions class="d-flex justify-center pa-5">
         <v-btn color="primary" outlined @click="doCloseForm">
-          Отменить
+          {{ locales.btns[0] }}
         </v-btn>
         <v-btn color="red" outlined @click="doDelete">
-          Удалить
+          {{ locales.btns[1] }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -25,13 +25,21 @@
 <script>
 export default {
   name: "DeleteForm",
-  props: ["isOpen", "info", "closeForm", "showAlert", "roles", "update"],
+  props: [
+    "isOpen",
+    "info",
+    "closeForm",
+    "showAlert",
+    "roles",
+    "update",
+    "locales"
+  ],
   methods: {
     doDelete() {
       this.$store.dispatch("deleteUserById", { id: this.info.id });
       if (this.$store.state.errors === "") {
         this.showAlert({
-          info: "Успешно удалено",
+          info: this.locales.alerts[1],
           color: "success"
         });
 
@@ -40,7 +48,7 @@ export default {
         this.closeForm("delete");
       } else {
         this.showAlert({
-          info: "Ошибка при удаление",
+          info: this.locales.alerts[0],
           color: "red"
         });
       }

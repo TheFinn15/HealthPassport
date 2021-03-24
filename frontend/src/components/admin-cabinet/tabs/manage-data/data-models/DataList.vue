@@ -12,6 +12,7 @@
           :all-users="users"
           :all-surveys="surveys"
           :searcher="searcher"
+          :locales="locales"
         />
       </v-row>
     </v-container>
@@ -30,7 +31,8 @@ export default {
     "partners",
     "users",
     "surveys",
-    "searcher"
+    "searcher",
+    "locales"
   ]
 };
 </script>

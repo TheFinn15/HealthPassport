@@ -26,15 +26,15 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Удалить эту запись ?
+              {{ locales.deleteForm.title }}
             </v-card-title>
             <v-divider />
             <v-card-actions class="d-flex justify-center">
               <v-btn outlined color="info" @click="forms.delete = false">
-                Отмена
+                {{ locales.deleteForm.btns[0] }}
               </v-btn>
               <v-btn outlined color="red" @click="doDelete">
-                Удалить
+                {{ locales.deleteForm.btns[1] }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -46,7 +46,7 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Изменить запись {{ tableItem.name }}
+              {{ locales.editForm.title }} {{ tableItem.name }}
               <v-btn icon @click="forms.edit = false" absolute right>
                 <v-icon>
                   close
@@ -59,7 +59,7 @@
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
-                      label="Название"
+                      :label="locales.editForm.labels[0]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -69,7 +69,7 @@
                   </v-col>
                   <v-col cols="6">
                     <v-select
-                      label="Вид сервиса"
+                      :label="locales.editForm.labels[1]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -80,7 +80,7 @@
                   </v-col>
                   <v-col cols="12">
                     <v-textarea
-                      label="О сервисе"
+                      :label="locales.editForm.labels[2]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -90,7 +90,7 @@
                   </v-col>
                 </v-row>
                 <v-btn block color="success" @click="doEdit">
-                  Редактировать
+                  {{ locales.editForm.btn }}
                 </v-btn>
               </v-container>
             </v-form>
@@ -117,7 +117,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Изменить запись
+                  {{ locales.viewForm.btns[0] }}
                 </span>
               </v-tooltip>
               <v-tooltip right color="#FB8C00">
@@ -135,13 +135,13 @@
                   </v-btn>
                 </template>
                 <span>
-                  Удалить запись
+                  {{ locales.viewForm.btns[1] }}
                 </span>
               </v-tooltip>
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Название
+                {{ locales.viewForm.labels[0] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.name }}
@@ -149,7 +149,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Доп. инфо.
+                {{ locales.viewForm.labels[1] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -157,7 +157,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Вид сервиса
+                {{ locales.viewForm.labels[2] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ getTypeService }}
@@ -167,7 +167,7 @@
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Партнер
+                {{ locales.viewForm.labels[3] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.partner.name }}
@@ -183,7 +183,7 @@
 <script>
 export default {
   name: "ServiceDataItem",
-  props: ["tableItem", "doDeleteService"],
+  props: ["tableItem", "doDeleteService", "locales"],
   data() {
     return {
       alert: {
@@ -197,19 +197,19 @@ export default {
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое !"]
+        text: [v => !!v || this.locales.rules.text]
       },
       typesServices: [
         {
-          text: "Болезнь",
+          text: this.locales.types[0],
           value: "TYPE_ILL"
         },
         {
-          text: "Обследование",
+          text: this.locales.types[1],
           value: "TYPE_SURVEY"
         },
         {
-          text: "Вакцина",
+          text: this.locales.types[2],
           value: "TYPE_VACCINE"
         }
       ]
@@ -231,11 +231,11 @@ export default {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение сервиса";
+            this.alert.info = this.locales.editForm.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Сервис успешно изменен";
+            this.alert.info = this.locales.editForm.alerts[1];
 
             this.$data.forms.edit = false;
           }
@@ -250,13 +250,13 @@ export default {
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление сервиса";
+          this.alert.info = this.locales.deleteForm.alerts[0];
         } else {
           this.doDeleteService({ name: "Services", id: this.tableItem.id });
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Сервис успешно удален";
+          this.alert.info = this.locales.deleteForm.alerts[1];
 
           setTimeout(() => {
             this.$data.forms.edit = false;
@@ -268,9 +268,9 @@ export default {
   computed: {
     getTypeService() {
       let res = "";
-      if (this.tableItem.type === "TYPE_ILL") res = "Болезнь";
-      if (this.tableItem.type === "TYPE_SURVEY") res = "Обследование";
-      if (this.tableItem.type === "TYPE_VACCINE") res = "Вакцина";
+      if (this.tableItem.type === "TYPE_ILL") res = this.locales.types[0];
+      if (this.tableItem.type === "TYPE_SURVEY") res = this.locales.types[1];
+      if (this.tableItem.type === "TYPE_VACCINE") res = this.locales.types[2];
 
       return res;
     }

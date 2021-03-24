@@ -27,7 +27,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Вкл. раздел
+                  {{ locales.statistic[0].btns[0] }}
                 </span>
               </v-tooltip>
               <v-tooltip left color="#FB8C00" v-else>
@@ -46,7 +46,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Выкл. раздел
+                  {{ locales.statistic[0].btns[1] }}
                 </span>
               </v-tooltip>
             </v-card-title>
@@ -57,8 +57,8 @@
                   sm="5"
                   md="3"
                   lg="4"
-                  xl="2"
-                  v-for="(item, i) in months"
+                  xl="4"
+                  v-for="(item, i) in locales.statistic[0].months"
                   :key="i"
                 >
                   <v-card
@@ -72,16 +72,16 @@
                       {{ item.text }}
                     </v-btn>
                     <v-card-subtitle class="pb-0">
-                      Кол-во болезней
+                      {{ locales.statistic[0].labels[0] }}
                     </v-card-subtitle>
                     <v-card-title>
                       {{ statistic[0].data[i][0] }}
                     </v-card-title>
                     <v-card-subtitle class="pb-0">
-                      Последний анализ
+                      {{ locales.statistic[0].labels[1] }}
                     </v-card-subtitle>
                     <v-card-title>
-                      {{statistic[0].data[i][1]}}
+                      {{ statistic[0].data[i][1] }}
                     </v-card-title>
                   </v-card>
                 </v-col>
@@ -114,7 +114,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Вкл. раздел
+                  {{ locales.statistic[1].btns[0] }}
                 </span>
               </v-tooltip>
               <v-tooltip left color="#FB8C00" v-else>
@@ -133,13 +133,13 @@
                   </v-btn>
                 </template>
                 <span>
-                  Выкл. раздел
+                  {{ locales.statistic[1].btns[1] }}
                 </span>
               </v-tooltip>
             </v-card-title>
             <v-divider />
             <v-container v-if="showPart.vaccines">
-              <VaccinesList :all-data="statistic[1].data" />
+              <VaccinesList :locales="locales.statistic[1]" :all-data="statistic[1].data" />
             </v-container>
           </v-card>
         </v-col>
@@ -153,6 +153,7 @@ import VaccinesList from "@/components/admin-cabinet/tabs/statistics/VaccinesLis
 export default {
   name: "Statistics",
   components: { VaccinesList },
+  props: ["locales"],
   data() {
     return {
       showPart: {
@@ -161,7 +162,7 @@ export default {
       },
       statistic: [
         {
-          name: "Статистика по кол-ву людей с болезнями",
+          name: this.locales.statistic[0].title,
           data: [
             [0, 0],
             [0, 0],
@@ -178,7 +179,7 @@ export default {
           ]
         },
         {
-          name: "Статистика популярности вакцинаций",
+          name: this.locales.statistic[1].title,
           data: []
         }
       ],
@@ -248,8 +249,6 @@ export default {
       }
     }
 
-    // this.statistic[0].data = [];
-
     // top of vaccines
     const users = await this.$store.getters.getAllUsers;
 
@@ -277,13 +276,13 @@ export default {
 
     vaccines.reduce((back, next) => {
       if (back !== undefined) {
-        if (back.name === next.name) {
+        if (back["name"] === next["name"]) {
+          allData.push(next);
+        } else {
           allData.push(next);
         }
-      } else {
-        allData.push(next);
       }
-    });
+    }, "");
 
     this.statistic[1].data.push(...allData);
     allData = allData.map(i => i.id);

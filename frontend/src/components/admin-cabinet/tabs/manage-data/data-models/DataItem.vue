@@ -4,13 +4,13 @@
       <template v-slot:default="{ hover }">
         <v-card max-width="180" max-height="180" height="180" rounded="lg">
           <v-card-subtitle class="pb-0">
-            Название:
+            {{ locales.dataLabels[0] }}
           </v-card-subtitle>
           <v-card-title>
             {{ item.name }}
           </v-card-title>
           <v-card-subtitle class="pb-0">
-            Кол-во записей:
+            {{ locales.dataLabels[1] }}
           </v-card-subtitle>
           <v-card-title>
             {{ item.count }}
@@ -19,7 +19,7 @@
           <v-fade-transition>
             <v-overlay v-if="hover" absolute>
               <v-btn @click="showInfo = true">
-                СВЕДЕНИЯ
+                {{ locales.dataLabels[2] }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -29,7 +29,7 @@
     <v-dialog max-width="840" persistent v-model="showInfo">
       <v-card>
         <v-card-title class="d-flex justify-center">
-          Работа с таблицей {{ item.name }}
+          {{ locales.dataTable.title }} {{ item.name }}
           <v-btn icon @click="showInfo = false" absolute right>
             <v-icon>
               close
@@ -39,7 +39,7 @@
         <v-divider />
         <v-container>
           <v-text-field
-            :label="'Поиск по таблице ' + item.name"
+            :label="locales.dataTable.searchBar + item.name"
             outlined
             shaped
             v-model="searchText"
@@ -64,24 +64,28 @@
                 </v-icon>
               </v-btn>
             </template>
-            <span> Добавить {{ item.name }} </span>
+            <span> {{ locales.dataTable.addBtn }} {{ item.name }} </span>
           </v-tooltip>
           <ServiceDataList
+            :locales="locales.dataTable.services"
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Services'"
             :table-info="item.data"
           />
           <PartnerDataList
+            :locales="locales.dataTable.partners"
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Partners'"
             :table-info="item.data"
           />
           <ResultDataList
+            :locales="locales.dataTable.results"
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Results'"
             :table-info="item.data"
           />
           <CapabilityDataList
+            :locales="locales.dataTable.caps"
             :do-delete-service="doDeleteData"
             v-if="item.name === 'Capabilities'"
             :table-info="item.data"
@@ -89,6 +93,7 @@
         </v-container>
 
         <AddServiceForm
+          :locales="locales.dataTable.services"
           :is-open="showAddForm.services"
           :info="addForm"
           :close-form="closeForm"
@@ -96,6 +101,7 @@
           :update-data="addData"
         />
         <AddPartnerForm
+          :locales="locales.dataTable.partners"
           :is-open="showAddForm.partners"
           :info="addForm"
           :close-form="closeForm"
@@ -103,6 +109,7 @@
           :update-data="addData"
         />
         <AddResultForm
+          :locales="locales.dataTable.results"
           :is-open="showAddForm.results"
           :info="addForm"
           :close-form="closeForm"
@@ -111,6 +118,7 @@
           :update-data="addData"
         />
         <AddCapabilityForm
+          :locales="locales.dataTable.caps"
           :is-open="showAddForm.capabilities"
           :info="addForm"
           :close-form="closeForm"
@@ -150,7 +158,8 @@ export default {
     "allPartners",
     "allUsers",
     "allSurveys",
-    "searcher"
+    "searcher",
+    "locales"
   ],
   data() {
     return {

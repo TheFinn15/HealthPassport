@@ -18,7 +18,7 @@
       </template>
 
       <v-card-title class="d-flex justify-center">
-        Добавить сервис
+        {{ locales.addForm.title }}
         <v-btn icon absolute right @click="doClose">
           <v-icon>
             close
@@ -31,7 +31,7 @@
           <v-row>
             <v-col cols="6">
               <v-text-field
-                label="Название"
+                :label="locales.addForm.labels[0]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -41,7 +41,7 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                label="Вид сервиса"
+                :label="locales.addForm.labels[1]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -52,7 +52,7 @@
             </v-col>
             <v-col cols="6">
               <v-textarea
-                label="О сервисе"
+                :label="locales.addForm.labels[2]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -62,7 +62,7 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                label="Партнер"
+                :label="locales.addForm.labels[3]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -73,7 +73,7 @@
             </v-col>
           </v-row>
           <v-btn block color="success" @click="doAdd">
-            Создать
+            {{ locales.addForm.btn }}
           </v-btn>
         </v-container>
       </v-form>
@@ -84,7 +84,14 @@
 <script>
 export default {
   name: "AddServiceForm",
-  props: ["info", "isOpen", "closeForm", "allPartners", "updateData"],
+  props: [
+    "info",
+    "isOpen",
+    "closeForm",
+    "allPartners",
+    "updateData",
+    "locales"
+  ],
   data() {
     return {
       alert: {
@@ -94,19 +101,19 @@ export default {
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое !"]
+        text: [v => !!v || this.locales.rules.text]
       },
       typesServices: [
         {
-          text: "Болезнь",
+          text: this.locales.types[0],
           value: "TYPE_ILL"
         },
         {
-          text: "Обследование",
+          text: this.locales.types[1],
           value: "TYPE_SURVEY"
         },
         {
-          text: "Вакцина",
+          text: this.locales.types[2],
           value: "TYPE_VACCINE"
         }
       ],
@@ -128,11 +135,11 @@ export default {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при создание сервиса";
+            this.alert.info = this.locales.addForm.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Сервис успешно создан";
+            this.alert.info = this.locales.addForm.alerts[1];
 
             this.updateData({ name: "Services", data: this.info });
 

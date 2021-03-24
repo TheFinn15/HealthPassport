@@ -9,6 +9,7 @@
           :do-update-list="doUpdateList"
           :rules="rules"
           :roles="roles"
+          :locales="locales"
         />
       </v-row>
     </v-container>
@@ -20,12 +21,7 @@ import UsersItem from "@/components/admin-cabinet/tabs/managa-user/UsersItem";
 export default {
   name: "UsersList",
   components: { UsersItem },
-  props: [
-    "info",
-    "doUpdateList",
-    "roles",
-    "rules"
-  ]
+  props: ["info", "doUpdateList", "roles", "rules", "locales"]
 };
 </script>
 

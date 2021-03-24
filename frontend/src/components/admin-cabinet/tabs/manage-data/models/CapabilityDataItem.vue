@@ -26,15 +26,15 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Удалить эту запись ?
+              {{ locales.deleteForm.title }}
             </v-card-title>
             <v-divider />
             <v-card-actions class="d-flex justify-center">
               <v-btn outlined color="info" @click="forms.delete = false">
-                Отмена
+                {{ locales.deleteForm.btns[0] }}
               </v-btn>
               <v-btn outlined color="red" @click="doDelete">
-                Удалить
+                {{ locales.deleteForm.btns[1] }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -46,7 +46,7 @@
             </template>
 
             <v-card-title class="d-flex justify-center">
-              Изменить запись {{ tableItem.name }}
+              {{ locales.editForm.title }} {{ tableItem.name }}
               <v-btn icon @click="forms.edit = false" absolute right>
                 <v-icon>
                   close
@@ -59,7 +59,7 @@
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
-                      label="Название"
+                      :label="locales.editForm.labels[0]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -69,7 +69,7 @@
                   </v-col>
                   <v-col cols="6">
                     <v-textarea
-                      label="Об ограничение"
+                      :label="locales.editForm.labels[1]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -79,7 +79,7 @@
                   </v-col>
                   <v-col cols="12">
                     <v-select
-                      label="Уровень опасности"
+                      :label="locales.editForm.labels[2]"
                       outlined
                       shaped
                       color="#FB8C00"
@@ -90,7 +90,7 @@
                   </v-col>
                 </v-row>
                 <v-btn block color="success" @click="doEdit">
-                  Редактировать
+                  {{ locales.editForm.btn }}
                 </v-btn>
               </v-container>
             </v-form>
@@ -117,7 +117,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  Изменить запись
+                  {{ locales.viewForm.btns[0] }}
                 </span>
               </v-tooltip>
               <v-tooltip right color="#FB8C00">
@@ -135,13 +135,13 @@
                   </v-btn>
                 </template>
                 <span>
-                  Удалить запись
+                  {{ locales.viewForm.btns[1] }}
                 </span>
               </v-tooltip>
             </v-col>
             <v-col sm="4" md="3">
               <v-card-subtitle class="pb-0">
-                Название
+                {{ locales.viewForm.labels[0] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.name }}
@@ -149,7 +149,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Доп. инфо.
+                {{ locales.viewForm.labels[1] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.info }}
@@ -157,7 +157,7 @@
             </v-col>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Уровень опасности
+                {{ locales.viewForm.labels[2] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ getHazardLevel }}
@@ -167,7 +167,7 @@
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Пользователь
+                {{ locales.viewForm.labels[3] }}
               </v-card-subtitle>
               <v-card-title>
                 {{ tableItem.user.fullName }}
@@ -177,12 +177,12 @@
           <v-row>
             <v-col sm="4" md="4">
               <v-card-subtitle class="pb-0">
-                Болезнь
+                {{ locales.viewForm.labels[4] }}
               </v-card-subtitle>
               <v-card-title>
                 {{
                   tableItem.ill === undefined
-                    ? "Отсутствует"
+                    ? locales.viewForm.illsNotFound
                     : tableItem.ill.name
                 }}
               </v-card-title>
@@ -197,7 +197,7 @@
 <script>
 export default {
   name: "CapabilityDataItem",
-  props: ["tableItem", "doDeleteService"],
+  props: ["tableItem", "doDeleteService", "locales"],
   data() {
     return {
       alert: {
@@ -211,27 +211,27 @@ export default {
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое !"]
+        text: [v => !!v || this.locales.rules.text]
       },
       hazardLevels: [
         {
-          text: "Всё в порядке",
+          text: this.locales.hazardLevels[0],
           value: "OKAY_LEVEL"
         },
         {
-          text: "В норме",
+          text: this.locales.hazardLevels[1],
           value: "NORMAL_LEVEL"
         },
         {
-          text: "Не в порядке",
+          text: this.locales.hazardLevels[2],
           value: "NOT_OKAY_LEVEL"
         },
         {
-          text: "Есть угроза",
+          text: this.locales.hazardLevels[3],
           value: "DANGER_LEVEL"
         },
         {
-          text: "Смертельная",
+          text: this.locales.hazardLevels[4],
           value: "DEATHLY_LEVEL"
         }
       ]
@@ -250,11 +250,11 @@ export default {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при изменение ограничения";
+            this.alert.info = this.locales.editForm.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Ограничение успешно изменен";
+            this.alert.info = this.locales.editForm.alerts[1];
 
             this.$data.forms.edit = false;
           }
@@ -269,13 +269,13 @@ export default {
           this.loader = false;
           this.alert.state = true;
           this.alert.color = "error";
-          this.alert.info = "Ошибка при удаление ограничения";
+          this.alert.info = this.locales.deleteForm.alerts[0];
         } else {
           this.doDeleteService({ name: "Partners", id: this.tableItem.id });
 
           this.loader = false;
           this.alert.state = true;
-          this.alert.info = "Ограничение успешно удалено";
+          this.alert.info = this.locales.deleteForm.alerts[1];
 
           setTimeout(() => {
             this.$data.forms.edit = false;
@@ -288,11 +288,16 @@ export default {
     getHazardLevel() {
       let res = "";
 
-      if (this.tableItem.hazardLevel === "OKAY_LEVEL") res = "Всё в порядке";
-      if (this.tableItem.hazardLevel === "NORMAL_LEVEL") res = "В норме";
-      if (this.tableItem.hazardLevel === "NOT_OKAY_LEVEL") res = "Не в порядке";
-      if (this.tableItem.hazardLevel === "DANGER_LEVEL") res = "Есть угроза";
-      if (this.tableItem.hazardLevel === "DEATHLY_LEVEL") res = "Смертельная";
+      if (this.tableItem.hazardLevel === "OKAY_LEVEL")
+        res = this.locales.hazardLevels[0];
+      if (this.tableItem.hazardLevel === "NORMAL_LEVEL")
+        res = this.locales.hazardLevels[1];
+      if (this.tableItem.hazardLevel === "NOT_OKAY_LEVEL")
+        res = this.locales.hazardLevels[2];
+      if (this.tableItem.hazardLevel === "DANGER_LEVEL")
+        res = this.locales.hazardLevels[3];
+      if (this.tableItem.hazardLevel === "DEATHLY_LEVEL")
+        res = this.locales.hazardLevels[4];
 
       return res;
     }

@@ -18,7 +18,7 @@
       </template>
 
       <v-card-title class="d-flex justify-center">
-        Добавить сервис
+        {{ locales.addForm.title }}
         <v-btn icon absolute right @click="doClose">
           <v-icon>
             close
@@ -31,7 +31,7 @@
           <v-row>
             <v-col cols="6">
               <v-text-field
-                label="Название"
+                :label="locales.addForm.labels[0]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -41,7 +41,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="Ссылка на партнера"
+                :label="locales.addForm.labels[1]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -51,7 +51,7 @@
             </v-col>
             <v-col cols="6">
               <v-textarea
-                label="О партнере"
+                :label="locales.addForm.labels[2]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -61,7 +61,7 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                label="Пользователь"
+                :label="locales.addForm.labels[3]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -73,7 +73,7 @@
             <v-col cols="12">
               <v-text-field
                 readonly
-                label="Начало партнерства"
+                :label="locales.addForm.labels[4]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -83,7 +83,7 @@
             </v-col>
           </v-row>
           <v-btn block color="success" @click="doAdd">
-            Создать
+            {{ locales.addForm.btn }}
           </v-btn>
         </v-container>
       </v-form>
@@ -94,7 +94,7 @@
 <script>
 export default {
   name: "AddPartnerForm",
-  props: ["info", "isOpen", "closeForm", "allUsers", "updateData"],
+  props: ["info", "isOpen", "closeForm", "allUsers", "updateData", "locales"],
   data() {
     return {
       alert: {
@@ -104,7 +104,7 @@ export default {
       },
       loader: false,
       rules: {
-        text: [v => !!v || "Поле пустое !"]
+        text: [v => !!v || this.locales.rules.text]
       },
       users: []
     };
@@ -125,11 +125,11 @@ export default {
             this.loader = false;
             this.alert.state = true;
             this.alert.color = "error";
-            this.alert.info = "Ошибка при создание партнера";
+            this.alert.info = this.locales.addForm.alerts[0];
           } else {
             this.loader = false;
             this.alert.state = true;
-            this.alert.info = "Партнер успешно создан";
+            this.alert.info = this.locales.addForm.alerts[1];
 
             this.updateData({ name: "Partners", data: this.info });
 

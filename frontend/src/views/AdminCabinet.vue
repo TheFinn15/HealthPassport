@@ -2,22 +2,23 @@
   <v-card style="margin: 5% 10%">
     <v-tabs grow color="#FB8C00" show-arrows>
       <v-tab>
-        Управление данными
+        {{ curLocale.tabs[0].name }}
       </v-tab>
       <v-tab>
-        Управление пользователями
+        {{ curLocale.tabs[1].name }}
       </v-tab>
       <v-tab>
-        Статистика сервиса
+        {{ curLocale.tabs[2].name }}
       </v-tab>
 
       <v-tab-item>
         <v-card>
           <v-card-title class="d-flex justify-center">
-            Все данные системы
+            {{ curLocale.tabs[0].context.title }}
           </v-card-title>
           <v-divider />
           <DataList
+            :locales="curLocale.tabs[0].context"
             :surveys="tables[2].surveys"
             :users="tables[1].users"
             :partners="tables[0].partners"
@@ -29,10 +30,14 @@
         </v-card>
       </v-tab-item>
       <v-tab-item>
-        <ManageUser :info="tables[1].users" :do-update-list="doUpdateList" />
+        <ManageUser
+          :locales="curLocale.tabs[1].context"
+          :info="tables[1].users"
+          :do-update-list="doUpdateList"
+        />
       </v-tab-item>
       <v-tab-item>
-        <Statistics />
+        <Statistics :locales="curLocale.tabs[2].context" />
       </v-tab-item>
     </v-tabs>
   </v-card>
@@ -71,13 +76,17 @@ export default {
           count: 0,
           data: []
         }
-      ]
+      ],
+      curLocale: {},
+      pageLocale: "admin-cabinet"
     };
   },
   methods: {
     doUpdateList(info) {
       if (info.action === "delete")
-        this.tables[1].users = this.tables[1].users.filter(i => i.id !== info.id);
+        this.tables[1].users = this.tables[1].users.filter(
+          i => i.id !== info.id
+        );
       else this.tables[1].users.push(info.item);
     },
     async doSearchData(info) {
@@ -111,6 +120,10 @@ export default {
         i => i.id !== item.id
       );
     }
+  },
+  beforeMount() {
+    this.$i18n.locale = localStorage["locale"];
+    this.curLocale = this.$t(this.pageLocale);
   },
   async mounted() {
     const services = await this.$store.getters.getServices;

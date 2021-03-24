@@ -20,7 +20,7 @@
               <v-row>
                 <v-col cols="4">
                   <v-card-subtitle class="pa-0">
-                    Название
+                    {{ locales.labels[0] }}
                   </v-card-subtitle>
                   <v-card-title>
                     {{ item.name }}
@@ -28,7 +28,7 @@
                 </v-col>
                 <v-col cols="4">
                   <v-card-subtitle class="pa-0">
-                    Доп. инфо
+                    {{ locales.labels[1] }}
                   </v-card-subtitle>
                   <v-card-title>
                     {{ item.info }}
@@ -38,7 +38,7 @@
               <v-row>
                 <v-col cols="4">
                   <v-card-subtitle class="pa-0">
-                    Партнер
+                    {{ locales.labels[2] }}
                   </v-card-subtitle>
                   <v-card-title>
                     {{ item.partner.name }}
@@ -46,7 +46,7 @@
                 </v-col>
                 <v-col cols="4">
                   <v-card-subtitle class="pa-0">
-                    О Партнере
+                    {{ locales.labels[3] }}
                   </v-card-subtitle>
                   <v-card-title>
                     {{ item.partner.about }}
@@ -54,7 +54,7 @@
                 </v-col>
                 <v-col cols="4">
                   <v-card-subtitle class="pa-0">
-                    Ссылка на партнера
+                    {{ locales.labels[4] }}
                   </v-card-subtitle>
                   <v-card-title>
                     {{ item.partner.url }}
@@ -66,7 +66,7 @@
         </v-dialog>
 
         <v-card-title class="pb-0">
-          {{ ind + 1 }} - Место
+          {{ ind + 1 }} {{ locales.labels[5] }}
         </v-card-title>
         <v-card-title class="justify-center">
           {{ item.name }}
@@ -75,7 +75,7 @@
         <v-fade-transition v-if="hover">
           <v-overlay absolute>
             <v-btn @click="showInfo = true">
-              СВЕДЕНИЯ
+              {{ locales.labels[6] }}
             </v-btn>
           </v-overlay>
         </v-fade-transition>
@@ -87,7 +87,7 @@
 <script>
 export default {
   name: "VaccinesItem",
-  props: ["item", "ind"],
+  props: ["item", "ind", "locales"],
   data() {
     return {
       showInfo: false

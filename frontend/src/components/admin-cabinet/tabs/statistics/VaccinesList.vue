@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center">
     <v-col cols="5" v-for="(item, i) in allData" :key="i">
-      <VaccinesItem :item="item" :ind="i" />
+      <VaccinesItem :locales="locales" :item="item" :ind="i" />
     </v-col>
   </v-row>
 </template>
@@ -11,7 +11,7 @@ import VaccinesItem from "@/components/admin-cabinet/tabs/statistics/VaccinesIte
 export default {
   name: "VaccinesList",
   components: { VaccinesItem },
-  props: ["allData"]
+  props: ["allData", "locales"]
 };
 </script>
 

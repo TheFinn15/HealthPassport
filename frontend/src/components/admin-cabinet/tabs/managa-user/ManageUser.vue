@@ -11,11 +11,12 @@
       :show-alert="doShowAlert"
       :roles="roles"
       :update="doUpdateList"
+      :locales="locales.addForm"
     />
     <v-card-title class="d-flex justify-center">
-      Пользователи
+      {{ locales.title }}
       <v-btn text absolute top right @click="forms.add = true" color="success" outlined>
-        СОЗДАТЬ
+        {{ locales.btnCreate }}
       </v-btn>
     </v-card-title>
     <v-divider />
@@ -24,6 +25,7 @@
       :do-update-list="doUpdateList"
       :roles="roles"
       :rules="rules"
+      :locales="locales.usersList"
     />
   </v-card>
 </template>
@@ -34,7 +36,7 @@ import AddForm from "@/components/admin-cabinet/tabs/managa-user/forms/AddForm";
 export default {
   name: "ManageUser",
   components: { AddForm, UsersList },
-  props: ["info", "doUpdateList"],
+  props: ["info", "doUpdateList", "locales"],
   data() {
     return {
       forms: {
@@ -44,15 +46,15 @@ export default {
       },
       roles: [
         {
-          text: "Обычный",
+          text: this.locales.roles[0],
           value: "ROLE_USER"
         },
         {
-          text: "Админ",
+          text: this.locales.roles[1],
           value: "ROLE_ADMIN"
         },
         {
-          text: "Партнер",
+          text: this.locales.roles[2],
           value: "ROLE_PARTNER"
         }
       ],
@@ -65,10 +67,10 @@ export default {
         email: [
           v =>
             v.match("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$") !== null ||
-            "Неверный e-mail"
+            this.locales.rules.email
         ],
-        phone: [v => v.length === 11 || "Неверный телефон"],
-        text: [v => !!v || "Поле пустое !"]
+        phone: [v => v.length === 11 || this.locales.rules.phone],
+        text: [v => !!v || this.locales.rules.text]
       }
     };
   },

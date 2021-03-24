@@ -2,7 +2,7 @@
   <v-dialog max-width="420" persistent v-model="isOpen">
     <v-card>
       <v-card-title class="d-flex justify-center">
-        Изменить {{ info.fullName }}
+        {{ locales.title }} {{ info.fullName }}
         <v-btn icon absolute right @click="doCloseForm">
           <v-icon>
             close
@@ -15,7 +15,7 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="ФИО"
+                :label="locales.labels[0]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -25,7 +25,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="Логин"
+                :label="locales.labels[1]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -36,7 +36,7 @@
             <v-col cols="6">
               <v-text-field
                 type="password"
-                label="Пароль"
+                :label="locales.labels[2]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -46,7 +46,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="E-mail"
+                :label="locales.labels[3]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -56,7 +56,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                label="Телефон"
+                :label="locales.labels[4]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -66,7 +66,7 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                label="Роль пользователя"
+                :label="locales.labels[5]"
                 outlined
                 shaped
                 color="#FB8C00"
@@ -77,7 +77,7 @@
             </v-col>
           </v-row>
           <v-btn block color="success" @click="doEdit" outlined>
-            РЕДАКТИРОВАТЬ
+            {{ locales.btn }}
           </v-btn>
         </v-container>
       </v-form>
@@ -88,7 +88,15 @@
 <script>
 export default {
   name: "EditForm",
-  props: ["isOpen", "info", "formRules", "closeForm", "showAlert", "roles"],
+  props: [
+    "isOpen",
+    "info",
+    "formRules",
+    "closeForm",
+    "showAlert",
+    "roles",
+    "locales"
+  ],
   methods: {
     doEdit() {
       const user = new Object(this.info);
@@ -108,14 +116,14 @@ export default {
 
       if (this.$store.state.errors === "") {
         this.showAlert({
-          info: "Изменения применены",
+          info: this.locales.alerts[1],
           color: "success"
         });
 
         this.closeForm("edit");
       } else {
         this.showAlert({
-          info: "Ошибка при изменение",
+          info: this.locales.alerts[0],
           color: "red"
         });
       }
