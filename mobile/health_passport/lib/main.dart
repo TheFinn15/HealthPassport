@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             ind = value;
           });
+          print(value);
           if (value == 1) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
           }
