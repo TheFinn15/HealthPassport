@@ -4,6 +4,7 @@ import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InputForm {
   final String field;
@@ -24,32 +25,45 @@ class LoginPage extends StatelessWidget {
         title: Text("Login")
       ),
       body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                  child: Text("Авторизація")
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
+        child: Container(
+          width: 340.0,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Text(
+                    "Авторизація",
+                    style: GoogleFonts.roboto(
+                        fontSize: 25.0
+                    ),
+                  )
                 ),
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
+                TextField(
+                  key: Key("login"),
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Логін',
+                  )
                 ),
-              ),
-              ElevatedButton(
+                TextField(
+                  key: Key("password"),
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Пароль',
+                  ),
+                  keyboardType: TextInputType.visiblePassword,
+                ),
+                ElevatedButton(
                   onPressed: () {},
                   child: Text("sda"),
-              )
-            ]
-        ),
+                  clipBehavior: Clip.antiAlias,
+                )
+              ]
+          ),
+        )
       )
     );
   }

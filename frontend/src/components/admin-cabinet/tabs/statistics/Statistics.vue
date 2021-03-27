@@ -56,7 +56,7 @@
                 <v-col
                   sm="5"
                   md="3"
-                  lg="4"
+                  lg="6"
                   xl="4"
                   v-for="(item, i) in locales.statistic[0].months"
                   :key="i"

@@ -70,6 +70,7 @@ export default {
       if (this.$store.state.errors === "") {
         localStorage.removeItem("uid");
         if (this.$route.path !== "/") window.location.href = "/";
+        else window.location.reload();
       }
     }
   }

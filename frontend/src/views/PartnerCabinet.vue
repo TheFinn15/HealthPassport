@@ -2,10 +2,18 @@
   <v-card flat style="padding: 2% 10% 0 10%">
     <v-card v-if="isAuth">
       <v-tabs color="#FB8C00" grow show-arrows>
-        <v-tab>Наши сервисы</v-tab>
-        <v-tab>Основная информация</v-tab>
-        <v-tab>Иследования</v-tab>
-        <v-tab>Наши клиенты</v-tab>
+        <v-tab>
+          {{ curLocale.tabs[0].name }}
+        </v-tab>
+        <v-tab>
+          {{ curLocale.tabs[1].name }}
+        </v-tab>
+        <v-tab>
+          {{ curLocale.tabs[2].name }}
+        </v-tab>
+        <v-tab>
+          {{ curLocale.tabs[3].name }}
+        </v-tab>
 
         <v-tab-item>
           <v-card>

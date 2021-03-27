@@ -167,7 +167,7 @@ export default new Vuex.Store({
           Authorization: "Bearer " + localStorage["uid"]
         }
       }).catch(e => {
-        state.errors = e.message;
+        state.errors = e;
       });
     },
     async auth({ state }) {
