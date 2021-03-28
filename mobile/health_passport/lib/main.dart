@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/navs/login_page.dart';
+import 'package:health_passport/navs/register_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'navs/cabinet_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,10 +19,33 @@ class Destination {
   const Destination(this.title, this.icon, this.color);
 }
 
-const List<Destination> allDestinations = <Destination>[
-  Destination('Главная', Icons.home, Colors.teal),
-  Destination('Логин', Icons.business, Colors.cyan),
-  Destination('Регистрация', Icons.school, Colors.orange)
+List<Destination> allDestinations = <Destination>[
+  Destination('Головна', Icons.home, Colors.teal),
+  Destination('Логін', Icons.business, Colors.cyan),
+  Destination('Реєстрація', Icons.school, Colors.orange)
+];
+
+var bottomNavTabs = [
+  Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+              "HEALTH-PASSPORT",
+              style: GoogleFonts.roboto(fontSize: 30.0, )
+          ),
+          Center(
+            child: Text(
+              "Війди або реєструйся, щоб використовувати сервіс",
+              style: GoogleFonts.roboto(),
+            ),
+          )
+      ]
+    )
+  ),
+  LoginPage(),
+  RegisterPage()
 ];
 
 class MyApp extends StatelessWidget {
@@ -30,10 +59,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text("Main"),
-        ),
-        body: MainPage()
+        bottomSheet: MainPage()
       ),
     );
   }
@@ -46,25 +72,39 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int ind = 0;
+  // ignore: top_level_function_literal_block
+  var storage = SharedPreferences.getInstance().then((value) {
+    // value.setString("uid", "dsad");
+    // value.remove("uid");
+    if (value.getString("uid") != null) {
+      bottomNavTabs[0] = HomePage();
+      bottomNavTabs[1] = CabinetPage();
+      bottomNavTabs[2] = Center(child: Text("Вихід"));
+      allDestinations[1] = Destination("Кабінет", Icons.person, Colors.blue);
+      allDestinations[2] = Destination("Вихід", Icons.exit_to_app, Colors.blue);
+    }
+  });
 
   Widget build(BuildContext context) {
     return Scaffold(
+      body: bottomNavTabs[ind],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: ind,
-        onTap: (value) {
+        onTap: (value) async {
+          var logout = await SharedPreferences.getInstance();
           setState(() {
             ind = value;
           });
-          if (value == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+          if (value == 2 && logout.getString("uid") != null) {
+            logout.remove("uid");
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
           }
         },
         items: List.generate(allDestinations.length, (index) {
           return BottomNavigationBarItem(
-            title: Text(allDestinations[index].title),
-            icon: Icon(allDestinations[index].icon),
-            backgroundColor: allDestinations[index].color
+            label: allDestinations[index].title,
+            icon: Icon(allDestinations[index].icon)
           );
         })
       )

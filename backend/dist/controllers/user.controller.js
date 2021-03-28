@@ -224,7 +224,6 @@ let UserController = class UserController {
     async login(req, res) {
         try {
             const { login, pwd, isRememberMe, device, ip } = req.body;
-            console.log([login, pwd, isRememberMe, device, ip]);
             await this.clientDB.user.findUnique({
                 where: { login: login }
             }).then(async (user) => {

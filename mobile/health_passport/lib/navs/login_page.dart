@@ -5,6 +5,7 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:health_passport/main.dart';
 import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/services/user_requests.dart';
 
@@ -19,7 +20,7 @@ class LoginPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login")
+        title: Text("Авторизація"),
       ),
       body: Center(
         child: Container(
@@ -36,58 +37,67 @@ class LoginPage extends StatelessWidget {
                     ),
                   )
                 ),
-                TextField(
-                  controller: loginField,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Логін',
-                  )
-                ),
-                TextField(
-                  controller: pwdField,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Пароль',
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextField(
+                    controller: loginField,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Логін',
+                    )
                   ),
-                  keyboardType: TextInputType.visiblePassword,
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    var data = jsonEncode(<String, dynamic> {
-                      "login": loginField.text,
-                      "pwd": pwdField.text,
-                      "device": "DEVICE_ANDROID",
-                      "isRememberMe": false,
-                      "ip": "91.204.113.91"
-                    });
-                    bool isAuth = await userService.login(data);
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextField(
+                    controller: pwdField,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Пароль',
+                    ),
+                    keyboardType: TextInputType.visiblePassword,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      var data = jsonEncode(<String, dynamic> {
+                        "login": loginField.text,
+                        "pwd": pwdField.text,
+                        "device": "DEVICE_ANDROID",
+                        "isRememberMe": false,
+                        "ip": "91.204.113.91"
+                      });
+                      bool isAuth = await userService.login(data);
 
-                    if (isAuth) {
-                      return showDialog(context: context, builder: (_) => new AlertDialog(
-                          title: Text("Авторизація успішна !"),
+                      if (isAuth) {
+                        return showDialog(context: context, builder: (_) => new AlertDialog(
+                            title: Text("Авторизація успішна !"),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                                  },
+                                  child: Text("CLOSE")
+                              )
+                            ]
+                        ));
+                      } else {
+                        return showDialog(context: context, builder: (_) => new AlertDialog(
+                          title: Text("Помилка при авторизації"),
                           actions: [
-                            FlatButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-                                },
-                                child: Text("CLOSE")
-                            )
+                            FlatButton(onPressed: () {Navigator.of(context).pop();}, child: Text("CLOSE"))
                           ]
-                      ));
-                    } else {
-                      return showDialog(context: context, builder: (_) => new AlertDialog(
-                        title: Text("Помилка при авторизації"),
-                        actions: [
-                          FlatButton(onPressed: () {Navigator.of(context).pop();}, child: Text("CLOSE"))
-                        ]
-                      ));
-                    }
-                  },
-                  child: Text("sda"),
-                  clipBehavior: Clip.antiAlias,
+                        ));
+                      }
+                    },
+                    child: Text("ВІЙТИ"),
+                    clipBehavior: Clip.antiAlias,
+                  ),
                 )
               ]
           ),

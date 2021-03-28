@@ -39,6 +39,22 @@ class UserService {
     } else {
       print(res.statusCode);
       print(res.body);
+
+      return false;
+    }
+  }
+
+  Future<bool> register(data) async {
+    Response res = await post(Uri.http(host, "api/register"), body: data, headers: <String, String> {
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
+
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      print(res.statusCode);
+      print(res.body);
+
       return false;
     }
   }
