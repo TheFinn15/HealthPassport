@@ -49,49 +49,98 @@ class HomePage extends StatelessWidget {
                            style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
                          ),
                        ),
-                       Icon(Icons.keyboard_arrow_down, size: 30)
+                       Spacer(),
+                       Padding(
+                         padding: const EdgeInsets.only(right: 20),
+                         child: Icon(Icons.keyboard_arrow_down, size: 30),
+                       ),
                      ],
                    ),
                  ),
                  onTap: () {
-                   print("TAPPED");
+                   showDialog(context: context, builder: (_) {
+                     return AlertDialog(
+                       title: Column(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           Padding(
+                             padding: const EdgeInsets.all(15.0),
+                             child: Text("Хвороби", style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
+                           ),
+                           const Divider(
+                             height: 2,
+                             thickness: 2
+                           ),
+                         ]
+                       ),
+                       content: Column(
+                         children: List.generate(10, (index) {
+                           return TextField(
+                               decoration: InputDecoration(
+                                   labelText: "Label $index"
+                               )
+                           );
+                         }),
+                       )
+                     );
+                   });
                  },
                ),
-               Card(
-                 elevation: 8,
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(5.0)
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.start,
-                   children: [
-                     Padding(
-                       padding: const EdgeInsets.all(20),
-                       child: Text(
-                         "Обстеження",
-                         style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+               GestureDetector(
+                 child: Card(
+                   elevation: 8,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(5.0)
+                   ),
+                   child: Row(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     children: [
+                       Padding(
+                         padding: const EdgeInsets.all(20),
+                         child: Text(
+                           "Обстеження",
+                           style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+                         ),
                        ),
-                     )
-                   ],
+                       Spacer(),
+                       Padding(
+                         padding: const EdgeInsets.only(right: 20),
+                         child: Icon(Icons.keyboard_arrow_down, size: 30),
+                       ),
+                     ],
+                   ),
                  ),
+                 onTap: () {
+                   print("TAPPED1");
+                 },
                ),
-               Card(
-                 elevation: 8,
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(5.0)
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.start,
-                   children: [
-                     Padding(
-                       padding: const EdgeInsets.all(20),
-                       child: Text(
-                         "Вакцинації",
-                         style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+               GestureDetector(
+                 child: Card(
+                   elevation: 8,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(5.0)
+                   ),
+                   child: Row(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     children: [
+                       Padding(
+                         padding: const EdgeInsets.all(20),
+                         child: Text(
+                           "Вакцинації",
+                           style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+                         ),
                        ),
-                     )
-                   ],
+                       Spacer(),
+                       Padding(
+                         padding: const EdgeInsets.only(right: 20),
+                         child: Icon(Icons.keyboard_arrow_down, size: 30),
+                       ),
+                     ],
+                   ),
                  ),
+                 onTap: () {
+                   print("TAPPED2");
+                 }
                )
              ],
            ),
