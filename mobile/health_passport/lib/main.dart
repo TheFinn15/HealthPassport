@@ -16,8 +16,7 @@ class Destination {
 const List<Destination> allDestinations = <Destination>[
   Destination('Главная', Icons.home, Colors.teal),
   Destination('Логин', Icons.business, Colors.cyan),
-  Destination('Регистрация', Icons.school, Colors.orange),
-  // Destination('Flight', Icons.flight, Colors.blue)
+  Destination('Регистрация', Icons.school, Colors.orange)
 ];
 
 class MyApp extends StatelessWidget {
@@ -34,18 +33,18 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text("Main"),
         ),
-        body: HomePage()
+        body: MainPage()
       ),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class MainPage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
   int ind = 0;
 
   Widget build(BuildContext context) {
@@ -57,7 +56,6 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             ind = value;
           });
-          print(value);
           if (value == 1) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
           }

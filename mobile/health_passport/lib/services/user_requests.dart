@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:health_passport/models/user_model.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class UserService {
@@ -21,6 +22,24 @@ class UserService {
       return users;
     } else {
       throw Exception("Error");
+    }
+  }
+
+  Future<bool> login(data) async {
+    final storage = await SharedPreferences.getInstance();
+    Response res = await post(Uri.http(host, "api/login"), body: data, headers: <String, String> {
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
+
+    if (res.statusCode == 200) {
+      String token = jsonDecode(res.body)["token"];
+      storage.setString("uid", token);
+
+      return true;
+    } else {
+      print(res.statusCode);
+      print(res.body);
+      return false;
     }
   }
 }

@@ -231,6 +231,7 @@ export class UserController {
   private async login(req: Request, res: Response) {
     try {
       const {login, pwd, isRememberMe, device, ip} = req.body;
+
       await this.clientDB.user.findUnique({
         where: {login: login}
       }).then(async user => {
@@ -249,7 +250,8 @@ export class UserController {
           return res.status(200).json({
             user: user, token: token.token
           })
-        }).catch(async () => {
+        })
+          .catch(async () => {
           const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
 
           const geoInfo = geo_from_ip.lookup(ip);

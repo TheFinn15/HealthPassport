@@ -224,6 +224,7 @@ let UserController = class UserController {
     async login(req, res) {
         try {
             const { login, pwd, isRememberMe, device, ip } = req.body;
+            console.log([login, pwd, isRememberMe, device, ip]);
             await this.clientDB.user.findUnique({
                 where: { login: login }
             }).then(async (user) => {
@@ -242,7 +243,8 @@ let UserController = class UserController {
                     return res.status(200).json({
                         user: user, token: token.token
                     });
-                }).catch(async () => {
+                })
+                    .catch(async () => {
                     const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
                     const geoInfo = geoip_lite_1.default.lookup(ip);
                     let location = `${geoInfo.country}, ${geoInfo.city}`;
