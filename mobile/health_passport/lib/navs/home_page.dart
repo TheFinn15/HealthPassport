@@ -3,14 +3,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:health_passport/navs/components/home/add_service_form.dart';
 
 import '../services/user_requests.dart';
+import 'components/home/services_info.dart';
 
 UserService userService = new UserService();
 
 Future<List<dynamic>> getIlls() async {
   List<dynamic> services = (await userService.getCurrentUser())[0]["services"];
-  return services.where((element) => element["type"] == "TYPE_ILL").toList();;
+  return services.where((element) => element["type"] == "TYPE_ILL").toList();
 }
 
 Future<List<dynamic>> getSurveys() async {
@@ -21,6 +23,10 @@ Future<List<dynamic>> getSurveys() async {
 Future<List<dynamic>> getVaccines() async {
   List<dynamic> services = (await userService.getCurrentUser())[0]["services"];
   return services.where((element) => element["type"] == "TYPE_VACCINE").toList();
+}
+
+Future<List<dynamic>> getServices() async {
+  return await userService.getServices();
 }
 
 class HomePage extends StatelessWidget {
@@ -34,146 +40,131 @@ class HomePage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(
-            child: Text(
-              "Мої дані",
-              style: GoogleFonts.roboto(fontSize: 30.0, fontWeight: FontWeight.bold),
-            )
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  tooltip: "Додати сервіс",
+                  icon: Icon(Icons.add_circle_outline, size: 30),
+                  onPressed: () {
+                    showDialog(context: context, builder: (_) {
+                      return AddServiceForm(getServices());
+                    });
+                  },
+                ),
+                Text(
+                  "Мої дані",
+                  style: GoogleFonts.roboto(fontSize: 30.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
-         Container(
-           margin: EdgeInsets.fromLTRB(150, 10, 150, 10),
-           child:  Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               GestureDetector(
-                 child: Card(
-                   elevation: 8,
-                   shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(5.0)
-                   ),
-                   child:  Row(
-                     mainAxisAlignment: MainAxisAlignment.start,
-                     children: [
-                       Padding(
-                         padding: const EdgeInsets.all(20),
-                         child: Text(
-                           "Хвороби",
-                           style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
-                         ),
-                       ),
-                       Spacer(),
-                       Padding(
-                         padding: const EdgeInsets.only(right: 20),
-                         child: Icon(Icons.keyboard_arrow_down, size: 30),
-                       ),
-                     ],
-                   ),
-                 ),
-                 onTap: () {
-                   showDialog(context: context, builder: (_) {
-                     return AlertDialog(
-                       title: Column(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           Padding(
-                             padding: const EdgeInsets.all(15.0),
-                             child: Text("Хвороби", style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
+          Container(
+             margin: EdgeInsets.fromLTRB(150, 10, 150, 10),
+             child:  Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 GestureDetector(
+                   child: Card(
+                     elevation: 8,
+                     shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(5.0)
+                     ),
+                     child:  Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                         Padding(
+                           padding: const EdgeInsets.all(20),
+                           child: Text(
+                             "Хвороби",
+                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
                            ),
-                           const Divider(
-                             height: 2,
-                             thickness: 2
+                         ),
+                         Spacer(),
+                         Padding(
+                           padding: const EdgeInsets.only(right: 20),
+                           child: Icon(Icons.keyboard_arrow_down, size: 30),
+                         ),
+                       ],
+                     ),
+                   ),
+                   onTap: () {
+                     showDialog(
+                       context: context,
+                       builder: (_) {
+                         return ServicesInfo("Хвороби", getIlls());
+                     });
+                   },
+                 ),
+                 GestureDetector(
+                   child: Card(
+                     elevation: 8,
+                     shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(5.0)
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                         Padding(
+                           padding: const EdgeInsets.all(20),
+                           child: Text(
+                             "Обстеження",
+                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
                            ),
-                         ]
-                       ),
-                       content: Column(
-                         children: [
-                           FutureBuilder<List<dynamic>>(
-                             future: getIlls(),
-                             builder: (context, snapshot) {
-                               if (snapshot.data.length > 0) {
-                                 return Column(
-                                   children: List.generate(snapshot.data.length, (index) {
-                                     return Text(snapshot.data[index]["name"].toString());
-                                   })
-                                 );
-                               } else {
-                                 return Column(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                   children: [
-                                     Center(
-                                       child: Text("Хвороби відсутні"),
-                                     )
-                                   ],
-                                 );
-                               }
-                             },
-                           )
-                         ]
-                       )
-                     );
-                   });
-                 },
-               ),
-               GestureDetector(
-                 child: Card(
-                   elevation: 8,
-                   shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(5.0)
-                   ),
-                   child: Row(
-                     mainAxisAlignment: MainAxisAlignment.start,
-                     children: [
-                       Padding(
-                         padding: const EdgeInsets.all(20),
-                         child: Text(
-                           "Обстеження",
-                           style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
                          ),
-                       ),
-                       Spacer(),
-                       Padding(
-                         padding: const EdgeInsets.only(right: 20),
-                         child: Icon(Icons.keyboard_arrow_down, size: 30),
-                       ),
-                     ],
-                   ),
-                 ),
-                 onTap: () {
-                   print("TAPPED1");
-                 },
-               ),
-               GestureDetector(
-                 child: Card(
-                   elevation: 8,
-                   shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(5.0)
-                   ),
-                   child: Row(
-                     mainAxisAlignment: MainAxisAlignment.start,
-                     children: [
-                       Padding(
-                         padding: const EdgeInsets.all(20),
-                         child: Text(
-                           "Вакцинації",
-                           style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+                         Spacer(),
+                         Padding(
+                           padding: const EdgeInsets.only(right: 20),
+                           child: Icon(Icons.keyboard_arrow_down, size: 30),
                          ),
-                       ),
-                       Spacer(),
-                       Padding(
-                         padding: const EdgeInsets.only(right: 20),
-                         child: Icon(Icons.keyboard_arrow_down, size: 30),
-                       ),
-                     ],
+                       ],
+                     ),
                    ),
+                   onTap: () {
+                     showDialog(
+                         context: context,
+                         builder: (_) {
+                           return ServicesInfo("Обстеження", getSurveys());
+                         });
+                   },
                  ),
-                 onTap: () {
-                   print("TAPPED2");
-                 }
-               )
-             ],
-           ),
+                 GestureDetector(
+                   child: Card(
+                     elevation: 8,
+                     shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(5.0)
+                     ),
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                         Padding(
+                           padding: const EdgeInsets.all(20),
+                           child: Text(
+                             "Вакцинації",
+                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
+                           ),
+                         ),
+                         Spacer(),
+                         Padding(
+                           padding: const EdgeInsets.only(right: 20),
+                           child: Icon(Icons.keyboard_arrow_down, size: 30),
+                         ),
+                       ],
+                     ),
+                   ),
+                   onTap: () {
+                     showDialog(
+                         context: context,
+                         builder: (_) {
+                           return ServicesInfo("Вакцинації", getVaccines());
+                         });
+                   }
+                 )
+               ],
+             ),
          )
         ],
       )

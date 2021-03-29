@@ -245,35 +245,46 @@ export class UserController {
           where: {
             ip: ip
           }
-        }).then(token => {
-          delete user.pwd;
-          return res.status(200).json({
-            user: user, token: token.token
-          })
+        }).then( async token => {
+          try {
+            jwt.verify(token.token, process.env.JWT_SECRET);
+
+            delete user.pwd;
+            return res.status(200).json({
+              user: user, token: token.token
+            })
+          } catch (e) {
+            await this.clientDB.token.delete({
+              where: {
+                ip: token.ip
+              }
+            });
+            throw "Token expired";
+          }
         })
           .catch(async () => {
-          const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
+            const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
 
-          const geoInfo = geo_from_ip.lookup(ip);
-          let location = `${geoInfo.country}, ${geoInfo.city}`;
+            const geoInfo = geo_from_ip.lookup(ip);
+            let location = `${geoInfo.country}, ${geoInfo.city}`;
 
-          await this.clientDB.token.create({
-            data: {
-              typeDevice: device,
-              token: newJWToken,
-              ip: ip,
-              location: location,
-              userId: user.id
-            }
-          }).catch(e => {
-            return res.status(400).json({
-              msg: "Error creating token | " + e
+            await this.clientDB.token.create({
+              data: {
+                typeDevice: device,
+                token: newJWToken,
+                ip: ip,
+                location: location,
+                userId: user.id
+              }
+            }).catch(e => {
+              return res.status(400).json({
+                msg: "Error creating token | " + e
+              });
             });
-          });
 
-          return res.status(200).json({
-            user: user, token: newJWToken
-          });
+            return res.status(200).json({
+              user: user, token: newJWToken
+            });
         });
       }).catch(e => {
         return res.status(400).json({

@@ -74,8 +74,6 @@ class _MainPageState extends State<MainPage> {
   int ind = 0;
   // ignore: top_level_function_literal_block
   var storage = SharedPreferences.getInstance().then((value) {
-    // value.setString("uid", "dsad");
-    // value.remove("uid");
     if (value.getString("uid") != null) {
       bottomNavTabs[0] = HomePage();
       bottomNavTabs[1] = CabinetPage();
@@ -96,6 +94,7 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             ind = value;
           });
+          print(logout.getString("uid"));
           if (value == 2 && logout.getString("uid") != null) {
             logout.remove("uid");
             Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));

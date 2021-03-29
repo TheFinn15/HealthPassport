@@ -237,11 +237,23 @@ let UserController = class UserController {
                     where: {
                         ip: ip
                     }
-                }).then(token => {
-                    delete user.pwd;
-                    return res.status(200).json({
-                        user: user, token: token.token
-                    });
+                }).then(async (token) => {
+                    try {
+                        jsonwebtoken_1.default.verify(token.token, process.env.JWT_SECRET);
+                        delete user.pwd;
+                        return res.status(200).json({
+                            user: user, token: token.token
+                        });
+                    }
+                    catch (e) {
+                        await this.clientDB.token.delete({
+                            where: {
+                                ip: token.ip
+                            }
+                        });
+                        console.log("delete");
+                        throw "Token expired";
+                    }
                 })
                     .catch(async () => {
                     const newJWToken = this.jwtConfigure.generateJWT(user, isRememberMe);
