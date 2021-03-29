@@ -5,6 +5,9 @@ import 'package:health_passport/models/user_model.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_model.dart';
+import '../models/user_model.dart';
+
 
 class UserService {
   final String host = "localhost:3000";
@@ -56,6 +59,24 @@ class UserService {
       print(res.body);
 
       return false;
+    }
+  }
+
+  Future<dynamic> getCurrentUser() async {
+    var token = await SharedPreferences.getInstance();
+
+    try {
+      Response res = await get(Uri.http(host, "api/user"), headers: {
+        "Authorization": "Bearer " + token.getString("uid")
+      });
+
+      if (res.statusCode == 200) {
+        return jsonDecode(res.body);
+      } else {
+        print(res.body);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

@@ -3,11 +3,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-Future<String> getToken() async {
-  var token = await SharedPreferences.getInstance();
-  return token.getString("uid");
+import '../services/user_requests.dart';
+
+UserService userService = new UserService();
+
+Future<List<dynamic>> getIlls() async {
+  List<dynamic> services = (await userService.getCurrentUser())[0]["services"];
+  return services.where((element) => element["type"] == "TYPE_ILL").toList();;
+}
+
+Future<List<dynamic>> getSurveys() async {
+  List<dynamic> services = (await userService.getCurrentUser())[0]["services"];
+  return services.where((element) => element["type"] == "TYPE_SURVEY").toList();
+}
+
+Future<List<dynamic>> getVaccines() async {
+  List<dynamic> services = (await userService.getCurrentUser())[0]["services"];
+  return services.where((element) => element["type"] == "TYPE_VACCINE").toList();
 }
 
 class HomePage extends StatelessWidget {
@@ -74,13 +87,30 @@ class HomePage extends StatelessWidget {
                          ]
                        ),
                        content: Column(
-                         children: List.generate(10, (index) {
-                           return TextField(
-                               decoration: InputDecoration(
-                                   labelText: "Label $index"
-                               )
-                           );
-                         }),
+                         children: [
+                           FutureBuilder<List<dynamic>>(
+                             future: getIlls(),
+                             builder: (context, snapshot) {
+                               if (snapshot.data.length > 0) {
+                                 return Column(
+                                   children: List.generate(snapshot.data.length, (index) {
+                                     return Text(snapshot.data[index]["name"].toString());
+                                   })
+                                 );
+                               } else {
+                                 return Column(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   crossAxisAlignment: CrossAxisAlignment.center,
+                                   children: [
+                                     Center(
+                                       child: Text("Хвороби відсутні"),
+                                     )
+                                   ],
+                                 );
+                               }
+                             },
+                           )
+                         ]
                        )
                      );
                    });
