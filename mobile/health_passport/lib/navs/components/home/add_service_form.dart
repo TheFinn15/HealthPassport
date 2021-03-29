@@ -1,7 +1,10 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:health_passport/services/user_requests.dart';
 
 String checkType(String type) {
   if (type == "TYPE_ILL") return "Хвороба";
@@ -112,7 +115,36 @@ class AddServiceForm extends StatelessWidget {
                                           tooltip: "Обрати сервіс",
                                           icon: Icon(Icons.keyboard_arrow_right_outlined, size: 25),
                                           onPressed: () async {
-
+                                            var doEdit = await UserService().editCurrentUser(
+                                                jsonEncode(<String, dynamic> {
+                                                  "service": snapshot.data[index]["id"]
+                                                })
+                                            );
+                                            return showDialog(
+                                                context: context,
+                                                builder: (_) {
+                                                  if (doEdit)
+                                                    return AlertDialog(
+                                                        title: Text("Сервіс додан !"),
+                                                        actions: [
+                                                          FlatButton(
+                                                              onPressed: () {},
+                                                              child: Text("CLOSE")
+                                                          )
+                                                        ]
+                                                    );
+                                                  else
+                                                    return AlertDialog(
+                                                        title: Text("Помилка при додані сервісу !"),
+                                                        actions: [
+                                                          FlatButton(
+                                                              onPressed: () {},
+                                                              child: Text("CLOSE")
+                                                          )
+                                                        ]
+                                                    );
+                                                }
+                                            );
                                           }
                                         )
                                       ],

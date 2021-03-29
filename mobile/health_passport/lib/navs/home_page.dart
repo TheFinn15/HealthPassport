@@ -26,7 +26,7 @@ Future<List<dynamic>> getVaccines() async {
 }
 
 Future<List<dynamic>> getServices() async {
-  return await userService.getServices();
+  return (await userService.getServices()).where((item) => item["type"] == "TYPE_SURVEY" || item["type"] == "TYPE_VACCINE").toList();
 }
 
 class HomePage extends StatelessWidget {
