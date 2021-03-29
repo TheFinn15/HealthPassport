@@ -12,22 +12,6 @@ import '../models/user_model.dart';
 class UserService {
   final String host = "localhost:3000";
 
-  Future<List<User>> getUsers() async {
-    Response res = await get(Uri.http(host, "/api/users"), headers: {
-      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyLCJsb2dpbiI6ImFkbWluIiwicm9sZSI6IlJPTEVfQURNSU4ifSwiaWF0IjoxNjE2NTc4NDYwLCJzdWIiOiJhdXRoIn0.gT06OknVdnVcLWEoH3n-sJS28DlzpLlfl82TNs66VZM"
-    });
-    if (res.statusCode == 200) {
-      List<dynamic> body = jsonDecode(res.body);
-
-      List<User> users = body
-        .map((i) => User.fromJson(i)).toList();
-
-      return users;
-    } else {
-      throw Exception("Error");
-    }
-  }
-
   Future<bool> login(data) async {
     final storage = await SharedPreferences.getInstance();
     Response res = await post(Uri.http(host, "api/login"), body: data, headers: <String, String> {
@@ -77,6 +61,25 @@ class UserService {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<dynamic> getRecommends() async {
+    var token = await SharedPreferences.getInstance();
+
+    try {
+      Response res = await get(Uri.http(host, "/api/recommend"), headers: {
+        "Authorization": "Bearer " + token.getString("uid")
+      });
+
+      if (res.statusCode == 200) {
+        return [jsonDecode(res.body), true];
+      } else {
+        return ["", false];
+      }
+    } catch (e) {
+      print(e);
+      return ["", false];
     }
   }
 

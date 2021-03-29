@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/navs/components/home/add_service_form.dart';
+import 'package:health_passport/navs/components/home/service_item.dart';
 
 import '../services/user_requests.dart';
 import 'components/home/services_info.dart';
@@ -26,7 +27,33 @@ Future<List<dynamic>> getVaccines() async {
 }
 
 Future<List<dynamic>> getServices() async {
-  return (await userService.getServices()).where((item) => item["type"] == "TYPE_SURVEY" || item["type"] == "TYPE_VACCINE").toList();
+  List<dynamic> userServices = (await userService.getCurrentUser())[0]["services"];
+  var services = (await userService.getServices()).where((item) =>
+      (item["type"] == "TYPE_SURVEY" || item["type"] == "TYPE_VACCINE")
+  ).toList();
+
+  var res = [];
+  for (var item in services) {
+    int curInd = services.indexOf(item);
+    try {
+      if (userServices[curInd]["id"] != item["id"]) {
+        res.add(item);
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+  return res;
+}
+
+Future<List<dynamic>> getRecommends() async {
+  var res = (await userService.getRecommends());
+  List<dynamic> services = [];
+  if (res[1]) {
+    services = res[0]["vaccines"];
+    services.addAll(res[0]["surveys"]);
+  }
+  return services;
 }
 
 class HomePage extends StatelessWidget {
@@ -50,13 +77,22 @@ class HomePage extends StatelessWidget {
                   icon: Icon(Icons.add_circle_outline, size: 30),
                   onPressed: () {
                     showDialog(context: context, builder: (_) {
-                      return AddServiceForm(getServices());
+                      return AddServiceForm("Додати сервіс", getServices());
                     });
                   },
                 ),
                 Text(
                   "Мої дані",
                   style: GoogleFonts.roboto(fontSize: 30.0, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  tooltip: "Рекомендації",
+                  icon: Icon(Icons.info_outlined, size: 30),
+                  onPressed: () {
+                    showDialog(context: context, builder: (_) {
+                      return AddServiceForm("Рекомендація", getRecommends());
+                    });
+                  },
                 ),
               ],
             ),
@@ -68,29 +104,7 @@ class HomePage extends StatelessWidget {
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
                  GestureDetector(
-                   child: Card(
-                     elevation: 8,
-                     shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(5.0)
-                     ),
-                     child:  Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
-                       children: [
-                         Padding(
-                           padding: const EdgeInsets.all(20),
-                           child: Text(
-                             "Хвороби",
-                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
-                           ),
-                         ),
-                         Spacer(),
-                         Padding(
-                           padding: const EdgeInsets.only(right: 20),
-                           child: Icon(Icons.keyboard_arrow_down, size: 30),
-                         ),
-                       ],
-                     ),
-                   ),
+                   child: ServiceItem("Мої Хвороби"),
                    onTap: () {
                      showDialog(
                        context: context,
@@ -100,29 +114,7 @@ class HomePage extends StatelessWidget {
                    },
                  ),
                  GestureDetector(
-                   child: Card(
-                     elevation: 8,
-                     shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(5.0)
-                     ),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
-                       children: [
-                         Padding(
-                           padding: const EdgeInsets.all(20),
-                           child: Text(
-                             "Обстеження",
-                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
-                           ),
-                         ),
-                         Spacer(),
-                         Padding(
-                           padding: const EdgeInsets.only(right: 20),
-                           child: Icon(Icons.keyboard_arrow_down, size: 30),
-                         ),
-                       ],
-                     ),
-                   ),
+                   child: ServiceItem("Мої Обстеження"),
                    onTap: () {
                      showDialog(
                          context: context,
@@ -132,29 +124,7 @@ class HomePage extends StatelessWidget {
                    },
                  ),
                  GestureDetector(
-                   child: Card(
-                     elevation: 8,
-                     shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(5.0)
-                     ),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
-                       children: [
-                         Padding(
-                           padding: const EdgeInsets.all(20),
-                           child: Text(
-                             "Вакцинації",
-                             style: GoogleFonts.roboto(fontSize: 20.0, fontWeight: FontWeight.bold),
-                           ),
-                         ),
-                         Spacer(),
-                         Padding(
-                           padding: const EdgeInsets.only(right: 20),
-                           child: Icon(Icons.keyboard_arrow_down, size: 30),
-                         ),
-                       ],
-                     ),
-                   ),
+                   child: ServiceItem("Мої Вакцинації"),
                    onTap: () {
                      showDialog(
                          context: context,
@@ -172,22 +142,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-// FutureBuilder<String>(
-// future: getToken(),
-// builder: (context, AsyncSnapshot<String>snapshot) {
-// List<Widget> children;
-// if (snapshot.hasData) {
-// children = <Widget>[
-// Text(snapshot.data)
-// ];
-// } else {
-// children = <Widget>[
-// Text("Помилка")
-// ];
-// }
-// return Center(
-// child: children[0]
-// );
-// },
-// ),
