@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_ip/flutter_ip.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/navs/login_page.dart';
 import 'package:health_passport/navs/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wifi/wifi.dart';
 
 import 'navs/cabinet_page.dart';
 
@@ -94,9 +98,11 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             ind = value;
           });
-          print(logout.getString("uid"));
+          print(await FlutterIp.internalIP);
+          print(await FlutterIp.externalIP);
           if (value == 2 && logout.getString("uid") != null) {
             logout.remove("uid");
+            // await userService.logout()
             Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
           }
         },

@@ -98,10 +98,9 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-             margin: EdgeInsets.fromLTRB(150, 10, 150, 10),
+             margin: EdgeInsets.all(50),
              child:  Column(
-               mainAxisAlignment: MainAxisAlignment.center,
-               crossAxisAlignment: CrossAxisAlignment.start,
+               mainAxisAlignment: MainAxisAlignment.start,
                children: [
                  GestureDetector(
                    child: ServiceItem("Мої Хвороби"),

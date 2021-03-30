@@ -27,7 +27,7 @@ class LoginPage extends StatelessWidget {
           width: 340.0,
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
                   child: Text(

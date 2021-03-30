@@ -10,7 +10,7 @@ import '../models/user_model.dart';
 
 
 class UserService {
-  final String host = "localhost:3000";
+  final String host = "10.0.2.2:3000";
 
   Future<bool> login(data) async {
     final storage = await SharedPreferences.getInstance();
