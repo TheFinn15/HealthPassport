@@ -54,7 +54,6 @@ class AddServiceForm extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Column(
                                             children: [
@@ -66,7 +65,7 @@ class AddServiceForm extends StatelessWidget {
                                                 ),
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                                                padding: const EdgeInsets.fromLTRB(5, 15, 15, 15),
                                                 child: Text(
                                                     snapshot.data[index]["name"],
                                                     style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
@@ -78,14 +77,14 @@ class AddServiceForm extends StatelessWidget {
                                         Column(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(10.0),
+                                              padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
                                               child: Text(
                                                 "Тип сервісу",
                                                 style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                                              padding: const EdgeInsets.fromLTRB(5, 15, 15, 15),
                                               child: Text(
                                                   checkType(snapshot.data[index]["type"]),
                                                   style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
@@ -97,27 +96,50 @@ class AddServiceForm extends StatelessWidget {
                                         Column(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(10.0),
+                                              padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
                                               child: Text(
                                                 "О процедурі",
                                                 style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                                              padding: const EdgeInsets.fromLTRB(5, 15, 15, 15),
                                               child: Text(
                                                   snapshot.data[index]["info"],
                                                   style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
                                               ),
                                             ),
                                           ],
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(10.0),
+                                              child: Text(
+                                                "Партнер",
+                                                style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                                              child: Text(
+                                                  snapshot.data[index]["partner"]["name"],
+                                                  style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
+                                              ),
+                                            ),
+                                          ],
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                         ),
                                         Column(
-                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
                                             IconButton(
                                                 tooltip: "Обрати сервіс",
-                                                icon: Icon(Icons.keyboard_arrow_right_outlined, size: 25),
+                                                icon: Icon(Icons.keyboard_arrow_right_outlined, size: 35),
                                                 onPressed: () async {
                                                   var doEdit = await UserService().editCurrentUser(
                                                       jsonEncode(<String, dynamic> {
@@ -152,29 +174,6 @@ class AddServiceForm extends StatelessWidget {
                                                 }
                                             )
                                           ],
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(10.0),
-                                              child: Text(
-                                                "Партнер",
-                                                style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                                              child: Text(
-                                                  snapshot.data[index]["partner"]["name"],
-                                                  style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
-                                              ),
-                                            ),
-                                          ],
-                                          mainAxisAlignment: MainAxisAlignment.start,
                                         )
                                       ],
                                     )

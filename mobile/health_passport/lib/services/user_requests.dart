@@ -53,7 +53,7 @@ class UserService {
       Response res = await get(Uri.http(host, "api/user"), headers: {
         "Authorization": "Bearer " + token.getString("uid")
       });
-
+      print(res.body);
       if (res.statusCode == 200) {
         return jsonDecode(res.body);
       } else {
@@ -125,6 +125,20 @@ class UserService {
       print(res.statusCode);
       print(res.body);
       return false;
+    }
+  }
+
+  Future<String> getClientIP() async {
+    try {
+      Response res = await get(Uri.parse("https://api.ipify.org/"));
+
+      if (res.statusCode == 200) {
+        return res.body;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
     }
   }
 }

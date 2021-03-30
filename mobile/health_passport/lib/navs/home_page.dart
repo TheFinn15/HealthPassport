@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/navs/components/home/add_service_form.dart';
 import 'package:health_passport/navs/components/home/service_item.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 import '../services/user_requests.dart';
 import 'components/home/services_info.dart';
@@ -62,6 +63,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Головна сторінка"),
+        backgroundColor: HexColor("#FB8C00"),
         automaticallyImplyLeading: false
       ),
       body: Column(

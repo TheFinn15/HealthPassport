@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/navs/login_page.dart';
 import 'package:health_passport/navs/register_page.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wifi/wifi.dart';
 
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      color: Colors.red,
       home: Scaffold(
         bottomSheet: MainPage()
       ),
@@ -91,6 +93,9 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: bottomNavTabs[ind],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: HexColor("#FB8C00"),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         currentIndex: ind,
         onTap: (value) async {
@@ -98,8 +103,7 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             ind = value;
           });
-          print(await FlutterIp.internalIP);
-          print(await FlutterIp.externalIP);
+          // print(await FlutterIp.internalIP);
           if (value == 2 && logout.getString("uid") != null) {
             logout.remove("uid");
             // await userService.logout()
@@ -116,32 +120,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
-
-// FutureBuilder(
-// future: userService.getUsers(),
-// builder: (context, AsyncSnapshot<List<User>> snapshot) {
-// if (snapshot.hasData) {
-// List<User> users = snapshot.data!;
-// return GridView.count(
-// crossAxisCount: 3,
-// children: List.generate(users.length, (index) {
-// var item = users[index];
-// return Center(
-// child: Column(
-// crossAxisAlignment: CrossAxisAlignment.center,
-// mainAxisAlignment: MainAxisAlignment.center,
-// children: [
-// Text(item.login),
-// Text(item.fullName),
-// Text(item.auths.toString())
-// ],
-// )
-// );
-// })
-// );
-// } else {
-// return Text(snapshot.toString());
-// }
-// },
-// )

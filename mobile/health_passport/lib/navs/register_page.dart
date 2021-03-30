@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/main.dart';
 import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/services/user_requests.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 
 class RegisterPage extends StatelessWidget {
@@ -24,119 +25,138 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text("Реєстрація"),
+          backgroundColor: HexColor("#FB8C00"),
         ),
         body: Center(
             child: Container(
-              width: 340.0,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                        child: Text(
-                          "Реєстрація",
-                          style: GoogleFonts.roboto(
-                              fontSize: 25.0
-                          ),
-                        )
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                          controller: fullNameField,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'ПІБ',
+              width: 340,
+              height: 540,
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)
+                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              "Реєстрація",
+                              style: GoogleFonts.roboto(
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
                           )
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                          controller: loginField,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Логін',
-                          )
+                      Divider(
+                        height: 3,
+                        thickness: 3
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                        controller: pwdField,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Пароль',
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            controller: fullNameField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'ПІБ',
+                            )
                         ),
-                        keyboardType: TextInputType.visiblePassword,
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                          controller: emailField,
-                          keyboardType: TextInputType.text,
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            controller: loginField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Логін',
+                            )
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                          controller: pwdField,
+                          obscureText: true,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'E-mail',
-                          )
+                            labelText: 'Пароль',
+                          ),
+                          keyboardType: TextInputType.visiblePassword,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                          controller: phoneField,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Телефон',
-                          )
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            controller: emailField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'E-mail',
+                            )
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          var data = jsonEncode(<String, dynamic> {
-                            "fullName": fullNameField.text,
-                            "login": loginField.text,
-                            "pwd": pwdField.text,
-                            "email": emailField.text,
-                            "phone": phoneField.text
-                          });
-                          bool isRegister = await userService.register(data);
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            controller: phoneField,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Телефон',
+                            )
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(HexColor("#6cc070"))
+                          ),
+                          onPressed: () async {
+                            var data = jsonEncode(<String, dynamic> {
+                              "fullName": fullNameField.text,
+                              "login": loginField.text,
+                              "pwd": pwdField.text,
+                              "email": emailField.text,
+                              "phone": phoneField.text
+                            });
+                            bool isRegister = await userService.register(data);
 
-                          if (isRegister) {
-                            return showDialog(context: context, builder: (_) => new AlertDialog(
-                                title: Text("Реєстрація успішна!"),
-                                content: Text("Використайте форму авторизації."),
-                                actions: [
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
-                                      },
-                                      child: Text("CLOSE")
-                                  )
-                                ]
-                            ));
-                          } else {
-                            return showDialog(context: context, builder: (_) => new AlertDialog(
-                                title: Text("Помилка при реєстрації"),
-                                actions: [
-                                  FlatButton(onPressed: () {Navigator.of(context).pop();}, child: Text("CLOSE"))
-                                ]
-                            ));
-                          }
-                        },
-                        child: Text("ЗАРЕЄСТРУВАТИСЯ"),
-                        clipBehavior: Clip.antiAlias,
-                      ),
-                    )
-                  ]
+                            if (isRegister) {
+                              return showDialog(context: context, builder: (_) => new AlertDialog(
+                                  title: Text("Реєстрація успішна!"),
+                                  content: Text("Використайте форму авторизації."),
+                                  actions: [
+                                    FlatButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                                        },
+                                        child: Text("CLOSE")
+                                    )
+                                  ]
+                              ));
+                            } else {
+                              return showDialog(context: context, builder: (_) => new AlertDialog(
+                                  title: Text("Помилка при реєстрації"),
+                                  actions: [
+                                    FlatButton(onPressed: () {Navigator.of(context).pop();}, child: Text("CLOSE"))
+                                  ]
+                              ));
+                            }
+                          },
+                          child: Text("ЗАРЕЄСТРУВАТИСЯ"),
+                          clipBehavior: Clip.antiAlias,
+                        ),
+                      )
+                    ]
+                ),
               ),
             )
         )

@@ -40,68 +40,95 @@ class ServicesInfo extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0)
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        child: Column(
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "Назва",
-                                    style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                      snapshot.data[index]["name"],
-                                      style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Spacer(),
-                            Column(
-                              // mainAxisAlignment: MainAxisAlignment.center,
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "О процедурі",
-                                    style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
-                                  ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Назва",
+                                        style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                          snapshot.data[index]["name"],
+                                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                      snapshot.data[index]["info"],
-                                      style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
-                                  ),
+                                Spacer(),
+                                Column(
+                                  // mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "О процедурі",
+                                        style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                          snapshot.data[index]["info"],
+                                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                Spacer(),
+                                Column(
+                                  // mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Партнер",
+                                        style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                          snapshot.data[index]["partner"]["name"],
+                                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
-                            Spacer(),
-                            Column(
-                              // mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                            Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "Партнер",
-                                    style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                      snapshot.data[index]["partner"]["name"],
-                                      style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
-                                  ),
-                                ),
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(
+                                        "Партнер",
+                                        style: GoogleFonts.openSans(color: Colors.grey.withOpacity(0.8)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                                      child: Text(
+                                          snapshot.data[index]["partner"]["name"],
+                                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.bold)
+                                      ),
+                                    ),
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                )
                               ],
                             )
                           ],
