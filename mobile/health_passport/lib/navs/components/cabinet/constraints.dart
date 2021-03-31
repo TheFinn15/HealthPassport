@@ -1,22 +1,57 @@
 
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:health_passport/navs/components/cabinet/constraint_item.dart';
 
-String getHazardLevel(rawLevel) {
-  if (rawLevel == "OKAY_LEVEL")
-     return "Стан здоровий";
-  if (rawLevel == "NORMAL_LEVEL")
-    return "Стан достатньо здоровий";
-  if (rawLevel == "NOT_OKAY_LEVEL")
-    return "Стан не здоровий";
-  if (rawLevel == "DANGER_LEVEL")
-    return "Стан критичний";
-  if (rawLevel == "DEATHLY_LEVEL")
-    return "Стан при смерті";
+List<bool> analyzeStatus(caps) {
+  List<bool> results = [false, false, false, false, false];
+  var capsLevels = {
+    "OKAY_LEVEL": [],
+    "NORMAL_LEVEL": [],
+    "NOT_OKAY_LEVEL": [{}],
+    "DANGER_LEVEL": [{}],
+    "DEATHLY_LEVEL": [{}]
+  };
+  for (var item in caps) {
+    capsLevels[item["hazardLevel"]].add(item);
+  }
+  var allCounts = [
+    capsLevels["OKAY_LEVEL"].length,
+    capsLevels["NORMAL_LEVEL"].length,
+    capsLevels["NOT_OKAY_LEVEL"].length,
+    capsLevels["DANGER_LEVEL"].length,
+    capsLevels["DEATHLY_LEVEL"].length
+  ];
+
+  int maxInd = allCounts.indexOf(allCounts.reduce(max));
+  if (maxInd == 0) results[0] = true;
+  if (maxInd == 1) results[1] = true;
+  if (maxInd == 2) results[2] = true;
+  if (maxInd == 3) results[3] = true;
+  if (maxInd == 4) results[4] = true;
+
+  return results;
+}
+
+showStatus(info, color, context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(info),
+        backgroundColor: color,
+        action: SnackBarAction(
+          textColor: Colors.white,
+          label: "ЗАЧИНИТИ",
+          onPressed: () {}
+        ),
+        padding: EdgeInsets.all(10),
+        elevation: 8,
+      )
+  );
 }
 
 class Constraints extends StatelessWidget {
@@ -62,7 +97,54 @@ class Constraints extends StatelessWidget {
                                     return showDialog(
                                         context: context,
                                         builder: (_) => new AlertDialog(
-                                          title: Text("kuk"),
+                                          title: Column(
+                                            children: [
+                                              Center(
+                                                child: Text(
+                                                  "Статус профілю",
+                                                  style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(top: 10),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    IconButton(
+                                                        icon: Icon(Icons.sentiment_very_satisfied_outlined),
+                                                        onPressed: analyzeStatus(user["caps"])[0] ? () {showStatus("Стан здоров'я - повністью здорове", Colors.greenAccent.shade700, context);} : null,
+                                                        color: Colors.greenAccent.shade700,
+                                                        tooltip: analyzeStatus(user["caps"])[0] ? "Стан здоров'я - повністью здорове" : "Стан неактивен",
+                                                    ),
+                                                    IconButton(
+                                                        icon: Icon(Icons.sentiment_satisfied_outlined),
+                                                        onPressed: analyzeStatus(user["caps"])[1] ? () {showStatus("Стан здоров'я - є малий недуг", Colors.indigo.shade700, context);} : null,
+                                                        color: Colors.indigo.shade700,
+                                                        tooltip: analyzeStatus(user["caps"])[1] ? "Стан здоров'я - є малий недуг" : "Стан неактивен",
+                                                    ),
+                                                    IconButton(
+                                                        icon: Icon(Icons.sentiment_neutral_outlined),
+                                                        onPressed: analyzeStatus(user["caps"])[2] ? () {showStatus("Стан здоров'я - не здорове", Colors.deepOrangeAccent, context);} : null,
+                                                        color: Colors.deepOrangeAccent,
+                                                        tooltip: analyzeStatus(user["caps"])[2] ? "Стан здоров'я - не здорове" : "Стан неактивен",
+                                                    ),
+                                                    IconButton(
+                                                        icon: Icon(Icons.sentiment_dissatisfied_outlined),
+                                                        onPressed: analyzeStatus(user["caps"])[3] ?  () {showStatus("Стан здоров'я - потребує швидкої допомоги", Colors.pinkAccent, context);} : null,
+                                                        color: Colors.pinkAccent,
+                                                        tooltip: analyzeStatus(user["caps"])[3] ? "Стан здоров'я - потребує швидкої допомоги" : "Стан неактивен",
+                                                    ),
+                                                    IconButton(
+                                                        icon: Icon(Icons.sentiment_very_dissatisfied_outlined),
+                                                        onPressed: analyzeStatus(user["caps"])[4] ?  () {showStatus("Стан здоров'я - при смерті", Colors.red, context);} : null,
+                                                        color: Colors.red,
+                                                        tooltip: analyzeStatus(user["caps"])[4] ? "Стан здоров'я - при смерті" : "Стан неактивен",
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         )
                                     );
                                   },
@@ -76,75 +158,16 @@ class Constraints extends StatelessWidget {
                             ),
                             user["caps"].length > 0 ?
                               Row(
-                                children: List.generate(user["caps"].length, (ind) {
-                                  print(user["caps"] == null ? 'opa': "s");
-                                  var item = user["caps"][ind];
-                                  return Container(
-                                    width: 400,
-                                    child: Card(
-                                      elevation: 8,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(5.0)
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            child: Row(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Text("Назва"),
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(10.0),
-                                                          child: Text(item["name"], style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      children: [
-                                                        Text("Об обмежені"),
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(10.0),
-                                                          child: Text(item["info"], style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      children: [
-                                                        Text("Виникло з"),
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(10.0),
-                                                          child: Text(item["ill"]["name"], style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Text("Рівень безпеки"),
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(10.0),
-                                                          child: Text(getHazardLevel(item["hazardLevel"]), style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-                                                        )
-                                                      ],
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            )
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ) :
+                                children: [
+                                  Column(
+                                    children: List.generate(user["caps"].length, (ind) {
+                                      var item = user["caps"][ind];
+                                      return ConstraintItem(item);
+                                    }),
+                                  )
+                                ],
+                              )
+                                :
                               Row(
                                 children: [
                                   Center(
