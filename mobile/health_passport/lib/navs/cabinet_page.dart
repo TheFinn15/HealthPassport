@@ -43,7 +43,7 @@ class CabinetPage extends StatelessWidget {
                     ),
                   ),
                   body: TabBarView(
-                    children: [UserData(getCurUser()), Constraints(), UserSessions()],
+                    children: [UserData(getCurUser()), Constraints(getCurUser()), UserSessions()],
                   ),
                 ))));
   }

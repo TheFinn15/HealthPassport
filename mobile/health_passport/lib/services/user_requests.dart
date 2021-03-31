@@ -53,7 +53,7 @@ class UserService {
       Response res = await get(Uri.http(host, "api/user"), headers: {
         "Authorization": "Bearer " + token.getString("uid")
       });
-      print(res.body);
+
       if (res.statusCode == 200) {
         return jsonDecode(res.body);
       } else {

@@ -34,7 +34,6 @@ class UserData extends StatelessWidget {
                     var user = snapshot.data;
                     fullNameField.text = user["fullName"];
                     loginField.text = user["login"];
-                    // pwdField.text = user["fullName"];
                     emailField.text = user["email"];
                     phoneField.text = user["phone"];
 
@@ -96,9 +95,10 @@ class _UserDataEdit extends State<UserDataEdit> {
                 style: GoogleFonts.roboto(fontWeight: FontWeight.bold, fontSize: 25),
               ),
             ),
-            IconButton(
-              tooltip: "Редагувати дані",
-              icon: !isReadOnly ? Icon(Icons.done, size: 30) : Icon(Icons.edit, size: 30),
+            FloatingActionButton(
+              mini: true,
+              backgroundColor: HexColor("#6cc070"),
+              child: !isReadOnly ? Icon(Icons.done, size: 25) : Icon(Icons.edit, size: 25),
               onPressed: () async {
                 setState(() {
                   isReadOnly = !isReadOnly;
@@ -131,9 +131,9 @@ class _UserDataEdit extends State<UserDataEdit> {
                         SnackBar(
                           content: Text("Помилка при зміні даних"),
                           action: SnackBarAction(
-                            textColor: Colors.white,
-                            label: "ЗАЧИНИТИ",
-                            onPressed: () {}
+                              textColor: Colors.white,
+                              label: "ЗАЧИНИТИ",
+                              onPressed: () {}
                           ),
                           padding: EdgeInsets.all(10),
                           elevation: 8,
@@ -142,8 +142,7 @@ class _UserDataEdit extends State<UserDataEdit> {
                     );
                   }
                 }
-              },
-              color: HexColor("#6cc070"),
+              }
             )
           ],
         ),
