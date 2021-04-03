@@ -13,20 +13,24 @@ class UserService {
   final String host = "10.0.2.2:3000";
 
   Future<bool> login(data) async {
-    final storage = await SharedPreferences.getInstance();
-    Response res = await post(Uri.http(host, "api/login"), body: data, headers: <String, String> {
-      'Content-Type': 'application/json; charset=UTF-8',
-    });
+    try {
+      final storage = await SharedPreferences.getInstance();
+      Response res = await post(Uri.http(host, "api/login"), body: data, headers: <String, String> {
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
 
-    if (res.statusCode == 200) {
-      String token = jsonDecode(res.body)["token"];
-      storage.setString("uid", token);
+      if (res.statusCode == 200) {
+        String token = jsonDecode(res.body)["token"];
+        storage.setString("uid", token);
 
-      return true;
-    } else {
-      print(res.statusCode);
-      print(res.body);
+        return true;
+      } else {
+        print(res.statusCode);
+        print(res.body);
 
+        return false;
+      }
+    } catch (e) {
       return false;
     }
   }

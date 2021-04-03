@@ -119,29 +119,39 @@ class RegisterPage extends StatelessWidget {
                               backgroundColor: MaterialStateProperty.all<Color>(HexColor("#6cc070"))
                           ),
                           onPressed: () async {
-                            var data = jsonEncode(<String, dynamic> {
-                              "fullName": fullNameField.text,
-                              "login": loginField.text,
-                              "pwd": pwdField.text,
-                              "email": emailField.text,
-                              "phone": phoneField.text
-                            });
-                            bool isRegister = await userService.register(data);
+                            if (fullNameField.text.length > 0 || loginField.text.length > 0 ||
+                                pwdField.text.length > 0 || emailField.text.length > 0 || phoneField.text.length > 0) {
+                              var data = jsonEncode(<String, dynamic> {
+                                "fullName": fullNameField.text,
+                                "login": loginField.text,
+                                "pwd": pwdField.text,
+                                "email": emailField.text,
+                                "phone": phoneField.text
+                              });
+                              bool isRegister = await userService.register(data);
 
-                            if (isRegister) {
-                              return showDialog(context: context, builder: (_) => new AlertDialog(
-                                  title: Text("Реєстрація успішна!"),
-                                  content: Text("Використайте форму авторизації."),
-                                  actions: [
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
-                                        },
-                                        child: Text("CLOSE")
-                                    )
-                                  ]
-                              ));
+                              if (isRegister) {
+                                return showDialog(context: context, builder: (_) => new AlertDialog(
+                                    title: Text("Реєстрація успішна!"),
+                                    content: Text("Використайте форму авторизації."),
+                                    actions: [
+                                      FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                                          },
+                                          child: Text("CLOSE")
+                                      )
+                                    ]
+                                ));
+                              } else {
+                                return showDialog(context: context, builder: (_) => new AlertDialog(
+                                    title: Text("Помилка при реєстрації"),
+                                    actions: [
+                                      FlatButton(onPressed: () {Navigator.of(context).pop();}, child: Text("CLOSE"))
+                                    ]
+                                ));
+                              }
                             } else {
                               return showDialog(context: context, builder: (_) => new AlertDialog(
                                   title: Text("Помилка при реєстрації"),
