@@ -179,7 +179,7 @@ class Constraints extends StatelessWidget {
                         )
                     );
                   } else {
-                    return Center(child: Text("NONE"));
+                    return Center(child: Text("Дані відсутні"));
                   }
                 }
             )

@@ -1,16 +1,29 @@
 
 import 'dart:convert';
 import 'dart:core';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/main.dart';
-import 'package:health_passport/navs/home_page.dart';
+import 'package:health_passport/navs/cabinet_page.dart';
 import 'package:health_passport/services/user_requests.dart';
 import 'package:hexcolor/hexcolor.dart';
 
+import 'home_page.dart';
+
+
+var allDestinations = [
+  Destination('Головна', Icons.home, Colors.teal),
+  Destination("Кабінет", Icons.person, Colors.blue),
+  Destination("Вихід", Icons.exit_to_app, Colors.blue)
+];
+
+var bottomNavTabs = [
+  HomePage(),
+  CabinetPage(),
+  Center(child: Text("Вихід"))
+];
 
 class LoginPage extends StatelessWidget {
   @override
@@ -136,6 +149,7 @@ class _AuthForms extends State<AuthForms> {
                     "isRememberMe": isRememberMe,
                     "ip": await userService.getClientIP()
                   });
+                  print(data);
                   bool isAuth = await userService.login(data);
                   if (isAuth) {
                     return showDialog(context: context, builder: (_) => new AlertDialog(
@@ -144,7 +158,7 @@ class _AuthForms extends State<AuthForms> {
                           FlatButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(allDestinations, bottomNavTabs)));
                               },
                               child: Text("CLOSE")
                           )

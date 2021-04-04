@@ -6,9 +6,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:health_passport/main.dart';
-import 'package:health_passport/navs/home_page.dart';
 import 'package:health_passport/services/user_requests.dart';
 import 'package:hexcolor/hexcolor.dart';
+
+import 'cabinet_page.dart';
+import 'home_page.dart';
+
+
+var allDestinations = [
+  Destination('Головна', Icons.home, Colors.teal),
+  Destination("Кабінет", Icons.person, Colors.blue),
+  Destination("Вихід", Icons.exit_to_app, Colors.blue)
+];
+
+var bottomNavTabs = [
+  HomePage(),
+  CabinetPage(),
+  Center(child: Text("Вихід"))
+];
 
 
 class RegisterPage extends StatelessWidget {
@@ -138,7 +153,7 @@ class RegisterPage extends StatelessWidget {
                                       FlatButton(
                                           onPressed: () {
                                             Navigator.of(context).pop();
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(allDestinations, bottomNavTabs)));
                                           },
                                           child: Text("CLOSE")
                                       )

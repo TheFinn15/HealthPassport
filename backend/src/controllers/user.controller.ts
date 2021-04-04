@@ -234,7 +234,8 @@ export class UserController {
 
       await this.clientDB.user.findUnique({
         where: {login: login}
-      }).then(async user => {
+      })
+        .then(async user => {
         const verifyPwd = await argon2.verify(user.pwd, pwd);
         if (!verifyPwd) {
           return res.status(400).json({
@@ -245,7 +246,8 @@ export class UserController {
           where: {
             ip: ip
           }
-        }).then( async token => {
+        })
+          .then(async token => {
           try {
             jwt.verify(token.token, process.env.JWT_SECRET);
 
@@ -286,7 +288,8 @@ export class UserController {
               user: user, token: newJWToken
             });
         });
-      }).catch(e => {
+      })
+        .catch(e => {
         return res.status(400).json({
           msg: `User not found | ERROR: ${e}`
         });

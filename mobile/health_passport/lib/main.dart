@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -31,7 +32,7 @@ class Destination {
   const Destination(this.title, this.icon, this.color);
 }
 
-List<Destination> allDestinations = <Destination>[
+var allDestinations = [
   Destination('Головна', Icons.home, Colors.teal),
   Destination('Логін', Icons.business, Colors.cyan),
   Destination('Реєстрація', Icons.school, Colors.orange)
@@ -40,51 +41,27 @@ List<Destination> allDestinations = <Destination>[
 var bottomNavTabs = [
   Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-              "HEALTH-PASSPORT",
-              style: GoogleFonts.roboto(fontSize: 30.0, )
-          ),
-          Center(
-            child: Text(
-              "Війди або реєструйся, щоб використовувати сервіс",
-              style: GoogleFonts.roboto(),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+                "HEALTH-PASSPORT",
+                style: GoogleFonts.roboto(fontSize: 30.0, )
             ),
-          )
-      ]
-    )
+            Center(
+              child: Text(
+                "Війди або реєструйся, щоб використовувати сервіс",
+                style: GoogleFonts.roboto(),
+              ),
+            )
+          ]
+      )
   ),
   LoginPage(),
   RegisterPage()
 ];
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Health Passport',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      color: Colors.red,
-      home: Scaffold(
-        bottomSheet: MainPage()
-      ),
-    );
-  }
-}
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  int ind = 0;
   // ignore: top_level_function_literal_block
   var storage = SharedPreferences.getInstance().then((value) {
     if (value.getString("uid") != null) {
@@ -96,9 +73,44 @@ class _MainPageState extends State<MainPage> {
     }
   });
 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Health Passport',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      color: Colors.red,
+      home: Scaffold(
+        bottomSheet: MainPage(allDestinations, bottomNavTabs)
+      ),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  final dynamic destination;
+  final dynamic tabs;
+
+  MainPage(this.destination, this.tabs);
+
+  @override
+  _MainPageState createState() => _MainPageState(destination, tabs);
+}
+
+class _MainPageState extends State<MainPage> {
+  final dynamic destination;
+  final dynamic tabs;
+
+  _MainPageState(this.destination, this.tabs);
+
+  int ind = 0;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: bottomNavTabs[ind],
+      body: tabs[ind],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: HexColor("#FB8C00"),
         selectedItemColor: Colors.white,
@@ -110,17 +122,48 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             ind = value;
           });
-          // print(await FlutterIp.internalIP);
           if (value == 2 && logout.getString("uid") != null) {
+            await userService.logout(
+              jsonEncode({
+                "ip": await userService.getClientIP()
+              })
+            );
             logout.remove("uid");
-            // await userService.logout()
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(
+                [
+                  Destination('Головна', Icons.home, Colors.teal),
+                  Destination('Логін', Icons.business, Colors.cyan),
+                  Destination('Реєстрація', Icons.school, Colors.orange)
+                ],
+                [
+                  Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                "HEALTH-PASSPORT",
+                                style: GoogleFonts.roboto(fontSize: 30.0, )
+                            ),
+                            Center(
+                              child: Text(
+                                "Війди або реєструйся, щоб використовувати сервіс",
+                                style: GoogleFonts.roboto(),
+                              ),
+                            )
+                          ]
+                      )
+                  ),
+                  LoginPage(),
+                  RegisterPage()
+                ]
+              )));
           }
         },
-        items: List.generate(allDestinations.length, (index) {
+        items: List.generate(destination.length, (index) {
           return BottomNavigationBarItem(
-            label: allDestinations[index].title,
-            icon: Icon(allDestinations[index].icon)
+            label: destination[index].title,
+            icon: Icon(destination[index].icon)
           );
         })
       )

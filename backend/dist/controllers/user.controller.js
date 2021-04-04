@@ -224,9 +224,11 @@ let UserController = class UserController {
     async login(req, res) {
         try {
             const { login, pwd, isRememberMe, device, ip } = req.body;
+            console.log([login, pwd, isRememberMe, device, ip]);
             await this.clientDB.user.findUnique({
                 where: { login: login }
-            }).then(async (user) => {
+            })
+                .then(async (user) => {
                 const verifyPwd = await argon2_1.default.verify(user.pwd, pwd);
                 if (!verifyPwd) {
                     return res.status(400).json({
@@ -251,7 +253,6 @@ let UserController = class UserController {
                                 ip: token.ip
                             }
                         });
-                        console.log("delete");
                         throw "Token expired";
                     }
                 })

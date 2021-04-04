@@ -45,7 +45,7 @@ class UserData extends StatelessWidget {
                         child: UserDataEdit(fullNameField, loginField, pwdField, emailField, phoneField)
                     );
                   } else {
-                    return Center(child: Text("NONE"));
+                    return Center(child: Text("Дані відсутні"));
                   }
                 }
             )

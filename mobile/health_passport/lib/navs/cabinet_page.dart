@@ -4,6 +4,7 @@ import 'package:health_passport/navs/components/cabinet/constraints.dart';
 import 'package:health_passport/navs/components/cabinet/user_sessions.dart';
 import 'package:health_passport/services/user_requests.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:http/http.dart';
 
 import 'components/cabinet/user_data.dart';
 
@@ -43,8 +44,11 @@ class CabinetPage extends StatelessWidget {
                     ),
                   ),
                   body: TabBarView(
-                    children: [UserData(getCurUser()), Constraints(getCurUser()), UserSessions()],
+                    children: [UserData(getCurUser()), Constraints(getCurUser()), UserSessions(getCurUser())],
                   ),
-                ))));
+                )
+            )
+        )
+    );
   }
 }

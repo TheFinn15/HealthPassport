@@ -119,7 +119,10 @@ class UserService {
   }
 
   Future<bool> logout(data) async {
+    var token = await SharedPreferences.getInstance();
+
     Response res = await post(Uri.http(host, "api/logout"), body: data, headers: <String, String> {
+      "Authorization": "Bearer " + token.getString("uid"),
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
